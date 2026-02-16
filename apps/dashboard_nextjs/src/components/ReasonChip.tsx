@@ -20,9 +20,9 @@ export default function ReasonChip({ chip }: ReasonChipProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-medium ${chipBg(chip.emoji)}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-medium ${chipBg(chip.emoji)}`}
     >
-      <Icon size={13} strokeWidth={2} />
+      <Icon size={12} strokeWidth={2} />
       <span>{chip.text}</span>
     </span>
   );

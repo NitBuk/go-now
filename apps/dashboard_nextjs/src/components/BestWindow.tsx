@@ -1,7 +1,8 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { formatHour, formatDay, scoreBg, scoreText } from "@/lib/score-utils";
+import { formatHour, formatDay, scoreGradient, scoreText, scoreHex, scoreGlow } from "@/lib/score-utils";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
 
 interface BestWindowProps {
@@ -9,7 +10,15 @@ interface BestWindowProps {
   mode: ActivityMode;
 }
 
-export default function BestWindow({ hours, mode }: BestWindowProps) {
+interface WindowResult {
+  startHour: ScoredHour;
+  endHour: ScoredHour;
+  avgScore: number;
+  label: string;
+  windowLength: number;
+}
+
+function findBestWindow(hours: ScoredHour[], mode: ActivityMode): WindowResult | null {
   const now = new Date();
   const futureHours = hours.filter((h) => new Date(h.hour_utc) > now);
 
@@ -38,46 +47,75 @@ export default function BestWindow({ hours, mode }: BestWindowProps) {
     }
   }
 
-  if (bestStart === -1) {
-    return (
-      <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
-        <div className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider mb-2">
-          Next Best Window
-        </div>
-        <p className="text-[14px] text-[#656D76]">No good windows coming up. Tomorrow looks better.</p>
-      </div>
-    );
-  }
+  if (bestStart === -1) return null;
 
-  const startHour = futureHours[bestStart];
-  const endHour = futureHours[bestEnd];
   const avgScore = Math.round(bestAvg);
-  const label = avgScore >= 85 ? "Perfect" : avgScore >= 70 ? "Good" : "Meh";
-  const windowLength = bestEnd - bestStart + 1;
+  return {
+    startHour: futureHours[bestStart],
+    endHour: futureHours[bestEnd],
+    avgScore,
+    label: avgScore >= 85 ? "Perfect" : avgScore >= 70 ? "Good" : "Meh",
+    windowLength: bestEnd - bestStart + 1,
+  };
+}
+
+export default function BestWindow({ hours, mode }: BestWindowProps) {
+  const window = findBestWindow(hours, mode);
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
+    <motion.div
+      className="glass-card rounded-2xl p-5"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.35 }}
+    >
       <div className="flex items-center gap-1.5 mb-3">
-        <Sparkles size={14} className="text-[#656D76]" />
-        <span className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider">
+        <Sparkles size={14} className="text-slate-400" />
+        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
           Next Best Window
         </span>
       </div>
-      <div className="flex items-center gap-3">
-        <div
-          className={`w-11 h-11 rounded-full ${scoreBg(label)} flex items-center justify-center text-white text-sm font-semibold`}
-        >
-          {avgScore}
-        </div>
-        <div>
-          <div className="text-[14px] font-medium text-[#1F2328]">
-            {formatDay(startHour.hour_utc)} &middot; {formatHour(startHour.hour_utc)}&ndash;{formatHour(endHour.hour_utc)}
-          </div>
-          <div className="text-[12px] text-[#656D76]">
-            {windowLength}h window &middot; avg {avgScore} <span className={`font-medium ${scoreText(label)}`}>{label}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+
+      <AnimatePresence mode="wait">
+        {window ? (
+          <motion.div
+            key={`${mode}-found`}
+            className="flex items-center gap-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div
+              className={`w-12 h-12 rounded-full bg-gradient-to-br ${scoreGradient(window.label)} flex items-center justify-center text-white text-sm font-semibold score-glow`}
+              style={{ "--glow-color": scoreGlow(window.label) } as React.CSSProperties}
+            >
+              {window.avgScore}
+            </div>
+            <div>
+              <div className="text-[14px] font-medium text-slate-200">
+                {formatDay(window.startHour.hour_utc)} &middot; {formatHour(window.startHour.hour_utc)}&ndash;{formatHour(window.endHour.hour_utc)}
+              </div>
+              <div className="text-[12px] text-slate-400">
+                {window.windowLength}h window &middot; avg {window.avgScore}{" "}
+                <span className={`font-medium ${scoreText(window.label)}`}>{window.label}</span>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.p
+            key={`${mode}-empty`}
+            className="text-[14px] text-slate-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            No good windows coming up. Tomorrow looks better.
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

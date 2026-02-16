@@ -22,6 +22,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#0A0E1A",
 };
 
 export default function RootLayout({
@@ -30,27 +31,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F6F8FA] min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-white`}
       >
-        <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#D0D7DE]">
+        <nav className="sticky top-0 z-50 bg-[#0A0E1A]/80 backdrop-blur-xl border-b border-white/[0.06]">
           <div className="max-w-lg mx-auto px-4 h-12 flex items-center justify-between">
-            <Link href="/" className="text-sm font-bold text-[#1F2328]">
+            <Link href="/" className="text-sm font-bold text-white tracking-tight">
               Go Now
             </Link>
             <div className="flex gap-4">
               <Link
                 href="/"
-                className="text-xs font-medium text-[#656D76] hover:text-[#1F2328] transition-colors"
+                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
               >
                 Forecast
               </Link>
               <Link
                 href="/status"
-                className="text-xs font-medium text-[#656D76] hover:text-[#1F2328] transition-colors"
+                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
               >
                 Status
+              </Link>
+              <Link
+                href="/formula"
+                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
+              >
+                Formula
               </Link>
             </div>
           </div>

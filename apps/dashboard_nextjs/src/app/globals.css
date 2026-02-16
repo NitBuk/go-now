@@ -4,3 +4,93 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/* Hide scrollbar for horizontal carousels */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Score circle glow */
+.score-glow {
+  box-shadow: 0 0 20px var(--glow-color, rgba(45, 164, 78, 0.3));
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tell the browser this is a dark site (iOS status bar, scrollbar, etc.) */
+html {
+  color-scheme: dark;
+}
+
+/* Dark background on html + body to prevent white edges */
+html, body {
+  background: #0A0E1A;
+}
+body {
+  background: linear-gradient(170deg, #0F1724 0%, #0A0E1A 40%, #111827 100%);
+  min-height: 100vh;
+}
+
+/* Data flow animation for pipeline */
+@keyframes dataFlow {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+.data-flow {
+  stroke-dasharray: 6, 10;
+  animation: dataFlow 8s linear infinite;
+}
+.data-flow-fast {
+  stroke-dasharray: 4, 6;
+  animation: dataFlow 4s linear infinite;
+}
+
+/* Pulse for live indicator */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.live-dot {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+/* Ambient background blobs — CSS-only, compositor-thread animations (transform only, no paint) */
+@keyframes ambient-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, 40px) scale(1.15); }
+  66% { transform: translate(-30px, -20px) scale(0.95); }
+}
+@keyframes ambient-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, -30px) scale(0.9); }
+  66% { transform: translate(40px, 50px) scale(1.1); }
+}
+@keyframes ambient-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -40px) scale(1.1); }
+  66% { transform: translate(-50px, 30px) scale(0.9); }
+}
+.ambient-blob-1 { animation: ambient-drift-1 20s ease-in-out infinite; }
+.ambient-blob-2 { animation: ambient-drift-2 30s ease-in-out infinite; }
+.ambient-blob-3 { animation: ambient-drift-3 40s ease-in-out infinite; }
+
+/* Score circle breathing pulse — CSS-only to avoid JS paint churn */
+@keyframes score-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.score-breathe {
+  animation: score-breathe 3s ease-in-out infinite;
+  will-change: transform;
+}
+

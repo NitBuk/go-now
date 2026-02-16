@@ -1,10 +1,6 @@
 import { fetchHealth } from "@/lib/api";
 import { statusColor } from "@/lib/score-utils";
-import {
-  Activity, Clock, Database, Layers, MapPin,
-  Calculator, ShieldAlert, Minus, Waves, Thermometer,
-  Sun, Wind, CloudRain, Dog,
-} from "lucide-react";
+import { Activity, Clock, Database, Layers, MapPin } from "lucide-react";
 
 export default async function StatusPage() {
   let health;
@@ -18,290 +14,217 @@ export default async function StatusPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-bold text-[#1F2328]">Pipeline Status</h1>
+      <h1 className="text-lg font-bold text-white">Pipeline Status</h1>
 
       {error && (
-        <div className="bg-[#FFF1E5] border border-[#E16F24]/20 rounded-2xl p-4 text-sm text-[#E16F24]">
+        <div className="glass-card rounded-2xl p-4 text-sm text-red-300">
           <p className="font-medium">Could not load status</p>
-          <p className="text-xs mt-1 opacity-70">{error}</p>
+          <p className="text-xs mt-1 text-red-400/70">{error}</p>
         </div>
       )}
 
       {health && (
         <>
           {/* Overall Status */}
-          <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-1.5 mb-3">
-              <Activity size={14} className="text-[#656D76]" />
-              <span className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider">
+              <Activity size={14} className="text-slate-400" />
+              <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
                 System Health
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <div
-                className={`text-2xl font-bold capitalize ${statusColor(health.status)}`}
-              >
-                {health.status}
-              </div>
+            <div className={`text-2xl font-bold capitalize ${statusColor(health.status)}`}>
+              {health.status}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <span className="text-[#656D76] text-xs">API Version</span>
-                <p className="font-medium text-[#1F2328]">{health.version}</p>
+                <span className="text-slate-400 text-xs">API Version</span>
+                <p className="font-medium text-slate-200">{health.version}</p>
               </div>
               <div>
-                <span className="text-[#656D76] text-xs">Scoring</span>
-                <p className="font-medium text-[#1F2328]">
-                  {health.scoring_version}
-                </p>
+                <span className="text-slate-400 text-xs">Scoring</span>
+                <p className="font-medium text-slate-200">{health.scoring_version}</p>
               </div>
             </div>
           </div>
 
           {/* Forecast Pipeline */}
-          <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
+          <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-1.5 mb-3">
-              <Database size={14} className="text-[#656D76]" />
-              <span className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider">
+              <Database size={14} className="text-slate-400" />
+              <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
                 Forecast Pipeline
               </span>
             </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-1.5 text-sm text-[#656D76]">
+                <div className="flex items-center gap-1.5 text-sm text-slate-400">
                   <Clock size={13} />
                   <span>Freshness</span>
                 </div>
-                <span
-                  className={`text-sm font-medium ${
-                    health.forecast.freshness === "fresh"
-                      ? "text-[#2DA44E]"
-                      : "text-[#D29922]"
-                  }`}
-                >
-                  {health.forecast.freshness === "fresh" ? "Fresh" : "Stale"} (
-                  {health.forecast.age_minutes}m ago)
+                <span className={`text-sm font-medium ${health.forecast.freshness === "fresh" ? "text-emerald-400" : "text-amber-400"}`}>
+                  {health.forecast.freshness === "fresh" ? "Fresh" : "Stale"} ({health.forecast.age_minutes}m ago)
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-1.5 text-sm text-[#656D76]">
+                <div className="flex items-center gap-1.5 text-sm text-slate-400">
                   <Layers size={13} />
                   <span>Ingest Status</span>
                 </div>
-                <span className="text-sm font-medium text-[#1F2328]">
-                  {health.forecast.ingest_status}
-                </span>
+                <span className="text-sm font-medium text-slate-200">{health.forecast.ingest_status}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-[#656D76]">Hours Available</span>
-                <span className="text-sm font-medium text-[#1F2328]">
-                  {health.forecast.hours_count}
-                </span>
+                <span className="text-sm text-slate-400">Hours Available</span>
+                <span className="text-sm font-medium text-slate-200">{health.forecast.hours_count}</span>
               </div>
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-1.5 text-sm text-[#656D76]">
+                <div className="flex items-center gap-1.5 text-sm text-slate-400">
                   <MapPin size={13} />
                   <span>Area</span>
                 </div>
-                <span className="text-sm font-medium text-[#1F2328]">
-                  {health.forecast.area_id}
-                </span>
+                <span className="text-sm font-medium text-slate-200">{health.forecast.area_id}</span>
               </div>
               {health.forecast.updated_at_utc && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#656D76]">Last Updated</span>
-                  <span className="text-sm font-mono text-[#656D76]">
-                    {new Date(health.forecast.updated_at_utc).toLocaleString(
-                      "en-IL",
-                      { timeZone: "Asia/Jerusalem" }
-                    )}
+                  <span className="text-sm text-slate-400">Last Updated</span>
+                  <span className="text-sm font-mono text-slate-400">
+                    {new Date(health.forecast.updated_at_utc).toLocaleString("en-IL", { timeZone: "Asia/Jerusalem" })}
                   </span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Grade Formula */}
-          <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
-            <div className="flex items-center gap-1.5 mb-4">
-              <Calculator size={14} className="text-[#656D76]" />
-              <span className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider">
-                Grade Formula (v2)
+          {/* Live Data Pipeline */}
+          <div className="glass-card rounded-2xl p-5 overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Activity size={14} className="text-slate-400" />
+                <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+                  Data Pipeline
+                </span>
+              </div>
+              <span className="px-2.5 py-1 bg-emerald-400/15 text-emerald-400 text-[10px] font-mono rounded-full flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full live-dot" />
+                LIVE
               </span>
             </div>
 
-            {/* Formula overview */}
-            <div className="bg-[#F6F8FA] rounded-xl p-4 mb-4">
-              <p className="text-[14px] font-mono text-[#1F2328] text-center">
-                Score = 100 - {"\u03A3"} penalties
-              </p>
-              <p className="text-[12px] text-[#656D76] text-center mt-1.5">
-                Penalties scale <span className="font-medium text-[#1F2328]">linearly</span> between comfort and bad thresholds
-              </p>
-              <p className="text-[11px] text-[#656D76] text-center mt-1">
-                Below comfort {"\u2192"} 0 penalty &middot; Above bad {"\u2192"} max penalty &middot; Between {"\u2192"} proportional
-              </p>
-            </div>
+            <svg className="w-full" viewBox="0 0 420 200" preserveAspectRatio="xMidYMid meet">
+              {/* Background grid */}
+              <defs>
+                <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                  <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(59,130,246,0.04)" strokeWidth="0.5"/>
+                </pattern>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              <rect width="420" height="200" fill="url(#grid)"/>
 
-            {/* Labels */}
-            <div className="flex gap-1.5 mb-4 flex-wrap">
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#2DA44E]/10 text-[#2DA44E]">85-100 Perfect</span>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#57AB5A]/10 text-[#57AB5A]">70-84 Good</span>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#D29922]/10 text-[#D29922]">45-69 Meh</span>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E16F24]/10 text-[#E16F24]">20-44 Bad</span>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#F85149]/10 text-[#F85149]">0-19 Nope</span>
-            </div>
+              {/* Column labels */}
+              <text x="50" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">SOURCE</text>
+              <text x="160" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">INGEST</text>
+              <text x="270" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">STORAGE</text>
+              <text x="375" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">SERVING</text>
 
-            {/* Hard Gates */}
-            <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-2">
-                <ShieldAlert size={13} className="text-[#F85149]" />
-                <span className="text-[13px] font-semibold text-[#1F2328]">Hard Gates</span>
-                <span className="text-[11px] text-[#656D76]">Score forced to 0</span>
-              </div>
-              <div className="space-y-1.5 ml-5">
-                <div className="flex items-center gap-2 text-[13px]">
-                  <CloudRain size={12} className="text-[#656D76] shrink-0" />
-                  <span className="text-[#656D76]">Heavy rain ({"\u2265"}3mm or {"\u2265"}80% prob)</span>
-                  <span className="text-[11px] text-[#F85149] font-medium ml-auto shrink-0">All modes</span>
-                </div>
-                <div className="flex items-center gap-2 text-[13px]">
-                  <Wind size={12} className="text-[#656D76] shrink-0" />
-                  <span className="text-[#656D76]">Extreme wind (gusts {"\u2265"}14 m/s)</span>
-                  <span className="text-[11px] text-[#F85149] font-medium ml-auto shrink-0">Run only</span>
-                </div>
-                <div className="flex items-center gap-2 text-[13px]">
-                  <Dog size={12} className="text-[#656D76] shrink-0" />
-                  <span className="text-[#656D76]">Dog heat ({"\u2265"}29°C or {"\u2265"}26°C + UV {"\u2265"}8)</span>
-                  <span className="text-[11px] text-[#F85149] font-medium ml-auto shrink-0">Run+Dog</span>
-                </div>
-              </div>
-            </div>
+              {/* Connection paths */}
+              <path d="M95 55 C120 55 130 55 135 55" className="data-flow-fast" stroke="#3B82F6" strokeWidth="1.5" fill="none" filter="url(#glow)"/>
+              <path d="M95 95 C120 95 130 80 135 75" className="data-flow-fast" stroke="#22C55E" strokeWidth="1.5" fill="none"/>
+              <path d="M95 135 C120 135 130 100 135 95" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
+              <path d="M95 170 C120 170 130 130 135 115" className="data-flow" stroke="#A855F7" strokeWidth="1" fill="none"/>
 
-            {/* Linear Ramp Penalties */}
-            <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-3">
-                <Minus size={13} className="text-[#D29922]" />
-                <span className="text-[13px] font-semibold text-[#1F2328]">Linear Ramp Penalties</span>
-              </div>
+              {/* Ingest to Storage */}
+              <path d="M195 55 C220 55 230 45 240 45" className="data-flow-fast" stroke="#3B82F6" strokeWidth="1.5" fill="none"/>
+              <path d="M195 75 C220 75 230 90 240 90" className="data-flow-fast" stroke="#22C55E" strokeWidth="1.5" fill="none"/>
+              <path d="M195 95 C220 95 230 130 240 135" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
 
-              {/* Table header */}
-              <div className="grid grid-cols-[auto_1fr_auto_auto] gap-x-3 gap-y-0.5 ml-5 text-[12px]">
-                <div className="col-span-4 grid grid-cols-subgrid text-[10px] font-medium text-[#656D76] uppercase tracking-wider pb-1 border-b border-[#D0D7DE]/50">
-                  <span></span>
-                  <span>Factor</span>
-                  <span className="text-right">Comfort</span>
-                  <span className="text-right">Bad {"\u2192"} Max</span>
-                </div>
+              {/* Storage to Serving */}
+              <path d="M310 45 C330 45 340 55 345 55" className="data-flow-fast" stroke="#60A5FA" strokeWidth="1.5" fill="none" filter="url(#glow)"/>
+              <path d="M310 90 C330 90 340 95 345 95" className="data-flow" stroke="#22C55E" strokeWidth="1" fill="none"/>
+              <path d="M310 135 C330 135 340 135 345 135" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
 
-                {/* Swim section */}
-                <div className="col-span-4 text-[10px] font-medium text-[#656D76] uppercase tracking-wider pt-2 pb-0.5">Swim</div>
+              {/* Source: Open-Meteo */}
+              <g>
+                <rect x="5" y="30" width="90" height="100" rx="8" fill="rgba(30,41,59,0.8)" stroke="#3B82F6" strokeWidth="1.5"/>
+                <text x="50" y="52" textAnchor="middle" fill="#3B82F6" fontSize="10" fontWeight="bold" fontFamily="monospace">Open-Meteo</text>
+                <line x1="15" y1="60" x2="85" y2="60" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
+                <text x="15" y="76" fill="#94A3B8" fontSize="8" fontFamily="monospace">Waves</text>
+                <text x="15" y="90" fill="#94A3B8" fontSize="8" fontFamily="monospace">Weather</text>
+                <text x="15" y="104" fill="#94A3B8" fontSize="8" fontFamily="monospace">UV / AQI</text>
+                <text x="15" y="118" fill="#94A3B8" fontSize="8" fontFamily="monospace">Rain</text>
+              </g>
 
-                <Waves size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Waves</span>
-                <span className="text-right font-mono text-[#1F2328]">0.3m</span>
-                <span className="text-right font-mono text-[#E16F24]">1.5m {"\u2192"} -70</span>
+              {/* Ingest Worker */}
+              <g>
+                <rect x="115" y="35" width="80" height="85" rx="8" fill="rgba(30,41,59,0.8)" stroke="#22C55E" strokeWidth="1.5"/>
+                <text x="155" y="55" textAnchor="middle" fill="#22C55E" fontSize="10" fontWeight="bold" fontFamily="monospace">Ingest</text>
+                <text x="155" y="68" textAnchor="middle" fill="#64748B" fontSize="7">Cloud Run</text>
+                <line x1="125" y1="75" x2="185" y2="75" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
+                <text x="125" y="89" fill="#94A3B8" fontSize="7" fontFamily="monospace">Fetch</text>
+                <text x="125" y="100" fill="#94A3B8" fontSize="7" fontFamily="monospace">Normalize</text>
+                <text x="125" y="111" fill="#94A3B8" fontSize="7" fontFamily="monospace">Load</text>
+              </g>
 
-                <Wind size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Wind gusts</span>
-                <span className="text-right font-mono text-[#1F2328]">7 m/s</span>
-                <span className="text-right font-mono text-[#D29922]">14 m/s {"\u2192"} -15</span>
+              {/* Storage layers */}
+              <g>
+                <rect x="220" y="25" width="90" height="35" rx="6" fill="rgba(30,41,59,0.8)" stroke="#60A5FA" strokeWidth="1"/>
+                <text x="265" y="42" textAnchor="middle" fill="#60A5FA" fontSize="9" fontFamily="monospace">GCS Raw</text>
+                <text x="265" y="52" textAnchor="middle" fill="#64748B" fontSize="7">JSON blobs</text>
+              </g>
+              <g>
+                <rect x="220" y="70" width="90" height="35" rx="6" fill="rgba(30,41,59,0.8)" stroke="#F59E0B" strokeWidth="1"/>
+                <text x="265" y="87" textAnchor="middle" fill="#F59E0B" fontSize="9" fontFamily="monospace">BigQuery</text>
+                <text x="265" y="97" textAnchor="middle" fill="#64748B" fontSize="7">Curated tables</text>
+              </g>
+              <g>
+                <rect x="220" y="115" width="90" height="35" rx="6" fill="rgba(30,41,59,0.8)" stroke="#F97316" strokeWidth="1"/>
+                <text x="265" y="132" textAnchor="middle" fill="#F97316" fontSize="9" fontFamily="monospace">Firestore</text>
+                <text x="265" y="142" textAnchor="middle" fill="#64748B" fontSize="7">Serving cache</text>
+              </g>
 
-                <Activity size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">AQI</span>
-                <span className="text-right font-mono text-[#1F2328]">40</span>
-                <span className="text-right font-mono text-[#D29922]">120 {"\u2192"} -25</span>
+              {/* Serving */}
+              <g>
+                <rect x="325" y="30" width="90" height="45" rx="8" fill="rgba(30,41,59,0.8)" stroke="#34D399" strokeWidth="1.5"/>
+                <text x="370" y="50" textAnchor="middle" fill="#34D399" fontSize="10" fontWeight="bold" fontFamily="monospace">FastAPI</text>
+                <text x="370" y="63" textAnchor="middle" fill="#64748B" fontSize="7">Scores + Forecast</text>
+              </g>
+              <g>
+                <rect x="325" y="85" width="90" height="35" rx="6" fill="rgba(30,41,59,0.8)" stroke="#A855F7" strokeWidth="1"/>
+                <text x="370" y="100" textAnchor="middle" fill="#A855F7" fontSize="9" fontFamily="monospace">Scoring v2</text>
+                <text x="370" y="112" textAnchor="middle" fill="#64748B" fontSize="7">Linear ramp</text>
+              </g>
+              <g>
+                <rect x="325" y="125" width="90" height="35" rx="6" fill="rgba(30,41,59,0.8)" stroke="#EC4899" strokeWidth="1"/>
+                <text x="370" y="140" textAnchor="middle" fill="#EC4899" fontSize="9" fontFamily="monospace">Next.js</text>
+                <text x="370" y="152" textAnchor="middle" fill="#64748B" fontSize="7">Web App</text>
+              </g>
 
-                <Thermometer size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Heat</span>
-                <span className="text-right font-mono text-[#1F2328]">28°C</span>
-                <span className="text-right font-mono text-[#D29922]">40°C {"\u2192"} -10</span>
+              {/* Animated data particles */}
+              <circle r="3" fill="#3B82F6" filter="url(#glow)">
+                <animateMotion dur="3s" repeatCount="indefinite" path="M50 55 L135 55 L195 55 L265 45 L370 55"/>
+              </circle>
+              <circle r="2.5" fill="#22C55E">
+                <animateMotion dur="4s" repeatCount="indefinite" path="M50 95 L135 75 L195 75 L265 90 L370 95" begin="0.8s"/>
+              </circle>
+              <circle r="2" fill="#F59E0B">
+                <animateMotion dur="5s" repeatCount="indefinite" path="M50 135 L135 95 L195 95 L265 135 L370 135" begin="1.6s"/>
+              </circle>
 
-                <Thermometer size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Cold</span>
-                <span className="text-right font-mono text-[#1F2328]">18°C</span>
-                <span className="text-right font-mono text-[#D29922]">10°C {"\u2192"} -15</span>
+              {/* Scheduler trigger */}
+              <text x="50" y="155" textAnchor="middle" fill="#64748B" fontSize="7" fontFamily="monospace">Hourly via</text>
+              <text x="50" y="165" textAnchor="middle" fill="#64748B" fontSize="7" fontFamily="monospace">Cloud Scheduler</text>
+              <text x="155" y="140" textAnchor="middle" fill="#64748B" fontSize="7" fontFamily="monospace">Pub/Sub trigger</text>
 
-                {/* Run section */}
-                <div className="col-span-4 text-[10px] font-medium text-[#656D76] uppercase tracking-wider pt-2 pb-0.5 border-t border-[#D0D7DE]/50 mt-1">Run</div>
-
-                <Thermometer size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Heat</span>
-                <span className="text-right font-mono text-[#1F2328]">26°C</span>
-                <span className="text-right font-mono text-[#F85149]">38°C {"\u2192"} -60</span>
-
-                <Sun size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">UV index</span>
-                <span className="text-right font-mono text-[#1F2328]">4</span>
-                <span className="text-right font-mono text-[#D29922]">10 {"\u2192"} -25</span>
-
-                <Activity size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">AQI</span>
-                <span className="text-right font-mono text-[#1F2328]">40</span>
-                <span className="text-right font-mono text-[#E16F24]">120 {"\u2192"} -40</span>
-
-                <Wind size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Wind gusts</span>
-                <span className="text-right font-mono text-[#1F2328]">7 m/s</span>
-                <span className="text-right font-mono text-[#D29922]">14 m/s {"\u2192"} -12</span>
-
-                <CloudRain size={11} className="text-[#656D76] mt-0.5" />
-                <span className="text-[#656D76]">Rain prob</span>
-                <span className="text-right font-mono text-[#1F2328]">30%</span>
-                <span className="text-right font-mono text-[#D29922]">79% {"\u2192"} -10</span>
-              </div>
-            </div>
-
-            {/* Dog modifier */}
-            <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-2">
-                <Dog size={13} className="text-[#656D76]" />
-                <span className="text-[13px] font-semibold text-[#1F2328]">Dog Modes</span>
-              </div>
-              <div className="space-y-1 ml-5 text-[13px] text-[#656D76]">
-                <p>1.2x multiplier on heat, UV, and AQI penalties</p>
-                <p>Swim+Dog: stricter wave ramp (bad at 1.0m vs 1.5m, max -80)</p>
-              </div>
-            </div>
-
-            {/* Example */}
-            <div className="bg-[#F6F8FA] rounded-xl p-3 mb-3">
-              <p className="text-[12px] font-medium text-[#1F2328] mb-1">Example: 32°C run score</p>
-              <p className="text-[12px] text-[#656D76]">
-                32°C is 50% through the 26-38°C ramp {"\u2192"} penalty = 50% of 60 = <span className="font-mono font-medium text-[#E16F24]">-30</span> {"\u2192"} score <span className="font-mono font-medium text-[#1F2328]">70</span>
-              </p>
-              <p className="text-[11px] text-[#656D76] mt-0.5">
-                Old system: 31°C = 0 penalty, 32°C = -60 penalty (cliff edge)
-              </p>
-            </div>
-
-            {/* Missing data note */}
-            <div className="bg-[#F6F8FA] rounded-xl p-3 text-[12px] text-[#656D76]">
-              Missing data never penalizes — an info chip is shown instead so you know the score may be less reliable.
-            </div>
-          </div>
-
-          {/* How It Works */}
-          <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#D0D7DE]">
-            <div className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider mb-3">
-              How This Works
-            </div>
-            <div className="text-[14px] text-[#656D76] space-y-2 leading-relaxed">
-              <p>
-                Every hour, an ingest worker fetches wave, weather, UV, and air
-                quality data from Open-Meteo for the Tel Aviv coast.
-              </p>
-              <p>
-                The data is normalized and stored in three layers: raw JSON
-                (Cloud Storage), curated tables (BigQuery), and a serving cache
-                (Firestore).
-              </p>
-              <p>
-                The scoring engine evaluates each hour across 4 activity modes
-                (swim, swim+dog, run, run+dog), applying hard gates and penalty
-                factors to produce a 0-100 score.
-              </p>
-            </div>
+              {/* Flow arrow labels */}
+              <text x="210" y="175" textAnchor="middle" fill="#475569" fontSize="8" fontFamily="monospace">
+                168 hourly forecasts per cycle
+              </text>
+            </svg>
           </div>
         </>
       )}

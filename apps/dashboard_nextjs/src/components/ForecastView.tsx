@@ -1,19 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import ModeSelector from "./ModeSelector";
 import NowCard from "./NowCard";
 import BestWindow from "./BestWindow";
-import DayTimeline from "./DayTimeline";
+import HourlyCarousel from "./HourlyCarousel";
+import DailyForecast from "./DailyForecast";
+import AmbientBackground from "./AmbientBackground";
+import { scoreBgTint } from "@/lib/score-utils";
 import type { ScoredForecastResponse, ActivityMode } from "@/lib/types";
 
 interface ForecastViewProps {
   data: ScoredForecastResponse;
 }
 
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
+
 function findCurrentHour(data: ScoredForecastResponse) {
   const now = new Date();
-  // Find the hour closest to now (same hour or most recent past hour)
   let best = data.hours[0] ?? null;
   for (const hour of data.hours) {
     const hourDate = new Date(hour.hour_utc);
@@ -30,20 +47,45 @@ export default function ForecastView({ data }: ForecastViewProps) {
   const [mode, setMode] = useState<ActivityMode>("swim_solo");
   const currentHour = findCurrentHour(data);
 
+  const currentLabel = currentHour?.scores[mode]?.label ?? "Meh";
+
   return (
-    <div className="space-y-4">
-      <ModeSelector selected={mode} onChange={setMode} />
+    <div className="relative">
+      <AmbientBackground label={currentLabel} />
+      <div
+        className="absolute -mt-4 -mx-4 left-0 right-0 h-[400px] pointer-events-none transition-all duration-700 ease-in-out"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${scoreBgTint(currentLabel)}, transparent 70%)`,
+        }}
+      />
+      <motion.div
+        className="relative space-y-3"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={fadeUp}>
+          <ModeSelector selected={mode} onChange={setMode} />
+        </motion.div>
 
-      {currentHour && <NowCard hour={currentHour} mode={mode} />}
+        {currentHour && (
+          <motion.div variants={fadeUp}>
+            <NowCard hour={currentHour} mode={mode} />
+          </motion.div>
+        )}
 
-      <BestWindow hours={data.hours} mode={mode} />
+        <motion.div variants={fadeUp}>
+          <HourlyCarousel hours={data.hours} mode={mode} />
+        </motion.div>
 
-      <div>
-        <h2 className="text-[12px] font-medium text-[#656D76] uppercase tracking-wider px-1 mb-2">
-          7-Day Forecast
-        </h2>
-        <DayTimeline hours={data.hours} mode={mode} />
-      </div>
+        <motion.div variants={fadeUp}>
+          <BestWindow hours={data.hours} mode={mode} />
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <DailyForecast hours={data.hours} mode={mode} />
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

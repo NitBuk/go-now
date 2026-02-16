@@ -9,15 +9,15 @@ interface FreshnessBadgeProps {
 }
 
 const STATE_COLORS = {
-  fresh: "text-[#656D76]",
-  stale: "text-[#D29922]",
-  "very-stale": "text-[#F85149]",
+  fresh: "text-slate-400",
+  stale: "text-amber-400",
+  "very-stale": "text-red-400",
 } as const;
 
 const DOT_COLORS = {
-  fresh: "bg-[#2DA44E]",
-  stale: "bg-[#D29922]",
-  "very-stale": "bg-[#F85149]",
+  fresh: "bg-emerald-400",
+  stale: "bg-amber-400",
+  "very-stale": "bg-red-400",
 } as const;
 
 export default function FreshnessBadge({ ageMinutes }: FreshnessBadgeProps) {

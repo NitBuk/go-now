@@ -1,6 +1,6 @@
 "use client";
 
-import { scoreBg, scoreText } from "@/lib/score-utils";
+import { scoreGradient, scoreText, scoreGlow } from "@/lib/score-utils";
 import type { ModeScore } from "@/lib/types";
 
 interface ScoreCardProps {
@@ -15,7 +15,8 @@ export default function ScoreCard({ modeScore, size = "sm" }: ScoreCardProps) {
     return (
       <div className="flex flex-col items-center gap-1">
         <div
-          className={`w-[72px] h-[72px] ${scoreBg(label)} rounded-full flex items-center justify-center text-white font-semibold text-[32px] leading-none`}
+          className={`w-[72px] h-[72px] bg-gradient-to-br ${scoreGradient(label)} rounded-full flex items-center justify-center text-white font-bold text-[32px] leading-none score-glow`}
+          style={{ "--glow-color": scoreGlow(label) } as React.CSSProperties}
         >
           {score}
         </div>
@@ -27,7 +28,7 @@ export default function ScoreCard({ modeScore, size = "sm" }: ScoreCardProps) {
   return (
     <div className="flex flex-col items-center gap-0.5">
       <div
-        className={`w-10 h-10 ${scoreBg(label)} rounded-full flex items-center justify-center text-white text-sm font-semibold`}
+        className={`w-10 h-10 bg-gradient-to-br ${scoreGradient(label)} rounded-full flex items-center justify-center text-white text-sm font-semibold`}
       >
         {score}
       </div>
