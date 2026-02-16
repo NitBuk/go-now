@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter
+apps/mobile_flutter/.dart_tool/
+apps/mobile_flutter/.packages
+apps/mobile_flutter/build/
+apps/mobile_flutter/android/.gradle/
+apps/mobile_flutter/android/local.properties
+apps/mobile_flutter/ios/Pods/
+apps/mobile_flutter/ios/Runner/GoogleService-Info.plist
+apps/mobile_flutter/android/app/google-services.json
+
+# Node.js
+node_modules/
+apps/dashboard_nextjs/.next/
+apps/dashboard_nextjs/out/
+
+# Google Cloud
+*.json.key
+service-account*.json
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
