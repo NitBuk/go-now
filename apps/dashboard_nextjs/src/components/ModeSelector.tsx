@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Waves, Dog, PersonStanding } from "lucide-react";
 import type { ActivityMode } from "@/lib/types";
 
@@ -16,30 +17,47 @@ function compose(act: "swim" | "run", dog: boolean): ActivityMode {
 export default function ModeSelector({ selected, onChange }: ModeSelectorProps) {
   const activity = selected.startsWith("swim") ? "swim" : "run";
   const withDog = selected.endsWith("_dog");
+  const [dogWag, setDogWag] = useState(false);
+
+  useEffect(() => {
+    if (withDog) {
+      setDogWag(true);
+      const timer = setTimeout(() => setDogWag(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [withDog]);
 
   return (
-    <div className="flex flex-col gap-3 p-3 rounded-xl bg-white/[0.06] border border-white/[0.06]">
-      {/* Segmented control: Swim | Run */}
-      <div className="relative flex" role="radiogroup" aria-label="Activity type">
-        {/* Sliding indicator with layout animation */}
+    <div className="flex flex-col items-start gap-2">
+      {/* Compact segmented pill: Swim | Run */}
+      <div className="relative flex bg-white/[0.06] border border-white/[0.06] rounded-full p-0.5">
         <motion.div
-          className="absolute top-0 h-full w-1/2 p-0.5"
-          animate={{ x: activity === "run" ? "100%" : "0%" }}
+          className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full bg-white/[0.12]"
+          animate={{ x: activity === "run" ? "calc(100% + 4px)" : "0%" }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        >
-          <div className="h-full w-full rounded-lg bg-white/[0.12] shadow-sm shadow-white/5" />
-        </motion.div>
+        />
 
         <motion.button
           role="radio"
           aria-checked={activity === "swim"}
           onClick={() => onChange(compose("swim", withDog))}
-          whileTap={{ scale: 0.97 }}
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 ${
-            activity === "swim" ? "text-white" : "text-slate-400 hover:text-slate-200"
+          whileTap={{ scale: 0.95 }}
+          className={`relative z-10 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
+            activity === "swim" ? "text-white" : "text-slate-400"
           }`}
         >
-          <Waves size={18} strokeWidth={activity === "swim" ? 2 : 1.5} />
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={activity === "swim" ? "swim-active" : "swim-idle"}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center"
+            >
+              <Waves size={14} strokeWidth={activity === "swim" ? 2 : 1.5} />
+            </motion.span>
+          </AnimatePresence>
           <span>Swim</span>
         </motion.button>
 
@@ -47,34 +65,45 @@ export default function ModeSelector({ selected, onChange }: ModeSelectorProps) 
           role="radio"
           aria-checked={activity === "run"}
           onClick={() => onChange(compose("run", withDog))}
-          whileTap={{ scale: 0.97 }}
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 ${
-            activity === "run" ? "text-white" : "text-slate-400 hover:text-slate-200"
+          whileTap={{ scale: 0.95 }}
+          className={`relative z-10 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${
+            activity === "run" ? "text-white" : "text-slate-400"
           }`}
         >
-          <PersonStanding size={18} strokeWidth={activity === "run" ? 2 : 1.5} />
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={activity === "run" ? "run-active" : "run-idle"}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center"
+            >
+              <PersonStanding size={14} strokeWidth={activity === "run" ? 2 : 1.5} />
+            </motion.span>
+          </AnimatePresence>
           <span>Run</span>
         </motion.button>
       </div>
 
-      {/* Dog toggle pill */}
-      <div className="flex justify-end">
-        <motion.button
-          role="switch"
-          aria-checked={withDog}
-          aria-label="With dog"
-          onClick={() => onChange(compose(activity, !withDog))}
-          whileTap={{ scale: 0.97 }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 ${
-            withDog
-              ? "bg-white/[0.12] text-white shadow-sm shadow-white/5"
-              : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]"
-          }`}
-        >
-          <Dog size={16} strokeWidth={withDog ? 2 : 1.5} />
-          <span>With Dog</span>
-        </motion.button>
-      </div>
+      {/* Dog toggle pill with wag animation */}
+      <motion.button
+        role="switch"
+        aria-checked={withDog}
+        aria-label="With dog"
+        onClick={() => onChange(compose(activity, !withDog))}
+        whileTap={{ scale: 0.95 }}
+        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer border ${
+          withDog
+            ? "bg-white/[0.1] border-white/[0.12] text-white"
+            : "border-white/[0.06] text-slate-500 hover:text-slate-300"
+        }`}
+      >
+        <span className={dogWag ? "dog-wag" : ""}>
+          <Dog size={13} strokeWidth={withDog ? 2 : 1.5} />
+        </span>
+        <span>Dog</span>
+      </motion.button>
     </div>
   );
 }

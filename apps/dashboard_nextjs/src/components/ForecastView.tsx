@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import ModeSelector from "./ModeSelector";
-import NowCard from "./NowCard";
+import HeroSection from "./HeroSection";
 import BestWindow from "./BestWindow";
 import HourlyCarousel from "./HourlyCarousel";
 import DailyForecast from "./DailyForecast";
@@ -15,18 +15,26 @@ interface ForecastViewProps {
   data: ScoredForecastResponse;
 }
 
+const EASE = [0.25, 0.46, 0.45, 0.94] as const;
+
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
 };
 
 const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
+};
+
+const heroReveal = {
+  hidden: { opacity: 0, scale: 0.96 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: EASE } },
+};
+
+const scrollReveal = {
   hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
 };
 
 function findCurrentHour(data: ScoredForecastResponse) {
@@ -69,8 +77,8 @@ export default function ForecastView({ data }: ForecastViewProps) {
         </motion.div>
 
         {currentHour && (
-          <motion.div variants={fadeUp}>
-            <NowCard hour={currentHour} mode={mode} />
+          <motion.div variants={heroReveal}>
+            <HeroSection hour={currentHour} mode={mode} />
           </motion.div>
         )}
 
@@ -78,13 +86,24 @@ export default function ForecastView({ data }: ForecastViewProps) {
           <HourlyCarousel hours={data.hours} mode={mode} />
         </motion.div>
 
-        <motion.div variants={fadeUp}>
+        <motion.div
+          variants={scrollReveal}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+        >
           <BestWindow hours={data.hours} mode={mode} />
         </motion.div>
 
-        <motion.div variants={fadeUp}>
+        <motion.div
+          variants={scrollReveal}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+        >
           <DailyForecast hours={data.hours} mode={mode} />
         </motion.div>
+
       </motion.div>
     </div>
   );

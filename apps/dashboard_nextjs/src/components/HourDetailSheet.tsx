@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { X, Thermometer, Waves, Wind, Sun, CloudRain, Activity } from "lucide-react";
 import { scoreGradient, scoreHex, scoreGlow, formatHour } from "@/lib/score-utils";
-import ReasonChip from "./ReasonChip";
+import { getConditions, severityColor, severityHex } from "@/lib/condition-severity";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
 
 interface HourDetailSheetProps {
@@ -12,8 +12,18 @@ interface HourDetailSheetProps {
   onClose: () => void;
 }
 
+const CONDITION_ICONS: Record<string, typeof Thermometer> = {
+  feels: Thermometer,
+  waves: Waves,
+  wind: Wind,
+  uv: Sun,
+  aqi: Activity,
+  rain: CloudRain,
+};
+
 export default function HourDetailSheet({ hour, mode, onClose }: HourDetailSheetProps) {
   const ms = hour.scores[mode];
+  const conditions = getConditions(hour);
 
   return (
     <motion.div
@@ -71,57 +81,30 @@ export default function HourDetailSheet({ hour, mode, onClose }: HourDetailSheet
           </div>
         </div>
 
-        {/* Reason chips */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          {ms.reasons.map((chip, i) => (
-            <ReasonChip key={i} chip={chip} />
-          ))}
-        </div>
-
-        {/* Conditions grid */}
+        {/* Conditions grid with severity coloring */}
         <div className="grid grid-cols-3 gap-3">
-          {hour.feelslike_c != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <Thermometer size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">Feels</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.feelslike_c}°</span>
-            </div>
-          )}
-          {hour.wave_height_m != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <Waves size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">Waves</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.wave_height_m}m</span>
-            </div>
-          )}
-          {hour.wind_ms != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <Wind size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">Wind</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.wind_ms}m/s</span>
-            </div>
-          )}
-          {hour.uv_index != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <Sun size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">UV</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.uv_index}</span>
-            </div>
-          )}
-          {hour.eu_aqi != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <Activity size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">AQI</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.eu_aqi}</span>
-            </div>
-          )}
-          {hour.precip_prob_pct != null && (
-            <div className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1">
-              <CloudRain size={14} className="text-slate-400" />
-              <span className="text-[10px] text-slate-400 uppercase">Rain</span>
-              <span className="text-[15px] font-medium text-slate-200">{hour.precip_prob_pct}%</span>
-            </div>
-          )}
+          {conditions.map((cond) => {
+            const Icon = CONDITION_ICONS[cond.key] ?? Activity;
+            const color = severityColor(cond.severity);
+            const hex = severityHex(cond.severity);
+            return (
+              <div
+                key={cond.key}
+                className="bg-white/[0.04] rounded-xl p-3 flex flex-col items-center gap-1"
+              >
+                <Icon size={14} className={color} />
+                <span className={`text-[10px] uppercase font-medium ${color}`}>
+                  {cond.label}
+                </span>
+                <span
+                  className="text-[15px] font-medium"
+                  style={{ color: hex }}
+                >
+                  {cond.value}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </motion.div>
     </motion.div>

@@ -61,7 +61,7 @@ function scoreToPercent(score: number): number {
   return Math.max(0, Math.min(100, score));
 }
 
-function RangeBar({ min, max }: { min: number; max: number }) {
+function RangeBar({ min, max, index }: { min: number; max: number; index: number }) {
   const left = scoreToPercent(min);
   const right = scoreToPercent(max);
   const minLabel = scoreToLabel(min);
@@ -71,20 +71,32 @@ function RangeBar({ min, max }: { min: number; max: number }) {
   const toColor = scoreHex(maxLabel);
 
   return (
-    <div className="relative h-[5px] w-full bg-white/[0.06] rounded-full overflow-hidden">
-      <div
+    <div className="relative h-[4px] w-full bg-white/[0.06] rounded-full overflow-hidden">
+      <motion.div
         className="absolute top-0 h-full rounded-full"
-        style={{
+        initial={{ width: 0 }}
+        animate={{
+          width: `${Math.max(right - left, 5)}%`,
           left: `${left}%`,
-          right: `${100 - right}%`,
+        }}
+        transition={{ delay: 0.3 + index * 0.05, duration: 0.5, ease: "easeOut" as const }}
+        style={{
           background: `linear-gradient(to right, ${fromColor}, ${toColor})`,
-          minWidth: "5px",
           boxShadow: `0 0 8px ${toColor}40`,
         }}
       />
     </div>
   );
 }
+
+const rowVariants = {
+  hidden: { opacity: 0, x: 24 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
 
 export default function DailyForecast({ hours, mode }: DailyForecastProps) {
   const dayGroups = groupByDay(hours, mode);
@@ -104,46 +116,56 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
             <motion.button
               key={group.day}
               onClick={() => setSelectedDay(group)}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.35, delay: index * 0.05 }}
+              variants={rowVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-20px" }}
               whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/[0.03] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-white/[0.03] transition-colors cursor-pointer"
             >
-              <span className="text-[14px] font-medium text-slate-200 w-20 shrink-0">
+              <span className="text-[13px] font-medium text-slate-300 w-[72px] shrink-0 whitespace-nowrap">
                 {group.day}
               </span>
 
               <span
-                className="text-[13px] font-medium w-6 text-right tabular-nums shrink-0"
+                className="text-[12px] w-5 text-right tabular-nums shrink-0"
                 style={{ color: scoreHex(scoreToLabel(group.minScore)) }}
               >
                 {group.minScore}
               </span>
 
               <div className="flex-1 px-1">
-                <RangeBar min={group.minScore} max={group.maxScore} />
+                <RangeBar min={group.minScore} max={group.maxScore} index={index} />
               </div>
 
               <span
-                className="text-[13px] font-semibold w-6 tabular-nums shrink-0"
+                className="text-[12px] font-semibold w-5 tabular-nums shrink-0"
                 style={{ color: scoreHex(group.bestLabel) }}
               >
                 {group.maxScore}
               </span>
 
-              <span className="text-[11px] text-slate-300 w-12 text-right shrink-0">
-                {group.bestTime}
-              </span>
+              {/* Score pill with spring entrance */}
+              <motion.span
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0"
+                style={{
+                  color: scoreHex(group.bestLabel),
+                  backgroundColor: `${scoreHex(group.bestLabel)}15`,
+                }}
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15, type: "spring", stiffness: 400, damping: 20 }}
+              >
+                {group.bestLabel}
+              </motion.span>
 
-              <ChevronRight size={14} className="text-slate-400 shrink-0" />
+              <ChevronRight size={12} className="text-slate-500 shrink-0" />
             </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Day detail sheet overlay */}
       <AnimatePresence>
         {selectedDay && (
           <DayDetailSheet

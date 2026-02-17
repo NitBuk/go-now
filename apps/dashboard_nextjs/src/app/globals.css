@@ -94,3 +94,49 @@ body {
   will-change: transform;
 }
 
+/* Tier-speed breathing: faster = more excitement */
+.score-breathe-fast {
+  animation: score-breathe 2s ease-in-out infinite;
+  will-change: transform;
+}
+.score-breathe-slow {
+  animation: score-breathe 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Sparkle shimmer for best window icon */
+@keyframes sparkle-shimmer {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.7; transform: scale(1.15) rotate(8deg); }
+}
+.sparkle-anim {
+  animation: sparkle-shimmer 2.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Dog tail wag when toggled on */
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+.dog-wag {
+  animation: tail-wag 0.4s ease-in-out;
+  transform-origin: center;
+}
+
+/* Respect reduced motion — disable all custom animations */
+@media (prefers-reduced-motion: reduce) {
+  .score-breathe,
+  .score-breathe-fast,
+  .score-breathe-slow,
+  .sparkle-anim,
+  .dog-wag,
+  .ambient-blob-1,
+  .ambient-blob-2,
+  .ambient-blob-3,
+  .live-dot {
+    animation: none !important;
+  }
+}
+

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import NavBar from "@/components/NavBar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Go Now — Tel Aviv Coast",
+  title: "Go Now \u2014 Tel Aviv Coast",
   description: "Hourly swim and run scores for the Tel Aviv coast",
 };
 
@@ -35,33 +35,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-white`}
       >
-        <nav className="sticky top-0 z-50 bg-[#0A0E1A]/80 backdrop-blur-xl border-b border-white/[0.06]">
-          <div className="max-w-lg mx-auto px-4 h-12 flex items-center justify-between">
-            <Link href="/" className="text-sm font-bold text-white tracking-tight">
-              Go Now
-            </Link>
-            <div className="flex gap-4">
-              <Link
-                href="/"
-                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
-              >
-                Forecast
-              </Link>
-              <Link
-                href="/status"
-                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
-              >
-                Status
-              </Link>
-              <Link
-                href="/formula"
-                className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
-              >
-                Formula
-              </Link>
-            </div>
-          </div>
-        </nav>
+        <NavBar />
         <main className="max-w-lg mx-auto px-4 py-4">{children}</main>
       </body>
     </html>

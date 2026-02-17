@@ -106,7 +106,27 @@ export function formatDay(isoString: string): string {
 
   return date.toLocaleDateString("en-IL", {
     weekday: "short",
-    month: "short",
+    day: "numeric",
+    timeZone: "Asia/Jerusalem",
+  });
+}
+
+export function formatDayLong(isoString: string): string {
+  const date = new Date(isoString);
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateInTZ = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+  const nowInTZ = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+  const tomorrowInTZ = new Date(tomorrow.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+
+  if (dateInTZ.toDateString() === nowInTZ.toDateString()) return "Today";
+  if (dateInTZ.toDateString() === tomorrowInTZ.toDateString()) return "Tomorrow";
+
+  return date.toLocaleDateString("en-IL", {
+    weekday: "long",
+    month: "long",
     day: "numeric",
     timeZone: "Asia/Jerusalem",
   });
