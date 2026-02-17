@@ -1,0 +1,85 @@
+name: CI — API
+
+on:
+  pull_request:
+    paths:
+      - "services/api_fastapi/**"
+      - "services/scoring_engine/**"
+  push:
+    branches: [main]
+    paths:
+      - "services/api_fastapi/**"
+      - "services/scoring_engine/**"
+
+env:
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  REGION: europe-west1
+  AR_REPO: go-now
+  IMAGE: api-fastapi
+  SERVICE: api-fastapi
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        working-directory: services/api_fastapi
+        run: uv sync --frozen
+
+      - name: Lint
+        working-directory: services/api_fastapi
+        run: uv run ruff check .
+
+      - name: Test
+        working-directory: services/api_fastapi
+        run: uv run pytest tests/ -v
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${{ env.REGION }}-docker.pkg.dev" --quiet
+
+      - name: Build image
+        run: |
+          docker build \
+            -f Dockerfile.api \
+            -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE }}:${{ github.sha }}" \
+            -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE }}:latest" \
+            .
+
+      - name: Push image
+        run: |
+          docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE }}:${{ github.sha }}"
+          docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE }}:latest"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "${{ env.SERVICE }}" \
+            --image "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE }}:${{ github.sha }}" \
+            --region "${{ env.REGION }}" \
+            --platform managed \
+            --allow-unauthenticated \
+            --quiet

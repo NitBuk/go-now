@@ -1,0 +1,16 @@
+docs/
+infra/
+.git/
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.next/
+.env
+.env.*
+*.md
+!apps/dashboard_nextjs/README.md
+scripts/

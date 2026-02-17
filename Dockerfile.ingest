@@ -1,0 +1,23 @@
+FROM python:3.11-slim AS builder
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /app
+
+COPY services/ingest_worker/ /app/services/ingest_worker/
+
+WORKDIR /app/services/ingest_worker
+RUN uv sync --frozen --no-dev
+
+# --- Runtime ---
+FROM python:3.11-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+COPY --from=builder /app /app
+
+WORKDIR /app/services/ingest_worker
+
+EXPOSE 8080
+
+CMD ["uv", "run", "python", "main.py"]
