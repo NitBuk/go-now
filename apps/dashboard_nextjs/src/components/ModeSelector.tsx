@@ -105,7 +105,7 @@ export default function ModeSelector({ selected, onChange }: ModeSelectorProps) 
         <span className={dogWag ? "dog-wag" : ""}>
           <Dog size={13} strokeWidth={withDog ? 2 : 1.5} />
         </span>
-        <span>Dog</span>
+        <span>With Dog</span>
       </motion.button>
     </div>
   );

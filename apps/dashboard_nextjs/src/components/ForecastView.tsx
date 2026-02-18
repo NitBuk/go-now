@@ -61,9 +61,9 @@ export default function ForecastView({ data }: ForecastViewProps) {
     <div className="relative">
       <AmbientBackground label={currentLabel} />
       <div
-        className="absolute -mt-4 -mx-4 left-0 right-0 h-[400px] pointer-events-none transition-all duration-700 ease-in-out"
+        className="absolute -mt-32 -mx-4 left-0 right-0 h-[540px] pointer-events-none transition-all duration-700 ease-in-out"
         style={{
-          background: `radial-gradient(ellipse at 50% 0%, ${scoreBgTint(currentLabel)}, transparent 70%)`,
+          background: `radial-gradient(ellipse at 50% 30%, ${scoreBgTint(currentLabel)}, transparent 70%)`,
         }}
       />
       <motion.div

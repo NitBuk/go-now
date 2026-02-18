@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -16,8 +17,8 @@ export default function NavBar() {
   return (
     <nav className="sticky top-0 z-50 bg-[#0A0E1A]/80 backdrop-blur-xl border-b border-white/[0.06]">
       <div className="max-w-lg mx-auto px-4 h-12 flex items-center justify-between">
-        <Link href="/" className="text-sm font-bold text-white tracking-tight">
-          Go Now
+        <Link href="/" className="flex items-center -ml-8">
+          <Image src="/logo.svg" alt="Go Now" width={180} height={55} priority />
         </Link>
         <div className="flex gap-1">
           {NAV_LINKS.map((link) => {
