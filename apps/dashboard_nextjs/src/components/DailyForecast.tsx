@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronDown } from "lucide-react";
-import { scoreHex, formatDay, formatHour } from "@/lib/score-utils";
+import { scoreHex, formatDay } from "@/lib/score-utils";
 import { METRICS, getValue, formatValue, type MetricKey } from "@/lib/metrics";
 import DayDetailSheet from "./DayDetailSheet";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
