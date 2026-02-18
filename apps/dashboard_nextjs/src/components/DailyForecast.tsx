@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import { scoreHex, formatDay, formatHour } from "@/lib/score-utils";
+import { METRICS, getValue, formatValue, type MetricKey } from "@/lib/metrics";
 import DayDetailSheet from "./DayDetailSheet";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
 
@@ -23,14 +24,13 @@ function scoreToLabel(score: number): string {
 interface DayGroup {
   day: string;
   hours: ScoredHour[];
-  minScore: number;
-  maxScore: number;
+  minVal: number;
+  maxVal: number;
   bestScore: number;
-  bestTime: string;
   bestLabel: string;
 }
 
-function groupByDay(hours: ScoredHour[], mode: ActivityMode): DayGroup[] {
+function groupByDay(hours: ScoredHour[], mode: ActivityMode, metric: MetricKey): DayGroup[] {
   const groups = new Map<string, ScoredHour[]>();
   for (const hour of hours) {
     const day = formatDay(hour.hour_utc);
@@ -40,35 +40,44 @@ function groupByDay(hours: ScoredHour[], mode: ActivityMode): DayGroup[] {
   }
 
   return Array.from(groups.entries()).map(([day, dayHours]) => {
+    const vals = dayHours
+      .map((h) => getValue(h, metric, mode))
+      .filter((v): v is number => v !== null);
+    const minVal = vals.length > 0 ? Math.min(...vals) : 0;
+    const maxVal = vals.length > 0 ? Math.max(...vals) : 0;
+
     const scores = dayHours.map((h) => h.scores[mode].score);
-    const minScore = Math.min(...scores);
-    const maxScore = Math.max(...scores);
-    const bestHour = dayHours.find((h) => h.scores[mode].score === maxScore);
-    const bestTime = bestHour ? formatHour(bestHour.hour_utc) : "";
+    const bestScore = Math.max(...scores);
+
     return {
       day,
       hours: dayHours,
-      minScore,
-      maxScore,
-      bestScore: maxScore,
-      bestTime,
-      bestLabel: scoreToLabel(maxScore),
+      minVal,
+      maxVal,
+      bestScore,
+      bestLabel: scoreToLabel(bestScore),
     };
   });
 }
 
-function scoreToPercent(score: number): number {
-  return Math.max(0, Math.min(100, score));
-}
-
-function RangeBar({ min, max, index }: { min: number; max: number; index: number }) {
-  const left = scoreToPercent(min);
-  const right = scoreToPercent(max);
-  const minLabel = scoreToLabel(min);
-  const maxLabel = scoreToLabel(max);
-
-  const fromColor = scoreHex(minLabel);
-  const toColor = scoreHex(maxLabel);
+function RangeBar({
+  min,
+  max,
+  globalMin,
+  globalMax,
+  color,
+  index,
+}: {
+  min: number;
+  max: number;
+  globalMin: number;
+  globalMax: number;
+  color: string;
+  index: number;
+}) {
+  const range = globalMax - globalMin || 1;
+  const left = ((min - globalMin) / range) * 100;
+  const right = ((max - globalMin) / range) * 100;
 
   return (
     <div className="relative h-[4px] w-full bg-white/[0.06] rounded-full overflow-hidden">
@@ -81,11 +90,27 @@ function RangeBar({ min, max, index }: { min: number; max: number; index: number
         }}
         transition={{ delay: 0.3 + index * 0.05, duration: 0.5, ease: "easeOut" as const }}
         style={{
-          background: `linear-gradient(to right, ${fromColor}, ${toColor})`,
-          boxShadow: `0 0 8px ${toColor}40`,
+          background: color,
+          boxShadow: `0 0 8px ${color}40`,
         }}
       />
     </div>
+  );
+}
+
+function ScoreRangeBar({ min, max, index }: { min: number; max: number; index: number }) {
+  const fromColor = scoreHex(scoreToLabel(min));
+  const toColor = scoreHex(scoreToLabel(max));
+
+  return (
+    <RangeBar
+      min={min}
+      max={max}
+      globalMin={0}
+      globalMax={100}
+      color={`linear-gradient(to right, ${fromColor}, ${toColor})`}
+      index={index}
+    />
   );
 }
 
@@ -99,16 +124,97 @@ const rowVariants = {
 };
 
 export default function DailyForecast({ hours, mode }: DailyForecastProps) {
-  const dayGroups = groupByDay(hours, mode);
+  const [metric, setMetric] = useState<MetricKey>("score");
   const [selectedDay, setSelectedDay] = useState<DayGroup | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
+  const dayGroups = groupByDay(hours, mode, metric);
+  const metricDef = METRICS.find((m) => m.key === metric)!;
+  const isScore = metric === "score";
+
+  const globalRange = useMemo(() => {
+    if (isScore) return { min: 0, max: 100 };
+    const allVals = hours
+      .map((h) => getValue(h, metric, mode))
+      .filter((v): v is number => v !== null);
+    return {
+      min: allVals.length > 0 ? Math.min(...allVals) : 0,
+      max: allVals.length > 0 ? Math.max(...allVals) : 100,
+    };
+  }, [hours, metric, mode, isScore]);
+
+  const Icon = metricDef.icon;
 
   return (
     <>
       <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-white/[0.06]">
+        <div className="px-4 pt-3 pb-2 border-b border-white/[0.06] flex items-center justify-between">
           <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
             7-Day Forecast
           </span>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.1] transition-colors cursor-pointer"
+              aria-label={`Showing ${metricDef.label}. Click to change metric.`}
+              aria-expanded={menuOpen}
+              aria-haspopup="listbox"
+            >
+              <Icon size={12} style={{ color: metricDef.color }} />
+              <span className="text-[11px] font-medium text-slate-300">{metricDef.label}</span>
+              <ChevronDown
+                size={10}
+                className={`text-slate-400 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  role="listbox"
+                  aria-label="Select metric"
+                  initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[148px] py-1 rounded-xl bg-[#1A2234] border border-white/[0.1] shadow-xl shadow-black/40 backdrop-blur-xl overflow-hidden"
+                >
+                  {METRICS.map((m) => {
+                    const MIcon = m.icon;
+                    const active = m.key === metric;
+                    return (
+                      <button
+                        key={m.key}
+                        role="option"
+                        aria-selected={active}
+                        onClick={() => { setMetric(m.key); setMenuOpen(false); }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-left cursor-pointer transition-colors ${
+                          active ? "bg-white/[0.08]" : "hover:bg-white/[0.05]"
+                        }`}
+                      >
+                        <MIcon size={13} style={{ color: m.color }} />
+                        <span className={`text-[12px] font-medium ${active ? "text-white" : "text-slate-300"}`}>
+                          {m.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="divide-y divide-white/[0.04]">
@@ -128,24 +234,34 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
               </span>
 
               <span
-                className="text-[12px] w-5 text-right tabular-nums shrink-0"
-                style={{ color: scoreHex(scoreToLabel(group.minScore)) }}
+                className="text-[12px] w-8 text-right tabular-nums shrink-0"
+                style={{ color: isScore ? scoreHex(scoreToLabel(group.minVal)) : metricDef.color }}
               >
-                {group.minScore}
+                {formatValue(group.minVal, metric)}
               </span>
 
               <div className="flex-1 px-1">
-                <RangeBar min={group.minScore} max={group.maxScore} index={index} />
+                {isScore ? (
+                  <ScoreRangeBar min={group.minVal} max={group.maxVal} index={index} />
+                ) : (
+                  <RangeBar
+                    min={group.minVal}
+                    max={group.maxVal}
+                    globalMin={globalRange.min}
+                    globalMax={globalRange.max}
+                    color={metricDef.color}
+                    index={index}
+                  />
+                )}
               </div>
 
               <span
-                className="text-[12px] font-semibold w-5 tabular-nums shrink-0"
-                style={{ color: scoreHex(group.bestLabel) }}
+                className="text-[12px] font-semibold w-8 tabular-nums shrink-0"
+                style={{ color: isScore ? scoreHex(group.bestLabel) : metricDef.color }}
               >
-                {group.maxScore}
+                {formatValue(group.maxVal, metric)}
               </span>
 
-              {/* Score pill with spring entrance */}
               <motion.span
                 className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0"
                 style={{
@@ -172,6 +288,7 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
             key={selectedDay.day}
             hours={selectedDay.hours}
             mode={mode}
+            initialMetric={metric}
             onClose={() => setSelectedDay(null)}
           />
         )}

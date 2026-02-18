@@ -1,48 +1,12 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
-import { X, ChevronDown, Thermometer, Waves, Wind, Sun, CloudRain, Activity, Sunrise, Sunset } from "lucide-react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronDown, Sunrise, Sunset } from "lucide-react";
 import { scoreHex, scoreGradient, scoreGlow, formatHour, formatDayLong } from "@/lib/score-utils";
 import { getSunTimes, getSunEvent, type SunTimes } from "@/lib/sun";
+import { METRICS, getValue, formatValue, type MetricKey } from "@/lib/metrics";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
-
-interface DayDetailSheetProps {
-  hours: ScoredHour[];
-  mode: ActivityMode;
-  onClose: () => void;
-}
-
-type MetricKey = "score" | "temp" | "uv" | "wind" | "waves" | "rain" | "aqi";
-
-const METRICS: { key: MetricKey; label: string; icon: typeof Thermometer; unit: string; color: string }[] = [
-  { key: "score", label: "Score", icon: Activity, unit: "", color: "#60A5FA" },
-  { key: "temp", label: "Temperature", icon: Thermometer, unit: "°", color: "#FB923C" },
-  { key: "uv", label: "UV Index", icon: Sun, unit: "", color: "#FBBF24" },
-  { key: "wind", label: "Wind", icon: Wind, unit: "m/s", color: "#34D399" },
-  { key: "waves", label: "Waves", icon: Waves, unit: "m", color: "#60A5FA" },
-  { key: "rain", label: "Rain", icon: CloudRain, unit: "%", color: "#A78BFA" },
-  { key: "aqi", label: "Air Quality", icon: Activity, unit: "", color: "#F87171" },
-];
-
-function getValue(hour: ScoredHour, metric: MetricKey, mode: ActivityMode): number | null {
-  switch (metric) {
-    case "score": return hour.scores[mode].score;
-    case "temp": return hour.feelslike_c;
-    case "uv": return hour.uv_index;
-    case "wind": return hour.wind_ms;
-    case "waves": return hour.wave_height_m;
-    case "rain": return hour.precip_prob_pct;
-    case "aqi": return hour.eu_aqi;
-  }
-}
-
-function formatValue(val: number | null, metric: MetricKey): string {
-  if (val == null) return "--";
-  const metricDef = METRICS.find((m) => m.key === metric)!;
-  if (metric === "waves") return `${val.toFixed(1)}${metricDef.unit}`;
-  return `${Math.round(val)}${metricDef.unit}`;
-}
 
 function scoreToLabel(score: number): string {
   if (score >= 85) return "Perfect";
@@ -217,10 +181,30 @@ function SunStripMarker({ type, label }: { type: "sunrise" | "sunset"; label: st
   );
 }
 
-export default function DayDetailSheet({ hours, mode, onClose }: DayDetailSheetProps) {
-  const [metric, setMetric] = useState<MetricKey>("score");
+interface DayDetailSheetProps {
+  hours: ScoredHour[];
+  mode: ActivityMode;
+  initialMetric?: MetricKey;
+  onClose: () => void;
+}
+
+export default function DayDetailSheet({ hours, mode, initialMetric = "score", onClose }: DayDetailSheetProps) {
+  const [metric, setMetric] = useState<MetricKey>(initialMetric);
   const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
   const scores = hours.map((h) => h.scores[mode].score);
   const bestScore = Math.max(...scores);
   const bestLabel = scoreToLabel(bestScore);
@@ -289,19 +273,56 @@ export default function DayDetailSheet({ hours, mode, onClose }: DayDetailSheetP
           </div>
 
           {/* Metric dropdown */}
-          <div className="relative mb-4">
-            <select
-              value={metric}
-              onChange={(e) => setMetric(e.target.value as MetricKey)}
-              className="w-full appearance-none bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2.5 pr-10 text-[14px] font-medium text-slate-200 cursor-pointer focus:outline-none focus:border-white/[0.15] transition-colors"
+          <div className="relative mb-4" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="w-full flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2.5 text-left cursor-pointer hover:bg-white/[0.08] transition-colors"
+              aria-label={`Showing ${metricDef.label}. Click to change metric.`}
+              aria-expanded={menuOpen}
+              aria-haspopup="listbox"
             >
-              {METRICS.map((m) => (
-                <option key={m.key} value={m.key} className="bg-[#0F1724] text-slate-200">
-                  {m.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <metricDef.icon size={14} style={{ color: metricDef.color }} />
+              <span className="text-[14px] font-medium text-slate-200 flex-1">{metricDef.label}</span>
+              <ChevronDown
+                size={14}
+                className={`text-slate-400 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  role="listbox"
+                  aria-label="Select metric"
+                  initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 right-0 top-full mt-1.5 z-50 py-1 rounded-xl bg-[#1A2234] border border-white/[0.1] shadow-xl shadow-black/40 backdrop-blur-xl overflow-hidden"
+                >
+                  {METRICS.map((m) => {
+                    const MIcon = m.icon;
+                    const active = m.key === metric;
+                    return (
+                      <button
+                        key={m.key}
+                        role="option"
+                        aria-selected={active}
+                        onClick={() => { setMetric(m.key); setMenuOpen(false); }}
+                        className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left cursor-pointer transition-colors ${
+                          active ? "bg-white/[0.08]" : "hover:bg-white/[0.05]"
+                        }`}
+                      >
+                        <MIcon size={14} style={{ color: m.color }} />
+                        <span className={`text-[13px] font-medium ${active ? "text-white" : "text-slate-300"}`}>
+                          {m.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Graph */}

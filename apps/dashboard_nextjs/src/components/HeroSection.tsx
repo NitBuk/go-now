@@ -7,6 +7,7 @@ import { scoreHex, scoreGlow } from "@/lib/score-utils";
 import { useAnimatedNumber } from "@/lib/useAnimatedNumber";
 import { getConditions, severityColor } from "@/lib/condition-severity";
 import { VIBE_LINES, type ScoredHour, type ActivityMode } from "@/lib/types";
+import ActivityCharacter from "./ActivityCharacter";
 
 interface HeroSectionProps {
   hour: ScoredHour;
@@ -49,23 +50,32 @@ export default function HeroSection({ hour, mode }: HeroSectionProps) {
       />
 
       <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Large animated score number with tier-based breathing */}
-        <div className={`flex items-baseline gap-1 mb-1 ${
-          modeScore.label === "Perfect" || modeScore.label === "Good"
-            ? "score-breathe-fast"
-            : modeScore.label === "Meh"
-            ? "score-breathe"
-            : "score-breathe-slow"
-        }`}>
-          <motion.span
-            className="text-[72px] font-bold leading-none tabular-nums"
-            style={{
-              color: hex,
-              textShadow: `0 0 40px ${glow}`,
-            }}
-          >
-            {display}
-          </motion.span>
+        {/* Score number (centered) + character (absolute left) */}
+        <div className="relative mb-1">
+          <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3">
+            <ActivityCharacter
+              activity={mode.startsWith("swim") ? "swim" : "run"}
+              withDog={mode.endsWith("_dog")}
+              accentColor={hex}
+            />
+          </div>
+          <div className={`flex items-baseline gap-1 ${
+            modeScore.label === "Perfect" || modeScore.label === "Good"
+              ? "score-breathe-fast"
+              : modeScore.label === "Meh"
+              ? "score-breathe"
+              : "score-breathe-slow"
+          }`}>
+            <motion.span
+              className="text-[72px] font-bold leading-none tabular-nums"
+              style={{
+                color: hex,
+                textShadow: `0 0 40px ${glow}`,
+              }}
+            >
+              {display}
+            </motion.span>
+          </div>
         </div>
 
         {/* Label + vibe — crossfade on mode change */}
