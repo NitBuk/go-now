@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Waves, Dog, PersonStanding } from "lucide-react";
 import type { ActivityMode } from "@/lib/types";
@@ -18,14 +18,17 @@ export default function ModeSelector({ selected, onChange }: ModeSelectorProps) 
   const activity = selected.startsWith("swim") ? "swim" : "run";
   const withDog = selected.endsWith("_dog");
   const [dogWag, setDogWag] = useState(false);
+  const wagTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (withDog) {
+  const handleDogToggle = useCallback(() => {
+    const next = !withDog;
+    onChange(compose(activity, next));
+    if (next) {
+      if (wagTimer.current) clearTimeout(wagTimer.current);
       setDogWag(true);
-      const timer = setTimeout(() => setDogWag(false), 500);
-      return () => clearTimeout(timer);
+      wagTimer.current = setTimeout(() => setDogWag(false), 500);
     }
-  }, [withDog]);
+  }, [withDog, activity, onChange]);
 
   return (
     <div className="flex flex-col items-start gap-2">
@@ -91,7 +94,7 @@ export default function ModeSelector({ selected, onChange }: ModeSelectorProps) 
         role="switch"
         aria-checked={withDog}
         aria-label="With dog"
-        onClick={() => onChange(compose(activity, !withDog))}
+        onClick={handleDogToggle}
         whileTap={{ scale: 0.95 }}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer border ${
           withDog
