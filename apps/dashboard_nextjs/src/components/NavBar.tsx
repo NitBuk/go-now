@@ -17,8 +17,8 @@ export default function NavBar() {
   return (
     <nav className="sticky top-0 z-50 bg-[#0A0E1A]/80 backdrop-blur-xl border-b border-white/[0.06]">
       <div className="max-w-lg mx-auto px-4 h-12 flex items-center justify-between">
-        <Link href="/" className="flex items-center -ml-8">
-          <Image src="/logo.svg" alt="Go Now" width={180} height={55} priority />
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.svg" alt="Go Now" width={140} height={42} priority />
         </Link>
         <div className="flex gap-1">
           {NAV_LINKS.map((link) => {

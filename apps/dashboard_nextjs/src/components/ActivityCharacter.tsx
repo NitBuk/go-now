@@ -100,7 +100,7 @@ export default function ActivityCharacter({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="w-[64px] h-[38px] -mr-1 mb-5"
+            className="w-[64px] h-[38px] -mr-6 mb-5"
           >
             <Lottie
               animationData={tintedDogData}

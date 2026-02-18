@@ -32,11 +32,6 @@ const heroReveal = {
   show: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: EASE } },
 };
 
-const scrollReveal = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
-};
-
 function findCurrentHour(data: ScoredForecastResponse) {
   const now = new Date();
   let best = data.hours[0] ?? null;
@@ -86,21 +81,11 @@ export default function ForecastView({ data }: ForecastViewProps) {
           <HourlyCarousel hours={data.hours} mode={mode} />
         </motion.div>
 
-        <motion.div
-          variants={scrollReveal}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-        >
+        <motion.div variants={fadeUp}>
           <BestWindow hours={data.hours} mode={mode} />
         </motion.div>
 
-        <motion.div
-          variants={scrollReveal}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-        >
+        <motion.div variants={fadeUp}>
           <DailyForecast hours={data.hours} mode={mode} />
         </motion.div>
 
