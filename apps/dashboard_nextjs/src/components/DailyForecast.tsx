@@ -170,7 +170,6 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
         {selectedDay && (
           <DayDetailSheet
             key={selectedDay.day}
-            day={selectedDay.day}
             hours={selectedDay.hours}
             mode={mode}
             onClose={() => setSelectedDay(null)}

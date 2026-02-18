@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, Waves, Thermometer, Wind, Sun, CloudRain, Activity } from "lucide-react";
-import { scoreBg, scoreBgLight, scoreText, scoreGradient, formatHour } from "@/lib/score-utils";
+import { scoreBg, scoreBgLight, scoreGradient, formatHour } from "@/lib/score-utils";
 import ReasonChip from "./ReasonChip";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
 

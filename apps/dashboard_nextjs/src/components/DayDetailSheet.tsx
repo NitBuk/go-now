@@ -8,7 +8,6 @@ import { getSunTimes, getSunEvent, type SunTimes } from "@/lib/sun";
 import type { ScoredHour, ActivityMode } from "@/lib/types";
 
 interface DayDetailSheetProps {
-  day: string;
   hours: ScoredHour[];
   mode: ActivityMode;
   onClose: () => void;
@@ -218,7 +217,7 @@ function SunStripMarker({ type, label }: { type: "sunrise" | "sunset"; label: st
   );
 }
 
-export default function DayDetailSheet({ day, hours, mode, onClose }: DayDetailSheetProps) {
+export default function DayDetailSheet({ hours, mode, onClose }: DayDetailSheetProps) {
   const [metric, setMetric] = useState<MetricKey>("score");
   const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -323,7 +322,6 @@ export default function DayDetailSheet({ day, hours, mode, onClose }: DayDetailS
                 const ms = hour.scores[mode];
                 const isHighlighted = highlightIndex === i;
                 const displayLabel = metric === "score" ? scoreToLabel(ms.score) : null;
-                const dotColor = metric === "score" ? scoreHex(scoreToLabel(ms.score)) : metricDef.color;
                 const sunEvent = sunEventsMap.get(hour.hour_utc);
                 return (
                   <div key={hour.hour_utc} className="flex items-center">
