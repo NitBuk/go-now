@@ -28,6 +28,7 @@ CLAUDE.md
 
 # Internal ops / deployment notes (contain private project details)
 infra/DEPLOYMENT.md
+infra/README.md
 scripts/diagnose-ingest.sh
 
 # Local assets (not part of the app)
