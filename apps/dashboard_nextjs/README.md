@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Go Now — Web App
 
-## Getting Started
+Next.js frontend for the Go Now Tel Aviv Coast Buddy. Displays hourly swim and run scores for the Tel Aviv coast.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** with App Router
+- **React 19**
+- **Tailwind CSS 4**
+- **TypeScript 5**
+
+## Dev Setup
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | API base URL. Defaults to `http://localhost:8080` if not set. |
 
-## Learn More
+Copy `.env.example` to `.env.local` and adjust as needed:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env.local
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+For frontend-only development (no local API), point at the live API by leaving the default value in `.env.example` as-is.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pages
 
-## Deploy on Vercel
+| Route | Description |
+|---|---|
+| `/` | Forecast page — scores, timeline, best windows |
+| `/status` | Pipeline health + architecture overview |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Full Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See the [root README](../../README.md) for full local stack setup including the API and ingest worker.
