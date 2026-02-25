@@ -86,6 +86,25 @@ export default function StatusView({ health }: StatusViewProps) {
         >
           {health.status}
         </motion.div>
+        {health.status !== "healthy" && (
+          <motion.div
+            className="mt-1.5 space-y-0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            {health.forecast.freshness === "stale" && (
+              <p className="text-[12px] text-amber-400">
+                Data is stale — last updated {health.forecast.age_minutes} min ago
+              </p>
+            )}
+            {health.forecast.ingest_status !== "success" && (
+              <p className="text-[12px] text-slate-400">
+                Last ingest status: {health.forecast.ingest_status}
+              </p>
+            )}
+          </motion.div>
+        )}
         <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
