@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import math
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
+from scoring_engine import BALANCED_THRESHOLDS, score_hour
+from scoring_engine.engine import HourData
 
 from config import Config
 from models.schemas import (
@@ -23,8 +25,6 @@ from models.schemas import (
     ScoredForecastResponse,
     ScoredHourResponse,
 )
-from scoring_engine import BALANCED_THRESHOLDS, score_hour
-from scoring_engine.engine import HourData
 from storage.firestore import get_forecast_doc
 
 router = APIRouter(prefix="/v1/public", tags=["public"])
@@ -37,35 +37,37 @@ _TEL_AVIV_LAT = 32.08
 _TEL_AVIV_LON = 34.78
 
 
-def _compute_sunset_utc(target_date: date, lat: float = _TEL_AVIV_LAT, lon: float = _TEL_AVIV_LON) -> datetime:
+def _compute_sunset_utc(
+    target_date: date, lat: float = _TEL_AVIV_LAT, lon: float = _TEL_AVIV_LON
+) -> datetime:
     """Compute approximate sunset time (UTC) for a given date and location.
 
     Uses the standard solar declination + hour-angle formula.
     Accuracy: ±5 minutes, sufficient for the 30-minute swim gate window.
     """
-    N = target_date.timetuple().tm_yday
+    day_of_year = target_date.timetuple().tm_yday
     # Solar declination
-    declination = math.radians(-23.45 * math.cos(math.radians((360 / 365) * (N + 10))))
+    declination = math.radians(-23.45 * math.cos(math.radians((360 / 365) * (day_of_year + 10))))
     lat_rad = math.radians(lat)
     # Hour angle at sunset
     cos_h = -math.tan(lat_rad) * math.tan(declination)
     cos_h = max(-1.0, min(1.0, cos_h))
-    H = math.degrees(math.acos(cos_h))
+    hour_angle = math.degrees(math.acos(cos_h))
     # Sunset in local solar time (hours after midnight)
-    sunset_solar = 12.0 + H / 15.0
+    sunset_solar = 12.0 + hour_angle / 15.0
     # Convert solar time to UTC: subtract longitude offset
     sunset_utc_hours = sunset_solar - lon / 15.0
     h = int(sunset_utc_hours)
     m = int(round((sunset_utc_hours - h) * 60))
     if m == 60:
         h, m = h + 1, 0
-    return datetime(target_date.year, target_date.month, target_date.day, h, m, 0, tzinfo=timezone.utc)
+    return datetime(target_date.year, target_date.month, target_date.day, h, m, 0, tzinfo=UTC)
 
 
 def _compute_freshness(updated_at_utc: str) -> tuple[int, str]:
     """Compute forecast age in minutes and freshness label."""
     updated = datetime.fromisoformat(updated_at_utc.replace("Z", "+00:00"))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     age_minutes = int((now - updated).total_seconds() / 60)
     freshness = "fresh" if age_minutes < Config.FRESHNESS_THRESHOLD_MINUTES else "stale"
     return age_minutes, freshness
@@ -99,7 +101,7 @@ async def get_forecast(
 
     # Filter hours to requested day range
     hours_data = doc.get("hours", [])
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     max_hours = days * 24
     filtered_hours = []
     for h in hours_data:
@@ -141,7 +143,7 @@ async def get_health() -> HealthResponse:
                 ingest_status="failed",
                 hours_count=0,
             ),
-            timestamp_utc=datetime.now(timezone.utc).isoformat(),
+            timestamp_utc=datetime.now(UTC).isoformat(),
         )
 
     updated_at = doc.get("updated_at_utc", "")
@@ -168,7 +170,7 @@ async def get_health() -> HealthResponse:
             ingest_status=ingest_status,
             hours_count=hours_count,
         ),
-        timestamp_utc=datetime.now(timezone.utc).isoformat(),
+        timestamp_utc=datetime.now(UTC).isoformat(),
     )
 
 
@@ -181,7 +183,7 @@ def _score_hour_data(
     try:
         hour_dt = datetime.fromisoformat(hour_str.replace("Z", "+00:00"))
     except (ValueError, AttributeError):
-        hour_dt = datetime.now(timezone.utc)
+        hour_dt = datetime.now(UTC)
 
     date_key = hour_dt.date().isoformat()
     if sunset_lookup:
@@ -257,7 +259,7 @@ async def get_scores(
             pass
 
     hours_data = doc.get("hours", [])
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     max_hours = days * 24
     scored_hours: list[ScoredHourResponse] = []
 
