@@ -59,6 +59,36 @@ function tintAnimation(
   return copy;
 }
 
+function SwimBuoys() {
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      <div
+        className="absolute w-3 h-3 rounded-full bg-orange-400 border-2 border-white"
+        style={{ bottom: "38%", left: "2px" }}
+      />
+      <div
+        className="absolute w-3 h-3 rounded-full bg-white border-2 border-orange-400"
+        style={{ bottom: "38%", right: "2px" }}
+      />
+    </div>
+  );
+}
+
+function RunShoes() {
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      <div
+        className="absolute h-2 w-4 rounded bg-white opacity-90"
+        style={{ bottom: "2px", left: "8px" }}
+      />
+      <div
+        className="absolute h-2 w-4 rounded bg-white opacity-90"
+        style={{ bottom: "2px", right: "4px" }}
+      />
+    </div>
+  );
+}
+
 export default function ActivityCharacter({
   activity,
   withDog,
@@ -119,7 +149,7 @@ export default function ActivityCharacter({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="w-[72px] h-[104px]"
+          className="relative w-[72px] h-[104px]"
         >
           <Lottie
             animationData={personData}
@@ -127,6 +157,8 @@ export default function ActivityCharacter({
             autoplay={!reducedMotion}
             style={{ width: "100%", height: "100%" }}
           />
+          {activity === "swim" && <SwimBuoys />}
+          {activity === "run" && <RunShoes />}
         </motion.div>
       </AnimatePresence>
     </div>
