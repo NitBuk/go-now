@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Thermometer, Waves, Wind, Sun, CloudRain, Activity } from "lucide-react";
+import { Thermometer, Waves, Wind, Sun, CloudRain, AirVent } from "lucide-react";
 import { scoreHex, scoreGlow } from "@/lib/score-utils";
 import { useAnimatedNumber } from "@/lib/useAnimatedNumber";
 import { getConditions, severityColor } from "@/lib/condition-severity";
@@ -19,7 +19,7 @@ const CONDITION_ICONS: Record<string, typeof Thermometer> = {
   waves: Waves,
   wind: Wind,
   uv: Sun,
-  aqi: Activity,
+  aqi: AirVent,
   rain: CloudRain,
 };
 
@@ -111,7 +111,7 @@ export default function HeroSection({ hour, mode }: HeroSectionProps) {
             transition={{ duration: 0.25 }}
           >
             {conditions.map((cond, i) => {
-              const Icon = CONDITION_ICONS[cond.key] ?? Activity;
+              const Icon = CONDITION_ICONS[cond.key] ?? AirVent;
               const color = severityColor(cond.severity);
               return (
                 <motion.div

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Thermometer, Waves, Wind, Sun, CloudRain, Activity } from "lucide-react";
+import { Thermometer, Waves, Wind, Sun, CloudRain, AirVent } from "lucide-react";
 import { getConditions, severityColor, severityHex } from "@/lib/condition-severity";
 import type { ScoredHour } from "@/lib/types";
 
@@ -14,7 +14,7 @@ const CONDITION_ICONS: Record<string, typeof Thermometer> = {
   waves: Waves,
   wind: Wind,
   uv: Sun,
-  aqi: Activity,
+  aqi: AirVent,
   rain: CloudRain,
 };
 
@@ -40,7 +40,7 @@ export default function ConditionsGrid({ hour }: ConditionsGridProps) {
 
       <div className="grid grid-cols-2 gap-[1px] bg-white/[0.04] p-[1px]">
         {conditions.map((cond, i) => {
-          const Icon = CONDITION_ICONS[cond.key] ?? Activity;
+          const Icon = CONDITION_ICONS[cond.key] ?? AirVent;
           const color = severityColor(cond.severity);
           const hex = severityHex(cond.severity);
           return (
