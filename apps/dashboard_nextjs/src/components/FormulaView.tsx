@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import {
   Calculator, ShieldAlert, Waves, Thermometer,
-  Sun, Wind, CloudRain, Dog, Activity, PersonStanding,
+  Sun, Wind, CloudRain, Dog, Activity, PersonStanding, Sunset,
 } from "lucide-react";
 
 /* ── Scroll-triggered reveal wrapper ────────────────────────────── */
@@ -136,6 +136,7 @@ const GATES = [
   { icon: CloudRain, name: "Heavy rain", scope: "All modes", rule: "\u22653mm precipitation or \u226580% probability", reason: "Unsafe footing, poor visibility, and hypothermia risk in coastal conditions" },
   { icon: Wind, name: "Extreme wind", scope: "Run only", rule: "Gusts \u226514 m/s", reason: "Sand blasting and balance hazard on the promenade" },
   { icon: Dog, name: "Dog heat", scope: "Run + Dog", rule: "\u226529\u00B0C or \u226526\u00B0C + UV \u22658", reason: "Paw burns and heatstroke risk for dogs on hot asphalt" },
+  { icon: Sunset, name: "Darkness", scope: "Swim only", rule: "Score ramps linearly to 0 over the 30 min following sunset", reason: "After that window, swim score is hard-gated to 0 — no night swimming" },
 ];
 
 interface PenaltyRow {
