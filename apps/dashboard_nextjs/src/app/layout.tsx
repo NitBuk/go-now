@@ -14,9 +14,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+  ? "https://dashboard-841486153499.europe-west1.run.app"
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Go Now \u2014 Tel Aviv Coast",
-  description: "Hourly swim and run scores for the Tel Aviv coast",
+  title: "Go Now — Tel Aviv Coast",
+  description:
+    "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+  openGraph: {
+    title: "Go Now — Tel Aviv Coast Buddy",
+    description:
+      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+    url: BASE_URL,
+    siteName: "Go Now",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Go Now — Tel Aviv Coast Buddy",
+    description:
+      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+  },
 };
 
 export const viewport: Viewport = {
