@@ -9,6 +9,11 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![GCP](https://img.shields.io/badge/GCP-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com)
 
+[![CI — API](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml)
+[![CI — Dashboard](https://github.com/NitBuk/go-now/actions/workflows/ci-dashboard.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-dashboard.yml)
+[![CI — Ingest](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml)
+[![CI — Scoring](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml)
+
 Hourly swim and run conditions for the Tel Aviv coast. Four activity modes scored 0–100 using wave, weather, UV, air quality, and rain data.
 
 **[Live Demo](https://dashboard-841486153499.europe-west1.run.app)**
@@ -194,6 +199,26 @@ cd services/api_fastapi && uv run pytest tests/ -v
 # Ingest worker tests
 cd services/ingest_worker && uv run pytest tests/ -v
 ```
+
+---
+
+## CI/CD
+
+Four independent GitHub Actions pipelines — one per service, path-filtered so only the affected pipeline runs on each push.
+
+| Pipeline | Trigger paths | PR | Push to main |
+|---|---|---|---|
+| CI — API | `services/api_fastapi/**`, `services/scoring_engine/**` | lint + test | lint + test + build + deploy |
+| CI — Dashboard | `apps/dashboard_nextjs/**` | lint + build | lint + build + deploy |
+| CI — Ingest | `services/ingest_worker/**` | lint + test | lint + test + build + deploy |
+| CI — Scoring | `services/scoring_engine/**` | lint + test | lint + test (library only) |
+
+**Deploy steps (push to main):**
+1. Build Docker image tagged with commit SHA
+2. Push to GCP Artifact Registry
+3. Deploy to Cloud Run (`--image <sha>` for reproducible rollbacks)
+
+**Auth:** Keyless via [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) — no service account keys stored in GitHub.
 
 ---
 
