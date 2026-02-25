@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sunrise, Sunset } from "lucide-react";
 import { scoreGradient, scoreGlow } from "@/lib/score-utils";
 import { formatHour } from "@/lib/score-utils";
-import { getSunTimes, getSunEvent } from "@/lib/sun";
+import { getSunTimes, getSunTimesFromData, getSunEvent } from "@/lib/sun";
 import HourDetailSheet from "./HourDetailSheet";
-import type { ScoredHour, ActivityMode } from "@/lib/types";
+import type { ScoredHour, ActivityMode, DailySunTime } from "@/lib/types";
 
 interface HourlyCarouselProps {
   hours: ScoredHour[];
   mode: ActivityMode;
+  daily?: DailySunTime[];
 }
 
 function isCurrentHour(hourUtc: string): boolean {
@@ -62,7 +63,7 @@ function SunMarker({ type, label }: { type: "sunrise" | "sunset"; label: string 
   );
 }
 
-export default function HourlyCarousel({ hours, mode }: HourlyCarouselProps) {
+export default function HourlyCarousel({ hours, mode, daily = [] }: HourlyCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const nowRef = useRef<HTMLButtonElement>(null);
   const todayHours = getNext24Hours(hours);
@@ -77,7 +78,7 @@ export default function HourlyCarousel({ hours, mode }: HourlyCarouselProps) {
       if (!seen.has(dayKey)) {
         seen.add(dayKey);
       }
-      const sunTimes = getSunTimes(date);
+      const sunTimes = getSunTimesFromData(date, daily) ?? getSunTimes(date);
       const event = getSunEvent(hour.hour_utc, sunTimes);
       if (event) {
         map.set(hour.hour_utc, event);

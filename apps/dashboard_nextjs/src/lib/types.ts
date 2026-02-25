@@ -34,6 +34,12 @@ export interface ScoredHour {
   };
 }
 
+export interface DailySunTime {
+  date: string;         // "2026-02-25"
+  sunrise_utc: string;  // ISO string
+  sunset_utc: string;   // ISO string
+}
+
 export interface ScoredForecastResponse {
   area_id: string;
   updated_at_utc: string;
@@ -43,6 +49,7 @@ export interface ScoredForecastResponse {
   horizon_days: number;
   scoring_version: string;
   hours: ScoredHour[];
+  daily: DailySunTime[];
 }
 
 export interface HealthForecast {

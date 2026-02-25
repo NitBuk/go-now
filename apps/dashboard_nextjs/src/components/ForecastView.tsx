@@ -78,7 +78,7 @@ export default function ForecastView({ data }: ForecastViewProps) {
         )}
 
         <motion.div variants={fadeUp}>
-          <HourlyCarousel hours={data.hours} mode={mode} />
+          <HourlyCarousel hours={data.hours} mode={mode} daily={data.daily} />
         </motion.div>
 
         <motion.div variants={fadeUp}>

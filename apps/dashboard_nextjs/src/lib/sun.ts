@@ -1,5 +1,6 @@
 import SunCalc from "suncalc";
 import { formatHour } from "./score-utils";
+import type { DailySunTime } from "./types";
 
 const TEL_AVIV_LAT = 32.0853;
 const TEL_AVIV_LON = 34.7818;
@@ -18,6 +19,27 @@ export function getSunTimes(date: Date): SunTimes {
     sunset: times.sunset,
     sunriseLabel: formatHour(times.sunrise.toISOString()),
     sunsetLabel: formatHour(times.sunset.toISOString()),
+  };
+}
+
+/**
+ * Look up sun times from stored daily data instead of computing via suncalc.
+ * Returns null if no matching date entry is found.
+ */
+export function getSunTimesFromData(
+  date: Date,
+  daily: DailySunTime[]
+): SunTimes | null {
+  const dateStr = date.toISOString().slice(0, 10);
+  const entry = daily.find((d) => d.date === dateStr);
+  if (!entry) return null;
+  const sunrise = new Date(entry.sunrise_utc);
+  const sunset = new Date(entry.sunset_utc);
+  return {
+    sunrise,
+    sunset,
+    sunriseLabel: formatHour(sunrise.toISOString()),
+    sunsetLabel: formatHour(sunset.toISOString()),
   };
 }
 
