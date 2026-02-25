@@ -61,7 +61,7 @@ class TestHealthEndpoint:
         data = resp.json()
         assert data["status"] == "healthy"
         assert data["version"] == "1.0.0"
-        assert data["scoring_version"] == "score_v1"
+        assert data["scoring_version"] == "score_v2"
         assert data["forecast"]["area_id"] == "tel_aviv_coast"
         assert data["forecast"]["freshness"] == "fresh"
 
@@ -89,7 +89,7 @@ class TestScoresEndpoint:
         assert resp.status_code == 200
         data = resp.json()
         assert data["area_id"] == "tel_aviv_coast"
-        assert data["scoring_version"] == "score_v1"
+        assert data["scoring_version"] == "score_v2"
         assert "hours" in data
 
     def test_scores_hours_have_scores_object(self, client_with_forecast: TestClient) -> None:

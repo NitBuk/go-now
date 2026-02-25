@@ -79,6 +79,12 @@ class ScoredHourResponse(BaseModel):
     scores: dict[str, ModeScoreResponse]
 
 
+class DailySunTimeResponse(BaseModel):
+    date: str         # "2026-02-25"
+    sunrise_utc: str  # ISO string
+    sunset_utc: str   # ISO string
+
+
 class ScoredForecastResponse(BaseModel):
     area_id: str
     updated_at_utc: str
@@ -88,6 +94,7 @@ class ScoredForecastResponse(BaseModel):
     horizon_days: int
     scoring_version: str
     hours: list[ScoredHourResponse]
+    daily: list[DailySunTimeResponse] = []
 
 
 class ErrorDetail(BaseModel):

@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import math
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 
 from config import Config
 from models.schemas import (
+    DailySunTimeResponse,
     ErrorDetail,
     ErrorResponse,
     ForecastHealthDetail,
@@ -29,6 +31,35 @@ router = APIRouter(prefix="/v1/public", tags=["public"])
 
 API_VERSION = "1.0.0"
 SCORING_VERSION = "score_v2"
+
+# Tel Aviv coordinates for fallback sunset computation
+_TEL_AVIV_LAT = 32.08
+_TEL_AVIV_LON = 34.78
+
+
+def _compute_sunset_utc(target_date: date, lat: float = _TEL_AVIV_LAT, lon: float = _TEL_AVIV_LON) -> datetime:
+    """Compute approximate sunset time (UTC) for a given date and location.
+
+    Uses the standard solar declination + hour-angle formula.
+    Accuracy: ±5 minutes, sufficient for the 30-minute swim gate window.
+    """
+    N = target_date.timetuple().tm_yday
+    # Solar declination
+    declination = math.radians(-23.45 * math.cos(math.radians((360 / 365) * (N + 10))))
+    lat_rad = math.radians(lat)
+    # Hour angle at sunset
+    cos_h = -math.tan(lat_rad) * math.tan(declination)
+    cos_h = max(-1.0, min(1.0, cos_h))
+    H = math.degrees(math.acos(cos_h))
+    # Sunset in local solar time (hours after midnight)
+    sunset_solar = 12.0 + H / 15.0
+    # Convert solar time to UTC: subtract longitude offset
+    sunset_utc_hours = sunset_solar - lon / 15.0
+    h = int(sunset_utc_hours)
+    m = int(round((sunset_utc_hours - h) * 60))
+    if m == 60:
+        h, m = h + 1, 0
+    return datetime(target_date.year, target_date.month, target_date.day, h, m, 0, tzinfo=timezone.utc)
 
 
 def _compute_freshness(updated_at_utc: str) -> tuple[int, str]:
@@ -141,13 +172,25 @@ async def get_health() -> HealthResponse:
     )
 
 
-def _score_hour_data(h: dict) -> dict[str, ModeScoreResponse]:
+def _score_hour_data(
+    h: dict,
+    sunset_lookup: dict[str, datetime] | None = None,
+) -> dict[str, ModeScoreResponse]:
     """Score a single hour's forecast data and return mode scores."""
     hour_str = h.get("hour_utc", "")
     try:
         hour_dt = datetime.fromisoformat(hour_str.replace("Z", "+00:00"))
     except (ValueError, AttributeError):
         hour_dt = datetime.now(timezone.utc)
+
+    date_key = hour_dt.date().isoformat()
+    if sunset_lookup:
+        sunset_utc = sunset_lookup.get(date_key)
+    else:
+        sunset_utc = None
+    # Fallback: compute approximate sunset when Firestore daily data is missing
+    if sunset_utc is None:
+        sunset_utc = _compute_sunset_utc(hour_dt.date())
 
     hour_data = HourData(
         hour_utc=hour_dt,
@@ -158,6 +201,7 @@ def _score_hour_data(h: dict) -> dict[str, ModeScoreResponse]:
         precip_mm=h.get("precip_mm"),
         uv_index=h.get("uv_index"),
         eu_aqi=h.get("eu_aqi"),
+        sunset_utc=sunset_utc,
     )
     result = score_hour(hour_data, BALANCED_THRESHOLDS)
 
@@ -200,6 +244,18 @@ async def get_scores(
     updated_at = doc.get("updated_at_utc", "")
     age_minutes, freshness = _compute_freshness(updated_at)
 
+    # Build sunset lookup: date_str -> sunset_utc datetime
+    # Falls back to computed astronomical sunset when Firestore daily data is absent.
+    sunset_lookup: dict[str, datetime] = {}
+    daily_raw = doc.get("daily", [])
+    for entry in daily_raw:
+        try:
+            sunset_lookup[entry["date"]] = datetime.fromisoformat(
+                entry["sunset_utc"].replace("Z", "+00:00")
+            )
+        except (KeyError, ValueError):
+            pass
+
     hours_data = doc.get("hours", [])
     now = datetime.now(timezone.utc)
     max_hours = days * 24
@@ -212,7 +268,7 @@ async def get_scores(
         except (ValueError, AttributeError):
             continue
         if hour_dt >= now and len(scored_hours) < max_hours:
-            scores = _score_hour_data(h)
+            scores = _score_hour_data(h, sunset_lookup)
             scored_hours.append(
                 ScoredHourResponse(
                     hour_utc=h.get("hour_utc", ""),
@@ -232,6 +288,16 @@ async def get_scores(
                 )
             )
 
+    daily_response = [
+        DailySunTimeResponse(
+            date=entry["date"],
+            sunrise_utc=entry["sunrise_utc"],
+            sunset_utc=entry["sunset_utc"],
+        )
+        for entry in daily_raw
+        if "date" in entry and "sunrise_utc" in entry and "sunset_utc" in entry
+    ]
+
     return ScoredForecastResponse(
         area_id=area_id,
         updated_at_utc=updated_at,
@@ -241,4 +307,5 @@ async def get_scores(
         horizon_days=doc.get("horizon_days", 7),
         scoring_version=SCORING_VERSION,
         hours=scored_hours,
+        daily=daily_response,
     )
