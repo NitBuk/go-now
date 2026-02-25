@@ -15,7 +15,7 @@ class TestNormalize:
     def test_normalize_merges_three_endpoints(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         assert len(rows) == 3
@@ -23,7 +23,7 @@ class TestNormalize:
     def test_normalize_sets_area_id(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         for row in rows:
@@ -32,7 +32,7 @@ class TestNormalize:
     def test_normalize_converts_wind_kmh_to_ms(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         # First hour: wind_speed_10m = 12.6 km/h → 3.5 m/s
@@ -43,7 +43,7 @@ class TestNormalize:
     def test_normalize_passthrough_fields(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         row0 = rows[0]
@@ -61,7 +61,7 @@ class TestNormalize:
     def test_normalize_hour_utc_is_utc(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         assert rows[0].hour_utc == datetime(2025, 6, 1, 0, 0, tzinfo=timezone.utc)
@@ -75,7 +75,7 @@ class TestNormalize:
             "weather": sample_weather_response,
             "air_quality": sample_air_quality_response,
         }
-        rows = self.provider.normalize(raw, "tel_aviv_coast", self.fetched_at)
+        rows, _ = self.provider.normalize(raw, "tel_aviv_coast", self.fetched_at)
         assert len(rows) == 3
         for row in rows:
             assert row.wave_height_m is None
@@ -91,20 +91,21 @@ class TestNormalize:
             "weather": sample_weather_response,
             "marine": sample_marine_response,
         }
-        rows = self.provider.normalize(raw, "tel_aviv_coast", self.fetched_at)
+        rows, _ = self.provider.normalize(raw, "tel_aviv_coast", self.fetched_at)
         for row in rows:
             assert row.eu_aqi is None
             assert row.pm10 is None
             assert row.pm2_5 is None
 
     def test_normalize_empty_raw(self) -> None:
-        rows = self.provider.normalize({}, "tel_aviv_coast", self.fetched_at)
+        rows, daily_sun = self.provider.normalize({}, "tel_aviv_coast", self.fetched_at)
         assert rows == []
+        assert daily_sun == []
 
     def test_normalize_sorted_by_hour(
         self, sample_raw_responses: dict[str, dict]
     ) -> None:
-        rows = self.provider.normalize(
+        rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
         hours = [r.hour_utc for r in rows]

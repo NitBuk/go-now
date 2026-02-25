@@ -7,7 +7,7 @@ from datetime import datetime
 
 from google.cloud import firestore
 
-from provider.base import NormalizedHourlyRow
+from provider.base import DailySunRow, NormalizedHourlyRow
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +19,16 @@ def update_serving_doc(
     ingest_status: str,
     provider: str = "open_meteo",
     horizon_days: int = 7,
+    daily_sun: list[DailySunRow] | None = None,
 ) -> None:
     """Overwrite the forecasts/{area_id} doc in Firestore with latest data."""
+    if not rows:
+        logger.warning(
+            "storage_skip_empty",
+            extra={"layer": "firestore", "doc": f"forecasts/{area_id}", "reason": "no rows"},
+        )
+        return
+
     client = firestore.Client()
 
     hours = [
@@ -42,6 +50,15 @@ def update_serving_doc(
         for row in rows
     ]
 
+    daily = [
+        {
+            "date": row.date,
+            "sunrise_utc": row.sunrise_utc.isoformat(),
+            "sunset_utc": row.sunset_utc.isoformat(),
+        }
+        for row in (daily_sun or [])
+    ]
+
     doc_ref = client.collection("forecasts").document(area_id)
     doc_ref.set(
         {
@@ -51,6 +68,7 @@ def update_serving_doc(
             "horizon_days": horizon_days,
             "ingest_status": ingest_status,
             "hours": hours,
+            "daily": daily,
         }
     )
 

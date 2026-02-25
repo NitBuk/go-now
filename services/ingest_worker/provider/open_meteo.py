@@ -8,7 +8,7 @@ from typing import Any
 
 import httpx
 
-from .base import ForecastProvider, NormalizedHourlyRow
+from .base import DailySunRow, ForecastProvider, NormalizedHourlyRow
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +47,7 @@ class OpenMeteoProviderV1(ForecastProvider):
                 "&hourly=temperature_2m,apparent_temperature,"
                 "wind_speed_10m,wind_gusts_10m,"
                 "precipitation_probability,precipitation,uv_index"
+                "&daily=sunrise,sunset"
             ),
             "marine": (
                 f"https://marine-api.open-meteo.com/v1/marine?{base_params}"
@@ -123,12 +124,29 @@ class OpenMeteoProviderV1(ForecastProvider):
 
     def normalize(
         self, raw: dict[str, dict], area_id: str, fetched_at_utc: datetime
-    ) -> list[NormalizedHourlyRow]:
-        """Merge 3 endpoint responses into normalized hourly rows.
+    ) -> tuple[list[NormalizedHourlyRow], list[DailySunRow]]:
+        """Merge 3 endpoint responses into normalized hourly rows and daily sun times.
 
         Wind speed and gust are converted from km/h to m/s (÷ 3.6).
         Missing endpoints result in null fields for those variables.
         """
+        # Parse daily sun times from weather endpoint
+        daily_sun: list[DailySunRow] = []
+        weather_daily = raw.get("weather", {}).get("daily", {})
+        if weather_daily:
+            daily_times = weather_daily.get("time", [])
+            sunrises = weather_daily.get("sunrise", [])
+            sunsets = weather_daily.get("sunset", [])
+            for i in range(len(daily_times)):
+                try:
+                    daily_sun.append(DailySunRow(
+                        date=daily_times[i],
+                        sunrise_utc=datetime.fromisoformat(sunrises[i]).replace(tzinfo=timezone.utc),
+                        sunset_utc=datetime.fromisoformat(sunsets[i]).replace(tzinfo=timezone.utc),
+                    ))
+                except (IndexError, ValueError):
+                    pass
+
         # Collect all hours from weather (primary time axis)
         hours_set: set[str] = set()
         for endpoint_data in raw.values():
@@ -137,7 +155,7 @@ class OpenMeteoProviderV1(ForecastProvider):
             hours_set.update(times)
 
         if not hours_set:
-            return []
+            return [], daily_sun
 
         sorted_hours = sorted(hours_set)
 
@@ -215,4 +233,4 @@ class OpenMeteoProviderV1(ForecastProvider):
             "normalize_complete",
             extra={"row_count": len(rows), "area_id": area_id},
         )
-        return rows
+        return rows, daily_sun

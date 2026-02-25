@@ -106,7 +106,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
         return {"run_id": run_id, "status": "failed", "hours_ingested": 0}
 
     # Step 4: Normalize
-    rows = provider.normalize(raw, area_id, fetched_at)
+    rows, daily_sun = provider.normalize(raw, area_id, fetched_at)
 
     # Step 5: Data quality checks
     dq_result = run_dq_checks(rows)
@@ -134,7 +134,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
     # Step 7: Update Firestore serving doc
     fs_ok = True
     try:
-        update_serving_doc(area_id, rows, fetched_at, status)
+        update_serving_doc(area_id, rows, fetched_at, status, daily_sun=daily_sun)
     except Exception as exc:
         logger.error("firestore_write_failed", extra={"error": str(exc)})
         fs_ok = False

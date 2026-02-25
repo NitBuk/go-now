@@ -24,6 +24,13 @@ class NormalizedHourlyRow:
     pm2_5: Optional[float] = None
 
 
+@dataclass
+class DailySunRow:
+    date: str          # "2026-02-25"
+    sunrise_utc: datetime
+    sunset_utc: datetime
+
+
 class ForecastProvider(ABC):
     @abstractmethod
     async def fetch_raw(
@@ -35,6 +42,6 @@ class ForecastProvider(ABC):
     @abstractmethod
     def normalize(
         self, raw: dict[str, dict], area_id: str, fetched_at_utc: datetime
-    ) -> list[NormalizedHourlyRow]:
-        """Convert raw provider response to normalized hourly rows."""
+    ) -> tuple[list[NormalizedHourlyRow], list[DailySunRow]]:
+        """Convert raw provider response to normalized hourly rows and daily sun times."""
         ...
