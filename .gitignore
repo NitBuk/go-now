@@ -22,6 +22,13 @@ build/
 *.swo
 *~
 
+# Claude Code local config
+.claude/
+
+# Local assets (not part of the app)
+1x1 logo/
+apps/launch_video/
+
 # OS
 .DS_Store
 Thumbs.db
