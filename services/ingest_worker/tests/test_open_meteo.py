@@ -1,8 +1,8 @@
 """Tests for OpenMeteoProviderV1 fetch behavior using respx mocks."""
 
+import httpx
 import pytest
 import respx
-import httpx
 
 from provider.open_meteo import OpenMeteoProviderV1
 

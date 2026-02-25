@@ -12,7 +12,7 @@ import logging
 import random
 import string
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from config import Config
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def _generate_run_id() -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
     return f"run_{now:%Y%m%d}_{now:%H%M%S}_{suffix}"
 
@@ -44,7 +44,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
 
     Returns a dict with run_id, status, and hours_ingested.
     """
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     run_id = _generate_run_id()
     config = Config()
 
@@ -75,7 +75,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
 
     if not raw:
         # All endpoints failed
-        finished_at = datetime.now(timezone.utc)
+        finished_at = datetime.now(UTC)
         try:
             write_ingest_run(
                 config.BQ_DATASET, run_id, area_id, started_at, finished_at,
@@ -86,7 +86,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
             logger.error("failed_to_write_ingest_run", extra={"error": str(exc)})
         return {"run_id": run_id, "status": "failed", "hours_ingested": 0}
 
-    fetched_at = datetime.now(timezone.utc)
+    fetched_at = datetime.now(UTC)
 
     # Step 3: Write raw JSON to Cloud Storage
     try:
@@ -94,7 +94,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
     except Exception as exc:
         logger.error("gcs_raw_write_failed", extra={"error": str(exc)})
         # Raw write failure = full failure (as per spec)
-        finished_at = datetime.now(timezone.utc)
+        finished_at = datetime.now(UTC)
         try:
             write_ingest_run(
                 config.BQ_DATASET, run_id, area_id, started_at, finished_at,
@@ -147,7 +147,7 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
         status = "failed"
 
     # Step 8: Write ingest run record
-    finished_at = datetime.now(timezone.utc)
+    finished_at = datetime.now(UTC)
     try:
         write_ingest_run(
             config.BQ_DATASET, run_id, area_id, started_at, finished_at,

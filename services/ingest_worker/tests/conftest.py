@@ -1,6 +1,6 @@
 """Shared test fixtures for ingest worker tests."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -26,7 +26,7 @@ def make_hourly_row(
     """Create a NormalizedHourlyRow with sensible defaults."""
     return NormalizedHourlyRow(
         area_id=area_id,
-        hour_utc=datetime(2025, 6, 1, 0, 0, 0, tzinfo=timezone.utc) + timedelta(hours=hour),
+        hour_utc=datetime(2025, 6, 1, 0, 0, 0, tzinfo=UTC) + timedelta(hours=hour),
         wave_height_m=wave_height_m,
         wave_period_s=wave_period_s,
         air_temp_c=air_temp_c,

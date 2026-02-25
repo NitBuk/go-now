@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -68,10 +67,10 @@ def make_forecast_doc(
     """Create a sample forecast document."""
     from datetime import timedelta
 
-    updated_at = datetime.now(timezone.utc) - timedelta(minutes=age_minutes)
+    updated_at = datetime.now(UTC) - timedelta(minutes=age_minutes)
 
     hours = []
-    base_time = datetime(2025, 6, 1, 0, 0, 0, tzinfo=timezone.utc)
+    base_time = datetime(2025, 6, 1, 0, 0, 0, tzinfo=UTC)
     for i in range(hours_count):
         h = base_time + timedelta(hours=i)
         hours.append(

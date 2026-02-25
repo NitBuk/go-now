@@ -1,6 +1,6 @@
 """Tests for Open-Meteo normalization logic."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -10,7 +10,7 @@ from provider.open_meteo import OpenMeteoProviderV1
 class TestNormalize:
     def setup_method(self) -> None:
         self.provider = OpenMeteoProviderV1()
-        self.fetched_at = datetime(2025, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
+        self.fetched_at = datetime(2025, 6, 1, 12, 0, 0, tzinfo=UTC)
 
     def test_normalize_merges_three_endpoints(
         self, sample_raw_responses: dict[str, dict]
@@ -64,8 +64,8 @@ class TestNormalize:
         rows, _ = self.provider.normalize(
             sample_raw_responses, "tel_aviv_coast", self.fetched_at
         )
-        assert rows[0].hour_utc == datetime(2025, 6, 1, 0, 0, tzinfo=timezone.utc)
-        assert rows[1].hour_utc == datetime(2025, 6, 1, 1, 0, tzinfo=timezone.utc)
+        assert rows[0].hour_utc == datetime(2025, 6, 1, 0, 0, tzinfo=UTC)
+        assert rows[1].hour_utc == datetime(2025, 6, 1, 1, 0, tzinfo=UTC)
 
     def test_normalize_missing_marine_endpoint(
         self, sample_weather_response: dict, sample_air_quality_response: dict

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import httpx
@@ -141,8 +141,8 @@ class OpenMeteoProviderV1(ForecastProvider):
                 try:
                     daily_sun.append(DailySunRow(
                         date=daily_times[i],
-                        sunrise_utc=datetime.fromisoformat(sunrises[i]).replace(tzinfo=timezone.utc),
-                        sunset_utc=datetime.fromisoformat(sunsets[i]).replace(tzinfo=timezone.utc),
+                        sunrise_utc=datetime.fromisoformat(sunrises[i]).replace(tzinfo=UTC),
+                        sunset_utc=datetime.fromisoformat(sunsets[i]).replace(tzinfo=UTC),
                     ))
                 except (IndexError, ValueError):
                     pass
@@ -184,7 +184,7 @@ class OpenMeteoProviderV1(ForecastProvider):
 
         rows: list[NormalizedHourlyRow] = []
         for time_str in sorted_hours:
-            hour_utc = datetime.fromisoformat(time_str).replace(tzinfo=timezone.utc)
+            hour_utc = datetime.fromisoformat(time_str).replace(tzinfo=UTC)
 
             # Weather fields
             temp = _get(weather_hourly, "temperature_2m", weather_idx, time_str)
