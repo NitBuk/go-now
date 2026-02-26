@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/", label: "Forecast" },
   { href: "/status", label: "Status" },
   { href: "/formula", label: "Formula" },
+  { href: "/about", label: "About" },
 ] as const;
 
 export default function NavBar() {
