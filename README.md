@@ -14,15 +14,23 @@
 [![CI — Ingest](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml)
 [![CI — Scoring](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml)
 
-Hourly swim and run conditions for the Tel Aviv coast. Four activity modes scored 0–100 using wave, weather, UV, air quality, and rain data.
-
 **[Live Demo](https://dashboard-841486153499.europe-west1.run.app)**
 
 ---
 
-## What It Does
+## Why this exists
 
-Every hour, Go Now ingests coastal weather and ocean data, runs it through a scoring engine, and tells you whether conditions are good for:
+Before Go Now, every coastal trip started the same way: four apps, one decision. I'd check the weather forecast, pull up the surf/wind report on Windguru, look up the UV index, and open an air quality dashboard. Then I'd try to mentally combine all of that — is 1.2m swell too rough? Is AQI 80 acceptable? Is UV high enough to skip it? Every time.
+
+Bringing my dog made it worse. Dogs overheat faster than humans, are more sensitive to air quality, and unlike me, can't tell me when they've had enough. I had to be more conservative and more deliberate — but I was still doing it with the same scattered data across four different tabs.
+
+So I built Go Now. It pulls wave, weather, UV, AQI, wind, and rain data every hour and runs it through a scoring engine. The result: a single number per activity. 85+ means go. Below 45, stay home. No tab-switching, no mental math.
+
+---
+
+## What It Scores
+
+Four modes, each scored 0–100. The dog modes use stricter thresholds — dogs can't tell you they're overheating.
 
 | Mode | Score | Label |
 |---|---|---|
