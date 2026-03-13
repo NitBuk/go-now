@@ -1,6 +1,6 @@
 # Go Now — Tel Aviv Coast Buddy
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-go--now-blue)](https://dashboard-841486153499.europe-west1.run.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-go--now.dev-blue)](https://go-now.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -14,7 +14,7 @@
 [![CI — Ingest](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml)
 [![CI — Scoring](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml)
 
-**[Live Demo](https://dashboard-841486153499.europe-west1.run.app)**
+**[Live Demo](https://go-now.dev)**
 
 ---
 
