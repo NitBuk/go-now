@@ -81,3 +81,12 @@ jobs:
             --platform managed \
             --no-allow-unauthenticated \
             --quiet
+
+      - name: Update Pub/Sub subscription endpoint
+        run: |
+          SERVICE_URL=$(gcloud run services describe "${{ env.SERVICE }}" \
+            --region "${{ env.REGION }}" \
+            --format="value(status.url)")
+          gcloud pubsub subscriptions update ingest-trigger-sub \
+            --push-endpoint="$SERVICE_URL" \
+            --push-auth-service-account="ingest-worker@${{ env.PROJECT_ID }}.iam.gserviceaccount.com"
