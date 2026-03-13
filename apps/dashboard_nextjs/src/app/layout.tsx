@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-  ? "https://dashboard-841486153499.europe-west1.run.app"
+  ? "https://go-now.dev"
   : "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: "Go Now — Tel Aviv Coast",
+  title: "Go Now - Beach & Run Conditions",
   description:
     "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
   openGraph: {
-    title: "Go Now — Tel Aviv Coast Buddy",
+    title: "Go Now - Beach & Run Conditions",
     description:
       "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
     url: BASE_URL,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Go Now — Tel Aviv Coast Buddy",
+    title: "Go Now - Beach & Run Conditions",
     description:
       "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
   },
