@@ -39,7 +39,7 @@ class OpenMeteoProviderV1(ForecastProvider):
     ) -> dict[str, str]:
         base_params = (
             f"latitude={lat}&longitude={lon}"
-            f"&forecast_days={horizon_days}&timezone=auto"
+            f"&forecast_days={horizon_days}&timezone=UTC"
         )
         return {
             "weather": (

@@ -23,17 +23,17 @@ Three Open-Meteo API endpoints, all free tier:
 
 **Weather:**
 ```
-https://api.open-meteo.com/v1/forecast?latitude=32.08&longitude=34.77&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation_probability,precipitation,uv_index&forecast_days=7&timezone=auto
+https://api.open-meteo.com/v1/forecast?latitude=32.08&longitude=34.77&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation_probability,precipitation,uv_index&forecast_days=7&timezone=UTC
 ```
 
 **Marine:**
 ```
-https://marine-api.open-meteo.com/v1/marine?latitude=32.08&longitude=34.77&hourly=wave_height,wave_period,wave_direction&forecast_days=7&timezone=auto
+https://marine-api.open-meteo.com/v1/marine?latitude=32.08&longitude=34.77&hourly=wave_height,wave_period,wave_direction&forecast_days=7&timezone=UTC
 ```
 
 **Air Quality:**
 ```
-https://air-quality-api.open-meteo.com/v1/air-quality?latitude=32.08&longitude=34.77&hourly=european_aqi,pm10,pm2_5&forecast_days=7&timezone=auto
+https://air-quality-api.open-meteo.com/v1/air-quality?latitude=32.08&longitude=34.77&hourly=european_aqi,pm10,pm2_5&forecast_days=7&timezone=UTC
 ```
 
 ### Sample Response Shape (Weather, abbreviated)
@@ -43,8 +43,8 @@ https://air-quality-api.open-meteo.com/v1/air-quality?latitude=32.08&longitude=3
   "latitude": 32.08,
   "longitude": 34.78,
   "generationtime_ms": 0.5,
-  "utc_offset_seconds": 7200,
-  "timezone": "Asia/Jerusalem",
+  "utc_offset_seconds": 0,
+  "timezone": "UTC",
   "hourly_units": {
     "time": "iso8601",
     "temperature_2m": "°C",
