@@ -1,4 +1,4 @@
-# Go Now — Tel Aviv Coast Buddy
+# Go Now - Beach & Run Conditions
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-go--now.dev-blue)](https://go-now.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
