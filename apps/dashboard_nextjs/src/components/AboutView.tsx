@@ -498,7 +498,7 @@ export default function AboutView() {
           </span>
         </div>
 
-        {/* Data source chips — spring bounce in */}
+        {/* Data source chips - spring bounce in */}
         <div className="flex flex-wrap gap-1.5 mb-3 items-center">
           {DATA_SOURCES.map(({ Icon, label }, i) => (
             <ScrollReveal key={label} variants={springIn} custom={i}>
@@ -511,7 +511,7 @@ export default function AboutView() {
           <ScrollReveal variants={springIn} custom={DATA_SOURCES.length}>
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-400/10 border border-emerald-400/20">
               <ChevronRight size={11} className="text-emerald-400" />
-              <span className="text-[11px] text-emerald-400 font-medium">0–100</span>
+              <span className="text-[11px] text-emerald-400 font-medium">0-100</span>
             </div>
           </ScrollReveal>
         </div>
@@ -550,7 +550,7 @@ export default function AboutView() {
           </span>
         </div>
 
-        {/* Tech stack pills — spring bounce */}
+        {/* Tech stack pills - spring bounce */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {TECH_STACK.map((tech, i) => (
             <ScrollReveal key={tech} variants={springIn} custom={i}>

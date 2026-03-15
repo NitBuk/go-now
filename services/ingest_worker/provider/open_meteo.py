@@ -19,7 +19,7 @@ JITTER_MAX_MS = 500
 
 
 class OpenMeteoProviderV1(ForecastProvider):
-    """Open-Meteo free tier provider — weather, marine, and air quality endpoints."""
+    """Open-Meteo free tier provider - weather, marine, and air quality endpoints."""
 
     def __init__(self, base_url: str = "https://api.open-meteo.com") -> None:
         self.base_url = base_url.rstrip("/")

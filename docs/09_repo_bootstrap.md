@@ -687,7 +687,7 @@ apps/mobile_flutter/
 - **auth:** Firebase Authentication (Google + Apple sign-in)
 - **onboarding:** Multi-step flow collecting activities, dog info, preset, notifications
 - **forecast:** HTTP client for public forecast endpoint
-- **scoring:** On-device scoring engine (`score_v1`) — must match spec in `04_scoring_engine_v1.md`
+- **scoring:** On-device scoring engine (`score_v1`) - must match spec in `04_scoring_engine_v1.md`
 - **notifications:** Local notification scheduling with anti-spam rules from `06_notification_spec.md`
 - **profile:** Firestore profile persistence and sync
 
@@ -724,10 +724,10 @@ apps/dashboard_nextjs/
 ```
 
 **Pages:**
-- **status** — Pipeline health, freshness gauge, current conditions
-- **forecast** — 7-day time-series charts, score heatmap
-- **quality** — Missingness, range violations, DQ flags timeline
-- **architecture** — Mermaid diagram, component descriptions
+- **status** - Pipeline health, freshness gauge, current conditions
+- **forecast** - 7-day time-series charts, score heatmap
+- **quality** - Missingness, range violations, DQ flags timeline
+- **architecture** - Mermaid diagram, component descriptions
 
 **Server-side:** BigQuery client using service account (read-only).
 **API fallback:** `/v1/public/health`, `/v1/public/forecast` via client-side fetch.

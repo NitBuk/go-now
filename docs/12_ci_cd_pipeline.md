@@ -2,19 +2,19 @@
 
 ## Branch Strategy
 
-- **`main`** — production branch. Always deployable.
-- **Feature branches** — `feat/`, `fix/`, `docs/` prefixes. Short-lived (< 1 week).
-- **No `develop` branch** — keep it simple. Feature branches merge to `main` via PR.
+- **`main`** - production branch. Always deployable.
+- **Feature branches** - `feat/`, `fix/`, `docs/` prefixes. Short-lived (< 1 week).
+- **No `develop` branch** - keep it simple. Feature branches merge to `main` via PR.
 - **PR requirements:** All checks pass + 1 approval (self-approve OK for solo dev in V1).
 
 ## GitHub Actions Workflows
 
-### 1. `ci-api.yml` — API Service
+### 1. `ci-api.yml` - API Service
 
 **Trigger:** PR or push to `main` when files change in `services/api_fastapi/**` or `services/shared_contracts/**`
 
 ```yaml
-name: CI — API Service
+name: CI - API Service
 on:
   pull_request:
     paths:
@@ -81,12 +81,12 @@ jobs:
             --allow-unauthenticated
 ```
 
-### 2. `ci-ingest.yml` — Ingest Worker
+### 2. `ci-ingest.yml` - Ingest Worker
 
 **Trigger:** PR or push to `main` when files change in `services/ingest_worker/**` or `services/shared_contracts/**`
 
 ```yaml
-name: CI — Ingest Worker
+name: CI - Ingest Worker
 on:
   pull_request:
     paths:
@@ -149,12 +149,12 @@ jobs:
             --no-allow-unauthenticated
 ```
 
-### 3. `ci-flutter.yml` — Flutter Mobile App
+### 3. `ci-flutter.yml` - Flutter Mobile App
 
 **Trigger:** PR or push to `main` when files change in `apps/mobile_flutter/**` or `services/shared_contracts/**`
 
 ```yaml
-name: CI — Flutter
+name: CI - Flutter
 on:
   pull_request:
     paths:
@@ -201,12 +201,12 @@ jobs:
 
 > **Note:** Flutter build (iOS/Android) is manual in V1. Automated builds via Fastlane/Codemagic planned for V1.1.
 
-### 4. `ci-dashboard.yml` — Next.js Dashboard
+### 4. `ci-dashboard.yml` - Next.js Dashboard
 
 **Trigger:** PR or push to `main` when files change in `apps/dashboard_nextjs/**`
 
 ```yaml
-name: CI — Dashboard
+name: CI - Dashboard
 on:
   pull_request:
     paths:
@@ -282,12 +282,12 @@ jobs:
             --allow-unauthenticated
 ```
 
-### 5. `ci-scoring-parity.yml` — Cross-Platform Scoring Parity
+### 5. `ci-scoring-parity.yml` - Cross-Platform Scoring Parity
 
 **Trigger:** PR when files change in scoring-related paths
 
 ```yaml
-name: CI — Scoring Parity
+name: CI - Scoring Parity
 on:
   pull_request:
     paths:
@@ -319,7 +319,7 @@ jobs:
           flutter test test/scoring/scoring_engine_test.dart -v
       - name: Compare results
         run: |
-          echo "Both Dart and Python golden tests passed — scoring parity verified."
+          echo "Both Dart and Python golden tests passed - scoring parity verified."
 ```
 
 ## Build → Test → Deploy Gates

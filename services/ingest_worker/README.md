@@ -1,4 +1,4 @@
-# Go Now — Ingest Worker
+# Go Now - Ingest Worker
 
 Cloud Run job that fetches hourly weather/ocean data from Open-Meteo and writes it to Firestore, BigQuery, and Cloud Storage. Triggered hourly via Cloud Pub/Sub.
 
@@ -7,9 +7,9 @@ Cloud Run job that fetches hourly weather/ocean data from Open-Meteo and writes 
 1. Fetches raw forecast data from the Open-Meteo free API (no key required)
 2. Normalizes the data into hourly rows
 3. Writes to three storage layers:
-   - **Cloud Storage** — raw JSON archive
-   - **BigQuery** — normalized hourly data
-   - **Firestore** — serving cache read by the API
+   - **Cloud Storage** - raw JSON archive
+   - **BigQuery** - normalized hourly data
+   - **Firestore** - serving cache read by the API
 
 ## Stack
 
@@ -47,9 +47,9 @@ cp .env.example .env
 
 ## GCP Dependencies
 
-- **Firestore** — writes `forecasts/{area_id}` serving cache
-- **BigQuery** — writes normalized hourly rows to `{BQ_DATASET}.hourly_forecast`
-- **Cloud Storage** — archives raw JSON to `{GCS_RAW_BUCKET}`
+- **Firestore** - writes `forecasts/{area_id}` serving cache
+- **BigQuery** - writes normalized hourly rows to `{BQ_DATASET}.hourly_forecast`
+- **Cloud Storage** - archives raw JSON to `{GCS_RAW_BUCKET}`
 
 ## Tests
 

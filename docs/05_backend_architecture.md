@@ -104,7 +104,7 @@ Returns the 7-day hourly forecast for an area. No authentication required.
 
 | Parameter | Type | Required | Default | Validation |
 |-----------|------|----------|---------|------------|
-| `area_id` | string | yes | — | Must be `"tel_aviv_coast"` in V1 |
+| `area_id` | string | yes | - | Must be `"tel_aviv_coast"` in V1 |
 | `days` | int | no | 7 | Range: [1, 7] |
 
 **Request:**
@@ -112,7 +112,7 @@ Returns the 7-day hourly forecast for an area. No authentication required.
 GET /v1/public/forecast?area_id=tel_aviv_coast&days=7
 ```
 
-**Response — 200 OK:**
+**Response - 200 OK:**
 ```json
 {
   "area_id": "tel_aviv_coast",
@@ -157,7 +157,7 @@ Returns pipeline health and forecast freshness. No authentication required. Used
 GET /v1/public/health
 ```
 
-**Response — 200 OK:**
+**Response - 200 OK:**
 ```json
 {
   "status": "healthy",
@@ -171,9 +171,9 @@ GET /v1/public/health
 ```
 
 **`status` values:**
-- `"healthy"` — forecast is fresh (< 90 min old).
-- `"degraded"` — forecast is stale (>= 90 min old) or last ingest was `degraded`.
-- `"unhealthy"` — forecast is very stale (> 180 min) or last ingest `failed`.
+- `"healthy"` - forecast is fresh (< 90 min old).
+- `"degraded"` - forecast is stale (>= 90 min old) or last ingest was `degraded`.
+- `"unhealthy"` - forecast is very stale (> 180 min) or last ingest `failed`.
 
 ---
 
@@ -187,7 +187,7 @@ GET /v1/profile
 Authorization: Bearer <firebase_id_token>
 ```
 
-**Response — 200 OK:**
+**Response - 200 OK:**
 ```json
 {
   "schema_version": "profile_v1",
@@ -351,7 +351,7 @@ Content-Type: application/json
 4. Set `created_at` on first write; always update `updated_at`.
 5. Write to `users/{user_id}` using Firestore `set()` with merge.
 
-**Response — 201 Created (first write) / 200 OK (update):**
+**Response - 201 Created (first write) / 200 OK (update):**
 ```json
 {
   "schema_version": "profile_v1",
@@ -373,7 +373,7 @@ DELETE /v1/profile
 Authorization: Bearer <firebase_id_token>
 ```
 
-**Response — 200 OK:**
+**Response - 200 OK:**
 ```json
 {
   "deleted": true,
@@ -381,7 +381,7 @@ Authorization: Bearer <firebase_id_token>
 }
 ```
 
-**Response — 404 Not Found (no profile exists):**
+**Response - 404 Not Found (no profile exists):**
 ```json
 {
   "error": {
@@ -410,10 +410,10 @@ All error responses use a standardized envelope:
 }
 ```
 
-- `code` — Machine-readable error code (UPPER_SNAKE_CASE).
-- `message` — Human-readable description. Safe to display in UI.
-- `details` — Optional structured data (e.g., validation errors). Empty object `{}` when not applicable.
-- `request_id` — Unique ID generated per request for tracing. Format: `req_{ulid}`.
+- `code` - Machine-readable error code (UPPER_SNAKE_CASE).
+- `message` - Human-readable description. Safe to display in UI.
+- `details` - Optional structured data (e.g., validation errors). Empty object `{}` when not applicable.
+- `request_id` - Unique ID generated per request for tracing. Format: `req_{ulid}`.
 
 **Error code catalog:**
 

@@ -3,9 +3,9 @@
 ## Overview
 
 This doc covers three areas:
-1. **Metrics** — what we measure and alert on
-2. **Logging** — structured log format for all services
-3. **Data quality** — automated checks and degraded state handling
+1. **Metrics** - what we measure and alert on
+2. **Logging** - structured log format for all services
+3. **Data quality** - automated checks and degraded state handling
 
 ## Metrics Catalog
 
@@ -27,7 +27,7 @@ This doc covers three areas:
 | Metric Name | Type | Labels | Description | Alert Threshold |
 |-------------|------|--------|-------------|----------------|
 | `api_request_duration_seconds` | histogram | `endpoint`, `method`, `status_code` | Request latency | > 200ms P95 |
-| `api_request_count` | counter | `endpoint`, `method`, `status_code` | Request count | — |
+| `api_request_count` | counter | `endpoint`, `method`, `status_code` | Request count | - |
 | `api_error_count` | counter | `endpoint`, `error_code` | Error responses (4xx, 5xx) | > 10 5xx/hour |
 | `firestore_read_duration_seconds` | histogram | `collection` | Firestore read latency | > 500ms P95 |
 | `auth_failure_count` | counter | `reason` (expired/invalid/missing) | Auth failures | > 50/hour (possible attack) |

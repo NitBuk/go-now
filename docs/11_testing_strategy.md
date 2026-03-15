@@ -2,10 +2,10 @@
 
 ## Philosophy
 
-- **Scoring engine gets the most coverage** — it's the core product logic, runs on-device, and must produce identical results across all platforms.
-- **Integration tests validate the pipeline** — mock the provider, verify the full ingest flow.
-- **UI tests cover critical paths** — onboarding, forecast display, preset changes.
-- **Don't test framework code** — trust FastAPI, Flutter, and Next.js to work. Test our logic.
+- **Scoring engine gets the most coverage** - it's the core product logic, runs on-device, and must produce identical results across all platforms.
+- **Integration tests validate the pipeline** - mock the provider, verify the full ingest flow.
+- **UI tests cover critical paths** - onboarding, forecast display, preset changes.
+- **Don't test framework code** - trust FastAPI, Flutter, and Next.js to work. Test our logic.
 
 ## Coverage Targets
 
@@ -53,7 +53,7 @@ A shared JSON file (`/services/shared_contracts/test_fixtures/scoring_golden_tes
     },
     {
       "id": "all_null",
-      "description": "All variables null — no penalties, info chips only",
+      "description": "All variables null - no penalties, info chips only",
       "input": {
         "wave_height_m": null,
         "feelslike_c": null,
@@ -93,7 +93,7 @@ A shared JSON file (`/services/shared_contracts/test_fixtures/scoring_golden_tes
 
 Full test case list from `04_scoring_engine_v1.md` edge case table (12 cases) plus:
 - All 3 presets (Chill, Balanced, Strict) for boundary threshold cases
-- Reason chip count validation (2–5 chips per mode)
+- Reason chip count validation (2-5 chips per mode)
 - Positive chip presence when score >= 70
 
 ### Dart Test Suite (Flutter)
@@ -133,9 +133,9 @@ test_scoring_edge_cases.py    # Python-specific edge case tests
 **Framework:** pytest + httpx (async test client for FastAPI)
 
 ```
-test_public_forecast.py       # GET /v1/public/forecast — happy path, missing area_id, stale data
-test_public_health.py         # GET /v1/public/health — fresh, stale, degraded states
-test_profile_crud.py          # GET/POST/DELETE /v1/profile — auth required, validation, not found
+test_public_forecast.py       # GET /v1/public/forecast - happy path, missing area_id, stale data
+test_public_health.py         # GET /v1/public/health - fresh, stale, degraded states
+test_profile_crud.py          # GET/POST/DELETE /v1/profile - auth required, validation, not found
 test_auth.py                  # JWT validation, missing token, expired token, invalid token
 test_error_responses.py       # Verify error envelope format for all error codes
 ```
@@ -302,4 +302,4 @@ Tests run in CI via GitHub Actions (see `12_ci_cd_pipeline.md`):
 - **On every PR:** All unit tests + integration tests
 - **On merge to main:** Full suite including E2E
 - **Coverage reports:** Uploaded as PR comments via codecov or similar
-- **Test failures block merge** — no exceptions
+- **Test failures block merge** - no exceptions

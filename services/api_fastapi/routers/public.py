@@ -1,4 +1,4 @@
-"""Public API routes — no authentication required."""
+"""Public API routes - no authentication required."""
 
 from __future__ import annotations
 

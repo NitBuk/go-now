@@ -109,7 +109,7 @@
 
 | Field | Type | Required | Validation | Default |
 |-------|------|----------|------------|---------|
-| `display_name` | string | no | 1–50 chars, trimmed | `"Beach Buddy"` |
+| `display_name` | string | no | 1-50 chars, trimmed | `"Beach Buddy"` |
 | `units` | enum | yes | `"metric"` only in V1 | `"metric"` |
 | `language` | enum | yes | `"en"` only in V1 | `"en"` |
 
@@ -120,12 +120,12 @@
 | Field | Type | Required | Validation | Default |
 |-------|------|----------|------------|---------|
 | `preset` | enum | yes | `"chill"` \| `"balanced"` \| `"strict"` | `"balanced"` |
-| `activities_enabled.swim` | bool | yes | — | `true` |
-| `activities_enabled.run` | bool | yes | — | `true` |
-| `time_preference.morning` | bool | yes | — | `true` |
-| `time_preference.midday` | bool | yes | — | `false` |
-| `time_preference.sunset` | bool | yes | — | `true` |
-| `time_preference.night` | bool | yes | — | `false` |
+| `activities_enabled.swim` | bool | yes | - | `true` |
+| `activities_enabled.run` | bool | yes | - | `true` |
+| `time_preference.morning` | bool | yes | - | `true` |
+| `time_preference.midday` | bool | yes | - | `false` |
+| `time_preference.sunset` | bool | yes | - | `true` |
+| `time_preference.night` | bool | yes | - | `false` |
 
 **How `preset` works:** When the user selects a preset during onboarding (or changes it in settings), the app immediately writes the corresponding absolute threshold values to the `thresholds` object. The `preset` field is stored for UI display purposes and for re-computing thresholds if the canonical table changes in a future scoring version. The scoring engine reads only from `thresholds`, never from `preset` directly.
 
@@ -133,12 +133,12 @@
 
 | Field | Type | Required | Validation | Default |
 |-------|------|----------|------------|---------|
-| `enabled` | bool | yes | — | `true` |
-| `mode_toggles.swim_solo` | bool | yes | — | matches `activities_enabled.swim` |
-| `mode_toggles.swim_dog` | bool | yes | — | `true` if `dog.has_dog && activities_enabled.swim` |
-| `mode_toggles.run_solo` | bool | yes | — | matches `activities_enabled.run` |
-| `mode_toggles.run_dog` | bool | yes | — | `true` if `dog.has_dog && activities_enabled.run` |
-| `quiet_hours.enabled` | bool | yes | — | `false` |
+| `enabled` | bool | yes | - | `true` |
+| `mode_toggles.swim_solo` | bool | yes | - | matches `activities_enabled.swim` |
+| `mode_toggles.swim_dog` | bool | yes | - | `true` if `dog.has_dog && activities_enabled.swim` |
+| `mode_toggles.run_solo` | bool | yes | - | matches `activities_enabled.run` |
+| `mode_toggles.run_dog` | bool | yes | - | `true` if `dog.has_dog && activities_enabled.run` |
+| `quiet_hours.enabled` | bool | yes | - | `false` |
 | `quiet_hours.start` | string | yes | `HH:MM` 24h format | `"22:00"` |
 | `quiet_hours.end` | string | yes | `HH:MM` 24h format | `"07:00"` |
 
@@ -169,10 +169,10 @@
 
 | Field | Type | Required | Validation | Default |
 |-------|------|----------|------------|---------|
-| `has_dog` | bool | yes | — | `false` |
-| `dog_name` | string | if `has_dog` | 1–30 chars | — |
-| `size` | enum | if `has_dog` | `"small"` \| `"medium"` \| `"large"` | — |
-| `coat` | enum | if `has_dog` | `"short"` \| `"medium"` \| `"long"` | — |
+| `has_dog` | bool | yes | - | `false` |
+| `dog_name` | string | if `has_dog` | 1-30 chars | - |
+| `size` | enum | if `has_dog` | `"small"` \| `"medium"` \| `"large"` | - |
+| `coat` | enum | if `has_dog` | `"short"` \| `"medium"` \| `"long"` | - |
 | `heat_sensitivity` | enum | if `has_dog` | `"low"` \| `"medium"` \| `"high"` | `"medium"` |
 
 > **V1 note:** `size`, `coat`, and `heat_sensitivity` are collected at onboarding but do **not** affect scoring in V1 (all dogs use the same thresholds). They're stored for V1.1 personalization where large/long-coat/high-sensitivity dogs will get stricter heat thresholds.

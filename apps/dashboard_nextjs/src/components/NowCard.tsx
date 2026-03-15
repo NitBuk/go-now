@@ -75,7 +75,7 @@ export default function NowCard({ hour, mode }: NowCardProps) {
           </AnimatePresence>
         </div>
 
-        {/* Conditions row — static, same data regardless of mode */}
+        {/* Conditions row - static, same data regardless of mode */}
         <div className="flex justify-center gap-6 mb-5 text-[13px]">
           {hour.feelslike_c != null && (
             <div className="flex flex-col items-center gap-0.5">
@@ -107,7 +107,7 @@ export default function NowCard({ hour, mode }: NowCardProps) {
           )}
         </div>
 
-        {/* Reason chips — crossfade on mode change */}
+        {/* Reason chips - crossfade on mode change */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`chips-${mode}`}

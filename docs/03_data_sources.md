@@ -2,7 +2,7 @@
 
 ## Scope
 
-- **Location:** Single forecast point — Tel Aviv Coast (`area_id: tel_aviv_coast`, lat 32.08, lon 34.77).
+- **Location:** Single forecast point - Tel Aviv Coast (`area_id: tel_aviv_coast`, lat 32.08, lon 34.77).
 - **Horizon:** 7-day hourly forecast (168 hours).
 - **Refresh cadence:** Every 1 hour (backend ingestion job via Cloud Scheduler → Pub/Sub).
 - **Client access:** App reads from our API (`/v1/public/forecast`), never directly from the provider.
@@ -83,10 +83,10 @@ Explicit mapping from raw Open-Meteo variable names to our curated/serving field
 | `apparent_temperature` | °C | `feelslike_c` | °C | passthrough |
 | `wind_speed_10m` | km/h | `wind_ms` | m/s | `÷ 3.6` |
 | `wind_gusts_10m` | km/h | `gust_ms` | m/s | `÷ 3.6` |
-| `precipitation_probability` | % | `precip_prob_pct` | % (0–100) | passthrough |
+| `precipitation_probability` | % | `precip_prob_pct` | % (0-100) | passthrough |
 | `precipitation` | mm | `precip_mm` | mm | passthrough |
-| `uv_index` | — | `uv_index` | — | passthrough |
-| `european_aqi` | EU AQI | `eu_aqi` | EU AQI (0–500) | passthrough |
+| `uv_index` | - | `uv_index` | - | passthrough |
+| `european_aqi` | EU AQI | `eu_aqi` | EU AQI (0-500) | passthrough |
 | `pm10` | µg/m³ | `pm10` | µg/m³ | passthrough |
 | `pm2_5` | µg/m³ | `pm2_5` | µg/m³ | passthrough |
 
@@ -224,10 +224,10 @@ Applies to each Open-Meteo API call individually:
 
 | Attempt | Delay | Max |
 |---------|-------|-----|
-| 1st retry | 1s + jitter (0–500ms) | — |
-| 2nd retry | 2s + jitter (0–500ms) | — |
-| 3rd retry | 4s + jitter (0–500ms) | — |
-| After 3rd | Give up for this endpoint | — |
+| 1st retry | 1s + jitter (0-500ms) | - |
+| 2nd retry | 2s + jitter (0-500ms) | - |
+| 3rd retry | 4s + jitter (0-500ms) | - |
+| After 3rd | Give up for this endpoint | - |
 
 **Jitter:** Random uniform [0, 500ms] added to each delay to prevent thundering herd.
 
@@ -248,9 +248,9 @@ Applies to each Open-Meteo API call individually:
 
 Writes to the three storage layers are **not atomic**:
 
-1. **Cloud Storage (raw)** — written first. If this fails, entire run fails.
-2. **BigQuery (curated)** — written second. Uses `INSERT` (append); idempotent via dedup key.
-3. **Firestore (serving)** — written last. Uses `set()` (full overwrite of forecast doc).
+1. **Cloud Storage (raw)** - written first. If this fails, entire run fails.
+2. **BigQuery (curated)** - written second. Uses `INSERT` (append); idempotent via dedup key.
+3. **Firestore (serving)** - written last. Uses `set()` (full overwrite of forecast doc).
 
 **If BQ succeeds but Firestore fails:** The serving doc retains the previous forecast. App will show stale data (detected via `updated_at_utc` freshness check). Dashboard will show the latest data from BQ. The next hourly ingest will retry the full pipeline, overwriting both.
 
@@ -306,7 +306,7 @@ class ForecastProvider(ABC):
         ...
 ```
 
-**V1 implementation:** `OpenMeteoProviderV1` — fetches 3 endpoints, merges by hour, converts wind km/h → m/s.
+**V1 implementation:** `OpenMeteoProviderV1` - fetches 3 endpoints, merges by hour, converts wind km/h → m/s.
 
 ## Data Quality Checks (V1)
 

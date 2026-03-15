@@ -136,7 +136,7 @@ const GATES = [
   { icon: CloudRain, name: "Heavy rain", scope: "All modes", rule: "\u22653mm precipitation or \u226580% probability", reason: "Unsafe footing, poor visibility, and hypothermia risk in coastal conditions" },
   { icon: Wind, name: "Extreme wind", scope: "Run only", rule: "Gusts \u226514 m/s", reason: "Sand blasting and balance hazard on the promenade" },
   { icon: Dog, name: "Dog heat", scope: "Run + Dog", rule: "\u226529\u00B0C or \u226526\u00B0C + UV \u22658", reason: "Paw burns and heatstroke risk for dogs on hot asphalt" },
-  { icon: Sunset, name: "Darkness", scope: "Swim only", rule: "Score ramps linearly to 0 over the 30 min following sunset", reason: "After that window, swim score is hard-gated to 0 — no night swimming" },
+  { icon: Sunset, name: "Darkness", scope: "Swim only", rule: "Score ramps linearly to 0 over the 30 min following sunset", reason: "After that window, swim score is hard-gated to 0 - no night swimming" },
 ];
 
 interface PenaltyRow {
@@ -217,7 +217,7 @@ export default function FormulaView() {
         Scoring Formula
       </motion.h1>
 
-      {/* Core formula — always above the fold */}
+      {/* Core formula - always above the fold */}
       <motion.div
         className="glass-card rounded-2xl p-5"
         variants={cardVariants}
@@ -337,7 +337,7 @@ export default function FormulaView() {
         <div className="space-y-2 text-[13px] text-slate-400">
           <ScrollReveal className="bg-white/[0.04] rounded-xl p-3" variants={bounceIn} custom={0}>
             <p className="font-medium text-slate-200 mb-1">1.2x penalty multiplier</p>
-            <p className="text-[12px]">Heat, UV, and AQI penalties are amplified by 1.2x for dog modes. Dogs regulate temperature through panting — less efficient than sweating — making them more vulnerable to heat stress and poor air quality.</p>
+            <p className="text-[12px]">Heat, UV, and AQI penalties are amplified by 1.2x for dog modes. Dogs regulate temperature through panting - less efficient than sweating - making them more vulnerable to heat stress and poor air quality.</p>
           </ScrollReveal>
           <ScrollReveal className="bg-white/[0.04] rounded-xl p-3" variants={bounceIn} custom={1}>
             <p className="font-medium text-slate-200 mb-1">Stricter swim thresholds</p>
@@ -374,7 +374,7 @@ export default function FormulaView() {
         </div>
 
         <div className="bg-white/[0.04] rounded-xl p-3 text-[12px] text-slate-400">
-          Missing data never penalizes — an info chip is shown instead so you know the score may be less reliable.
+          Missing data never penalizes - an info chip is shown instead so you know the score may be less reliable.
         </div>
       </ScrollReveal>
     </div>

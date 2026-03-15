@@ -18,7 +18,7 @@ class Config:
     ENV: str = os.environ.get("ENV", "dev")
     PORT: int = int(os.environ.get("PORT", "8080"))
 
-    # Tel Aviv Coast — single location in V1
+    # Tel Aviv Coast - single location in V1
     AREA_ID: str = "tel_aviv_coast"
     LAT: float = 32.08
     LON: float = 34.77

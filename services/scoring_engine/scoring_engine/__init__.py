@@ -1,4 +1,4 @@
-"""Go Now scoring engine — computes activity scores from forecast data."""
+"""Go Now scoring engine - computes activity scores from forecast data."""
 
 from scoring_engine.engine import score_hour
 from scoring_engine.thresholds import BALANCED_THRESHOLDS, Thresholds

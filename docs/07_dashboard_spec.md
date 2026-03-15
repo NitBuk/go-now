@@ -2,7 +2,7 @@
 
 ## Goal
 
-A public, portfolio-ready dashboard that showcases the Go Now data engineering pipeline. The dashboard demonstrates real-time data ingestion, quality monitoring, and forecast visualization for the Tel Aviv coast. It serves as a credibility piece for data engineering work — recruiters and peers can see a live, functioning pipeline with observability built in.
+A public, portfolio-ready dashboard that showcases the Go Now data engineering pipeline. The dashboard demonstrates real-time data ingestion, quality monitoring, and forecast visualization for the Tel Aviv coast. It serves as a credibility piece for data engineering work - recruiters and peers can see a live, functioning pipeline with observability built in.
 
 ## Audience
 
@@ -34,8 +34,8 @@ Pages use ISR with a **5-minute revalidation** interval. This means:
 ### Client-Side API Fallback
 
 Each page includes a "Refresh" button that triggers client-side calls to the FastAPI service:
-- `/v1/public/health` — for pipeline status and freshness.
-- `/v1/public/forecast` — for current forecast data.
+- `/v1/public/health` - for pipeline status and freshness.
+- `/v1/public/forecast` - for current forecast data.
 
 This provides a fallback if BigQuery reads are slow or if the user wants the latest data without waiting for ISR.
 
@@ -80,7 +80,7 @@ A visual gauge (circular or horizontal bar) indicating forecast freshness:
 | Age | Color | Label |
 |-----|-------|-------|
 | < 60 minutes | Green | "Fresh" |
-| 60–90 minutes | Yellow | "Aging" |
+| 60-90 minutes | Yellow | "Aging" |
 | > 90 minutes | Red | "Stale" |
 
 Computed from: `now() - ingest_runs_v1.finished_at_utc` (latest successful run).
@@ -102,7 +102,7 @@ A row of 4 compact metric cards showing the current hour's data from the forecas
 | Metric | Field | Example | Unit |
 |--------|-------|---------|------|
 | Feels Like | `feelslike_c` | 28.5 | C |
-| UV Index | `uv_index` | 6.2 | — |
+| UV Index | `uv_index` | 6.2 | - |
 | Air Quality | `eu_aqi` | 45 | EU AQI |
 | Wave Height | `wave_height_m` | 0.4 | m |
 
@@ -143,15 +143,15 @@ A 7-day x 24-hour grid showing computed scores for each activity mode. The grid 
 
 | Tier | Score Range | Color |
 |------|-------------|-------|
-| Perfect | 85–100 | Deep green |
-| Good | 70–84 | Light green |
-| Meh | 45–69 | Yellow |
-| Bad | 20–44 | Orange |
-| Nope | 0–19 | Red |
+| Perfect | 85-100 | Deep green |
+| Good | 70-84 | Light green |
+| Meh | 45-69 | Yellow |
+| Bad | 20-44 | Orange |
+| Nope | 0-19 | Red |
 
 Mode selector: tabs or dropdown to switch between swim_solo, swim_dog, run_solo, run_dog.
 
-**Note:** The dashboard computes scores using the **Balanced** preset thresholds (canonical defaults from `02_user_profile_schema.md`). This is a display-only approximation — personalized scores are computed on-device in the mobile app.
+**Note:** The dashboard computes scores using the **Balanced** preset thresholds (canonical defaults from `02_user_profile_schema.md`). This is a display-only approximation - personalized scores are computed on-device in the mobile app.
 
 ---
 
@@ -173,7 +173,7 @@ A table showing null rates per variable for the last 7 days:
 
 Status thresholds:
 - OK: null rate < 5%
-- Warning: null rate 5–10%
+- Warning: null rate 5-10%
 - Critical: null rate > 10%
 
 Data source: `SELECT` from `hourly_forecast_v1` for the last 7 days, counting nulls per column.
@@ -184,11 +184,11 @@ A summary card showing count of out-of-range values detected in the last 7 days,
 
 | Variable | Valid Range | Violations (7d) | Example |
 |----------|-------------|------------------|---------|
-| `wave_height_m` | [0, 10] m | 0 | — |
+| `wave_height_m` | [0, 10] m | 0 | - |
 | `eu_aqi` | [0, 500] | 1 | 612 at 2025-06-03T14:00Z |
-| `uv_index` | [0, 15] | 0 | — |
-| `feelslike_c` | [-5, 55] C | 0 | — |
-| `wind_ms` | [0, 50] m/s | 0 | — |
+| `uv_index` | [0, 15] | 0 | - |
+| `feelslike_c` | [-5, 55] C | 0 | - |
+| `wind_ms` | [0, 50] m/s | 0 | - |
 
 #### DQ Flags Timeline
 
@@ -256,7 +256,7 @@ A card for each component with:
 
 #### Data Flow Explanation
 
-A written narrative (3–4 paragraphs) explaining:
+A written narrative (3-4 paragraphs) explaining:
 1. How data flows from Open-Meteo through the three storage layers.
 2. Why scoring runs on-device instead of on the backend.
 3. How the dashboard reads from BigQuery (not Firestore) for richer analytics.
@@ -269,7 +269,7 @@ Mobile-first design with three breakpoints:
 | Breakpoint | Width | Layout |
 |------------|-------|--------|
 | Mobile | < 640px | Single column, stacked charts, collapsed tables |
-| Tablet | 640px–1023px | Two-column grid for cards, wider charts |
+| Tablet | 640px-1023px | Two-column grid for cards, wider charts |
 | Desktop | >= 1024px | Full-width charts, side-by-side cards, expanded tables |
 
 Charts resize responsively using Recharts' `ResponsiveContainer`. Tables switch to card-based layouts on mobile.
@@ -277,9 +277,9 @@ Charts resize responsively using Recharts' `ResponsiveContainer`. Tables switch 
 ## SEO and Meta Tags
 
 ```html
-<title>Go Now — Tel Aviv Coast Pipeline Status</title>
-<meta name="description" content="Real-time data pipeline monitoring for Tel Aviv beach conditions. Wave height, weather, UV, and air quality — ingested hourly from Open-Meteo." />
-<meta property="og:title" content="Go Now — Tel Aviv Coast Pipeline Status" />
+<title>Go Now - Tel Aviv Coast Pipeline Status</title>
+<meta name="description" content="Real-time data pipeline monitoring for Tel Aviv beach conditions. Wave height, weather, UV, and air quality - ingested hourly from Open-Meteo." />
+<meta property="og:title" content="Go Now - Tel Aviv Coast Pipeline Status" />
 <meta property="og:description" content="Real-time data pipeline monitoring for Tel Aviv beach conditions." />
 <meta property="og:image" content="/og-status-card.png" />
 <meta property="og:type" content="website" />

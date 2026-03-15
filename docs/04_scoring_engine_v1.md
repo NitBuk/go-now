@@ -2,9 +2,9 @@
 
 ## Overview
 
-The scoring engine runs **on-device** (Flutter/Dart). For each hour in the 7-day forecast, it produces 4 mode scores (0–100) with labels and reason chips. The engine reads threshold values from the user's profile (populated by preset selection — see canonical table in `02_user_profile_schema.md`).
+The scoring engine runs **on-device** (Flutter/Dart). For each hour in the 7-day forecast, it produces 4 mode scores (0-100) with labels and reason chips. The engine reads threshold values from the user's profile (populated by preset selection - see canonical table in `02_user_profile_schema.md`).
 
-**Version:** `score_v1` — logged with every recommendation and notification event.
+**Version:** `score_v1` - logged with every recommendation and notification event.
 
 ## Output Schema
 
@@ -35,11 +35,11 @@ For each hourly forecast entry, the scoring engine produces:
 
 | Score Range | Label | Color Tier |
 |-------------|-------|-----------|
-| 85–100 | Perfect | Green |
-| 70–84 | Good | Light green |
-| 45–69 | Meh | Yellow |
-| 20–44 | Bad | Orange |
-| 0–19 | Nope | Red |
+| 85-100 | Perfect | Green |
+| 70-84 | Good | Light green |
+| 45-69 | Meh | Yellow |
+| 20-44 | Bad | Orange |
+| 0-19 | Nope | Red |
 
 ### Reason Chip Schema
 
@@ -52,7 +52,7 @@ For each hourly forecast entry, the scoring engine produces:
 }
 ```
 
-- Each mode produces **2–5 reason chips**.
+- Each mode produces **2-5 reason chips**.
 - Negative penalties are listed first (sorted by magnitude, largest first).
 - If `score >= 70`, include 1 positive chip (penalty = 0, emoji = `"check"`).
 
@@ -66,7 +66,7 @@ The engine receives one `HourlyForecast` object per hour (from `/v1/public/forec
 |-------|------|--------------|---------|
 | `wave_height_m` | float? | `wave_height_m` | swim_solo, swim_dog |
 | `feelslike_c` | float? | `feelslike_c` | all modes |
-| `wind_ms` | float? | `wind_ms` | (not used directly — gust_ms is used) |
+| `wind_ms` | float? | `wind_ms` | (not used directly - gust_ms is used) |
 | `gust_ms` | float? | `gust_ms` | all modes |
 | `precip_prob_pct` | int? | `precip_prob_pct` | all modes (hard gate + penalty) |
 | `precip_mm` | float? | `precip_mm` | all modes (hard gate) |
@@ -86,8 +86,8 @@ When a forecast variable is `null` (provider didn't return data for that hour):
 | `wave_height_m` | Skip wave penalty (assume 0 penalty) | Add `"Wave data unavailable"` info chip |
 | `feelslike_c` | Skip heat/cold penalty; skip dog heat gate | Add `"Temp data unavailable"` info chip |
 | `gust_ms` | Skip wind penalty; skip wind hard gate | Add `"Wind data unavailable"` info chip |
-| `precip_prob_pct` | Skip rain hard gate (use `precip_mm` only if available) | — |
-| `precip_mm` | Skip rain hard gate (use `precip_prob_pct` only if available) | — |
+| `precip_prob_pct` | Skip rain hard gate (use `precip_mm` only if available) | - |
+| `precip_mm` | Skip rain hard gate (use `precip_prob_pct` only if available) | - |
 | `uv_index` | Skip UV penalty; skip compound dog heat gate UV component | Add `"UV data unavailable"` info chip |
 | `eu_aqi` | Skip AQI penalty | Add `"AQI data unavailable"` info chip |
 
@@ -99,7 +99,7 @@ When a forecast variable is `null` (provider didn't return data for that hour):
 
 Hard gates are evaluated **before** penalty scoring. If any gate triggers, the mode score is immediately set to 0 with a "Nope" label.
 
-### Rain Gate — All Modes
+### Rain Gate - All Modes
 
 ```
 IF precip_mm != null AND precip_mm >= 3.0:
@@ -108,14 +108,14 @@ ELSE IF precip_prob_pct != null AND precip_prob_pct >= 80:
     score = 0, reason = "Rain very likely"
 ```
 
-### Wind Gate — Run Modes Only (run_solo, run_dog)
+### Wind Gate - Run Modes Only (run_solo, run_dog)
 
 ```
 IF gust_ms != null AND gust_ms >= thresholds.wind_bad_ms:
     score = 0, reason = "Wind too strong"
 ```
 
-### Dog Heat Gate — run_dog Only
+### Dog Heat Gate - run_dog Only
 
 Compound condition (heat + UV interaction):
 
@@ -141,7 +141,7 @@ Start with `base_score = 100`. Subtract penalties per factor. Clamp result to `[
 
 | Factor | Condition | Penalty | Reason Text |
 |--------|-----------|---------|-------------|
-| Waves | `wave_height_m >= swim_wave_bad_m` | -70 | "Waves {X}m — rough" |
+| Waves | `wave_height_m >= swim_wave_bad_m` | -70 | "Waves {X}m - rough" |
 | Waves | `wave_height_m >= swim_wave_meh_m` (and < bad) | -35 | "Waves {X}m" |
 | Wind | `gust_ms >= wind_warn_ms` | -15 | "Gusty {X}m/s" |
 | AQI | `eu_aqi >= aqi_bad_eu` | -25 | "Air quality poor" |
@@ -156,7 +156,7 @@ Same as swim_solo, with these changes:
 | Factor | Condition | Penalty | Reason Text |
 |--------|-----------|---------|-------------|
 | Waves | `wave_height_m >= swim_dog_wave_bad_m` | -80 | "Waves too rough for dog" |
-| Waves | `wave_height_m >= swim_dog_wave_meh_m` (and < bad) | -45 | "Waves {X}m — watch your dog" |
+| Waves | `wave_height_m >= swim_dog_wave_meh_m` (and < bad) | -45 | "Waves {X}m - watch your dog" |
 | Dog heat | `feelslike_c >= dog_heat_warn_feelslike_c` | -15 | "Warm for paws" |
 | Dog UV | `uv_index >= uv_warn` | -10 | "UV elevated" |
 
@@ -201,11 +201,11 @@ Same penalty structure as run_solo, with the **1.2x dog multiplier** applied to 
 ```
 1. Collect all (factor, penalty_amount, reason_text) tuples from scoring
 2. Sort by abs(penalty_amount) descending
-3. Take top 2–4 penalty factors as "negative" chips
+3. Take top 2-4 penalty factors as "negative" chips
 4. If final score >= 70:
      Add 1 "positive" chip for the highest-value OK factor
      (e.g., "Waves calm" if wave penalty was 0)
-5. Total chips: 2–5 per mode
+5. Total chips: 2-5 per mode
 ```
 
 ### Tie-Breaking
@@ -240,7 +240,7 @@ def score_swim_solo(hour: HourlyForecast, t: Thresholds) -> ModeScore:
     # Waves
     if hour.wave_height_m is not None:
         if hour.wave_height_m >= t.swim_wave_bad_m:
-            penalties.append(("waves", -70, f"Waves {hour.wave_height_m}m — rough"))
+            penalties.append(("waves", -70, f"Waves {hour.wave_height_m}m - rough"))
         elif hour.wave_height_m >= t.swim_wave_meh_m:
             penalties.append(("waves", -35, f"Waves {hour.wave_height_m}m"))
     else:
@@ -325,5 +325,5 @@ When computing "best time" windows for notifications or the "Today" tab:
 
 ## Versioning
 
-- **`scoring_version`:** `"score_v1"` — included in every scoring output, notification event, and recommendation log.
+- **`scoring_version`:** `"score_v1"` - included in every scoring output, notification event, and recommendation log.
 - **Purpose:** When scoring logic changes (e.g., new penalty values, new factors), the version increments. This allows debugging why a past notification was sent and comparing scoring accuracy across versions.

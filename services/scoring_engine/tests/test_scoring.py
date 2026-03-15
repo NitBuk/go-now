@@ -1,4 +1,4 @@
-"""Tests for scoring engine v2 — continuous linear ramp penalties.
+"""Tests for scoring engine v2 - continuous linear ramp penalties.
 
 All tests use Balanced preset thresholds.
 """
@@ -147,7 +147,7 @@ class TestGoldenCases:
 
 
 class TestContinuousScoring:
-    """Tests specific to linear ramp behavior — no more cliff edges."""
+    """Tests specific to linear ramp behavior - no more cliff edges."""
 
     def test_heat_scales_linearly_for_run(self) -> None:
         """Run heat penalty grows linearly from 26°C to 38°C."""

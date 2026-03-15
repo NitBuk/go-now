@@ -72,7 +72,7 @@ The 7-character git SHA of the deployed commit is shown in the dashboard footer 
 **Version string:** `score_v1`
 
 - Embedded in every scoring output, notification event, and user profile.
-- Does not change with app version bumps — only changes when scoring logic (thresholds, penalties, gates) changes.
+- Does not change with app version bumps - only changes when scoring logic (thresholds, penalties, gates) changes.
 - When the scoring version changes, it becomes `score_v2`, and a migration path is documented.
 
 ## Mobile (Flutter)

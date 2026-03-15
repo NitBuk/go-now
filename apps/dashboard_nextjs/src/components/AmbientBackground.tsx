@@ -19,7 +19,7 @@ export default function AmbientBackground({ label }: AmbientBackgroundProps) {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* CSS animations run on compositor thread — no JS, no main-thread paint */}
+      {/* CSS animations run on compositor thread - no JS, no main-thread paint */}
       <div
         className="absolute rounded-full ambient-blob-1"
         style={{

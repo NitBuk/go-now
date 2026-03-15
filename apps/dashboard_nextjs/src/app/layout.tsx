@@ -21,11 +21,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 export const metadata: Metadata = {
   title: "Go Now - Beach & Run Conditions",
   description:
-    "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+    "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0-100 using wave, UV, AQI, wind, and rain data.",
   openGraph: {
     title: "Go Now - Beach & Run Conditions",
     description:
-      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0-100 using wave, UV, AQI, wind, and rain data.",
     url: BASE_URL,
     siteName: "Go Now",
     locale: "en_US",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Go Now - Beach & Run Conditions",
     description:
-      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0–100 using wave, UV, AQI, wind, and rain data.",
+      "Hourly swim and run scores for the Tel Aviv coast. 4 activity modes scored 0-100 using wave, UV, AQI, wind, and rain data.",
   },
 };
 

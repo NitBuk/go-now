@@ -1,4 +1,4 @@
-# Go Now — Web App
+# Go Now - Web App
 
 Next.js frontend for the Go Now Tel Aviv Coast Buddy. Displays hourly swim and run scores for the Tel Aviv coast.
 
@@ -36,7 +36,7 @@ For frontend-only development (no local API), point at the live API by leaving t
 
 | Route | Description |
 |---|---|
-| `/` | Forecast page — scores, timeline, best windows |
+| `/` | Forecast page - scores, timeline, best windows |
 | `/status` | Pipeline health + architecture overview |
 
 ## Full Setup

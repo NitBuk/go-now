@@ -112,7 +112,7 @@ export function getConditions(hour: ScoredHour): ConditionItem[] {
   ];
 }
 
-/** Tailwind color classes for each severity — only warning/danger are colored */
+/** Tailwind color classes for each severity - only warning/danger are colored */
 export function severityColor(severity: Severity): string {
   switch (severity) {
     case "warning": return "text-amber-400";
@@ -121,7 +121,7 @@ export function severityColor(severity: Severity): string {
   }
 }
 
-/** Hex color for SVG / inline styles — only warning/danger are colored */
+/** Hex color for SVG / inline styles - only warning/danger are colored */
 export function severityHex(severity: Severity): string {
   switch (severity) {
     case "warning": return "#FBBF24";

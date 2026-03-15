@@ -1,4 +1,4 @@
-name: CI — Ingest Worker
+name: CI - Ingest Worker
 
 on:
   pull_request:

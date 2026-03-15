@@ -6,10 +6,10 @@ A practical build order to keep momentum and reduce rework. Each phase has a def
 
 | T-Shirt | Meaning |
 |---------|---------|
-| S | 1–2 days |
-| M | 3–5 days |
-| L | 1–2 weeks |
-| XL | 2–3 weeks |
+| S | 1-2 days |
+| M | 3-5 days |
+| L | 1-2 weeks |
+| XL | 2-3 weeks |
 
 ## Phase Overview
 
@@ -29,7 +29,7 @@ Phase 9: Polish + Release ──────────────────
 
 ---
 
-## Phase 1: Ingest Worker — [L]
+## Phase 1: Ingest Worker - [L]
 
 Build the hourly data ingestion pipeline from Open-Meteo to three storage layers.
 
@@ -56,13 +56,13 @@ Build the hourly data ingestion pipeline from Open-Meteo to three storage layers
 
 ---
 
-## Phase 2: Public API — [M]
+## Phase 2: Public API - [M]
 
 Stand up the FastAPI service with public endpoints.
 
 **Deliverables:**
-- `GET /v1/public/forecast` — reads from Firestore, adds freshness flag
-- `GET /v1/public/health` — returns pipeline status
+- `GET /v1/public/forecast` - reads from Firestore, adds freshness flag
+- `GET /v1/public/health` - returns pipeline status
 - Standardized error response envelope
 - Structured JSON logging
 - Dockerfile + Cloud Run deployment
@@ -81,7 +81,7 @@ Stand up the FastAPI service with public endpoints.
 
 ---
 
-## Phase 3: Flutter UI (Raw) — [M]
+## Phase 3: Flutter UI (Raw) - [M]
 
 Build the Flutter app shell with raw forecast display (no scoring yet).
 
@@ -106,7 +106,7 @@ Build the Flutter app shell with raw forecast display (no scoring yet).
 
 ---
 
-## Phase 4: Scoring Engine (On-Device) — [L]
+## Phase 4: Scoring Engine (On-Device) - [L]
 
 Implement the scoring engine in Dart and integrate into the Flutter UI.
 
@@ -132,7 +132,7 @@ Implement the scoring engine in Dart and integrate into the Flutter UI.
 
 ---
 
-## Phase 5: Onboarding + Presets — [L]
+## Phase 5: Onboarding + Presets - [L]
 
 Full onboarding flow, Firebase Auth, preset selection, and profile persistence.
 
@@ -158,7 +158,7 @@ Full onboarding flow, Firebase Auth, preset selection, and profile persistence.
 
 ---
 
-## Phase 6: Local Notifications — [M]
+## Phase 6: Local Notifications - [M]
 
 On-device notification scheduling based on scored forecast windows.
 
@@ -185,7 +185,7 @@ On-device notification scheduling based on scored forecast windows.
 
 ---
 
-## Phase 7: Next.js Dashboard — [L]
+## Phase 7: Next.js Dashboard - [L]
 
 Public portfolio dashboard showing pipeline status and forecast data.
 
@@ -212,15 +212,15 @@ Public portfolio dashboard showing pipeline status and forecast data.
 
 ---
 
-## Phase 8: Private Profile Endpoints — [M]
+## Phase 8: Private Profile Endpoints - [M]
 
 Backend endpoints for profile CRUD with Firebase Auth.
 
 **Deliverables:**
 - Firebase JWT validation middleware
-- `GET /v1/profile` — read profile from Firestore
-- `POST /v1/profile` — create/update with validation
-- `DELETE /v1/profile` — delete profile document
+- `GET /v1/profile` - read profile from Firestore
+- `POST /v1/profile` - create/update with validation
+- `DELETE /v1/profile` - delete profile document
 - Request validation: schema_version, preset enum, threshold ranges
 
 **Definition of Done:**
@@ -237,7 +237,7 @@ Backend endpoints for profile CRUD with Firebase Auth.
 
 ---
 
-## Phase 9: Polish + Release — [XL]
+## Phase 9: Polish + Release - [XL]
 
 Final quality pass and app store submission.
 

@@ -78,7 +78,7 @@ export default function HeroSection({ hour, mode }: HeroSectionProps) {
           </div>
         </div>
 
-        {/* Label + vibe — crossfade on mode change */}
+        {/* Label + vibe - crossfade on mode change */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`${mode}-${modeScore.label}`}
@@ -100,7 +100,7 @@ export default function HeroSection({ hour, mode }: HeroSectionProps) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Conditions strip — all 6 params with severity coloring */}
+        {/* Conditions strip - all 6 params with severity coloring */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`conditions-${mode}`}

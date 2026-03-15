@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Go Now API",
     version="1.0.0",
-    description="Tel Aviv Coast Buddy — hourly swim and run scores",
+    description="Tel Aviv Coast Buddy - hourly swim and run scores",
 )
 
 # CORS

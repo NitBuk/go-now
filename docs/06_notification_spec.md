@@ -2,13 +2,13 @@
 
 ## Goal
 
-Notify users when a good activity window appears for their enabled modes, without backend push infrastructure. All notifications are **local** — computed and scheduled on-device using forecast data and the user's profile.
+Notify users when a good activity window appears for their enabled modes, without backend push infrastructure. All notifications are **local** - computed and scheduled on-device using forecast data and the user's profile.
 
 ## Strategy
 
 1. App fetches the public forecast from `/v1/public/forecast` (or reads from Firestore serving cache).
 2. Scoring engine runs on-device using the user's `thresholds` object (populated by preset selection).
-3. Engine identifies "good windows" — contiguous blocks of >= 60 minutes where average score >= 70 ("Good" or better).
+3. Engine identifies "good windows" - contiguous blocks of >= 60 minutes where average score >= 70 ("Good" or better).
 4. App schedules local notifications for the next 24-48 hours, respecting per-mode toggles and quiet hours.
 5. Recompute and reschedule triggers:
    - After onboarding completion
@@ -63,7 +63,7 @@ Notifications use per-mode toggles, **not** a single on/off switch:
 - Tie-breaker: earliest start time.
 - Return top 2 windows per mode per day (for notification scheduling).
 
-See `04_scoring_engine_v1.md` — Minimum Recommendation Window section for the full algorithm.
+See `04_scoring_engine_v1.md` - Minimum Recommendation Window section for the full algorithm.
 
 ## Scheduling Policy
 
@@ -93,7 +93,7 @@ Notifications are scheduled to arrive **before** the activity window, giving the
 ### Quiet Hours Interaction
 
 - If the computed fire time falls within `[quiet_hours.start, quiet_hours.end)`, the notification is **not sent** (silent suppression).
-- No deferral — the information is available in-app when the user opens it.
+- No deferral - the information is available in-app when the user opens it.
 
 ## Permission Request Flow
 
@@ -135,7 +135,7 @@ Create one channel per mode. Users can independently control each channel in And
 
 - Default importance: `IMPORTANCE_DEFAULT` (sound + notification shade).
 - Channel creation happens at first app launch (or after update if new channels are added).
-- Channels are never deleted — Android does not allow recreation of a deleted channel.
+- Channels are never deleted - Android does not allow recreation of a deleted channel.
 
 ### iOS: Notification Categories
 
@@ -150,7 +150,7 @@ Define categories for actionable notifications:
 
 ### Both Platforms
 
-- **Local notifications only** — no push server, no APNs/FCM integration in V1.
+- **Local notifications only** - no push server, no APNs/FCM integration in V1.
 - **Badge count**: Not used in V1 (always 0). Avoids confusion with stale badges.
 - **Sound**: System default notification sound. No custom sounds in V1.
 
@@ -208,7 +208,7 @@ Israel observes DST (IDT, UTC+3 in summer; IST, UTC+2 in winter). On a DST trans
 
 ### Forecast Staleness
 
-- If the most recent forecast data is older than 3 hours, **do not schedule new notifications** — keep existing ones.
+- If the most recent forecast data is older than 3 hours, **do not schedule new notifications** - keep existing ones.
 - If forecast data is older than 6 hours, **cancel all scheduled notifications** and show an in-app warning: "Forecast data is stale. Notifications paused until data refreshes."
 
 ## Notification Templates
@@ -234,7 +234,7 @@ Minimal, classy, informative. Notifications should feel like a friend with a wea
 
 | Context | Body |
 |---------|------|
-| Perfect window | "{dog_name} approved. 07:00-09:00 — calm waves, good temps." |
+| Perfect window | "{dog_name} approved. 07:00-09:00 - calm waves, good temps." |
 | Good window | "07:00-08:00 looks good for a swim with {dog_name}. Waves low." |
 | Backup window | "Afternoon backup: 17:00-18:00 works for {dog_name} too." |
 | Tomorrow heads-up | "Tomorrow's looking good for {dog_name}. Morning swim, calm sea." |
@@ -245,7 +245,7 @@ Minimal, classy, informative. Notifications should feel like a friend with a wea
 
 | Context | Body |
 |---------|------|
-| Perfect window | "Lace up. 06:00-07:30 is perfect — cool, calm, clean air." |
+| Perfect window | "Lace up. 06:00-07:30 is perfect - cool, calm, clean air." |
 | Good window | "18:00-19:00. Cooler + lower UV." |
 | Backup window | "Backup plan: 17:00-18:00 if morning doesn't work." |
 | Tomorrow heads-up | "Tomorrow evening looks solid for a run. 18:00-19:30." |
@@ -302,7 +302,7 @@ On-device log events (local analytics only in V1, sent to analytics backend if `
 | `notif_permission_granted` | `platform`, `provisional` (bool) | When notification permission is granted |
 | `notif_permission_denied` | `platform` | When notification permission is denied |
 | `notif_dst_reschedule` | `old_offset`, `new_offset`, `count_rescheduled` | When DST transition triggers reschedule |
-| `notif_settings_deep_link` | — | When user taps the "Open Settings" banner |
+| `notif_settings_deep_link` | - | When user taps the "Open Settings" banner |
 
 All events include `scoring_version` and `timestamp` automatically.
 

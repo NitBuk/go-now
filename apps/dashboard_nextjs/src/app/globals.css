@@ -64,7 +64,7 @@ body {
   animation: live-pulse 2s ease-in-out infinite;
 }
 
-/* Ambient background blobs — CSS-only, compositor-thread animations (transform only, no paint) */
+/* Ambient background blobs - CSS-only, compositor-thread animations (transform only, no paint) */
 @keyframes ambient-drift-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(60px, 40px) scale(1.15); }
@@ -84,7 +84,7 @@ body {
 .ambient-blob-2 { animation: ambient-drift-2 30s ease-in-out infinite; }
 .ambient-blob-3 { animation: ambient-drift-3 40s ease-in-out infinite; }
 
-/* Score circle breathing pulse — CSS-only to avoid JS paint churn */
+/* Score circle breathing pulse - CSS-only to avoid JS paint churn */
 @keyframes score-breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.04); }
@@ -125,7 +125,7 @@ body {
   transform-origin: center;
 }
 
-/* Respect reduced motion — disable all custom animations */
+/* Respect reduced motion - disable all custom animations */
 @media (prefers-reduced-motion: reduce) {
   .score-breathe,
   .score-breathe-fast,

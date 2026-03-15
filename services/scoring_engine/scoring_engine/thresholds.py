@@ -1,9 +1,9 @@
 """Threshold constants for scoring presets.
 
 Each penalty factor is defined by three values:
-  ok   — below this, zero penalty
-  bad  — at/above this, maximum penalty
-  max_penalty — the penalty applied at the bad threshold
+  ok   - below this, zero penalty
+  bad  - at/above this, maximum penalty
+  max_penalty - the penalty applied at the bad threshold
 
 Between ok and bad, the penalty scales linearly.
 """
@@ -40,7 +40,7 @@ class Thresholds:
     swim_cold_bad_c: float = 10.0  # lower = worse
     swim_cold_max_penalty: float = 15
 
-    # --- Dog heat (swim_dog penalty — dogs can cool in water) ---
+    # --- Dog heat (swim_dog penalty - dogs can cool in water) ---
     dog_swim_heat_ok_c: float = 24.0
     dog_swim_heat_bad_c: float = 34.0
     dog_swim_heat_max_penalty: float = 20
@@ -68,7 +68,7 @@ class Thresholds:
     rain_prob_bad_pct: float = 79.0
     rain_run_max_penalty: float = 10
 
-    # --- Hard gate thresholds (unchanged — binary, not ramped) ---
+    # --- Hard gate thresholds (unchanged - binary, not ramped) ---
     rain_gate_mm: float = 3.0
     rain_gate_prob_pct: int = 80
     wind_gate_ms: float = 14.0  # run modes only

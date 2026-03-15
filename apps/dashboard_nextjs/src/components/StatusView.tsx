@@ -95,7 +95,7 @@ export default function StatusView({ health }: StatusViewProps) {
           >
             {health.forecast.freshness === "stale" && (
               <p className="text-[12px] text-amber-400">
-                Data is stale — last updated {health.forecast.age_minutes} min ago
+                Data is stale - last updated {health.forecast.age_minutes} min ago
               </p>
             )}
             {health.forecast.ingest_status !== "success" && (

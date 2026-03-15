@@ -53,7 +53,7 @@ class TestDQChecks:
     def test_null_rate_under_threshold_ok(self) -> None:
         """< 10% null is fine."""
         rows = [make_hourly_row(hour=h) for h in range(168)]
-        # 10 nulls out of 168 = ~6% — under threshold
+        # 10 nulls out of 168 = ~6% - under threshold
         for i in range(10):
             rows[i] = make_hourly_row(hour=i, wave_height_m=None)
         result = run_dq_checks(rows)

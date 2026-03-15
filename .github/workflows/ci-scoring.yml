@@ -1,4 +1,4 @@
-name: CI — Scoring Engine
+name: CI - Scoring Engine
 
 on:
   pull_request:

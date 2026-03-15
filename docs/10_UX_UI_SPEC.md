@@ -4,7 +4,7 @@
 
 - **Language:** English only (V1).
 - **Visual:** Modern, minimal, high contrast, calm spacing. Clean lines, generous whitespace, no visual clutter.
-- **Humor:** Classy, occasional, short. The humor lives in the microcopy — the design itself is clean and serious. Never noisy, never try-hard.
+- **Humor:** Classy, occasional, short. The humor lives in the microcopy - the design itself is clean and serious. Never noisy, never try-hard.
 - **Personality:** The app feels like a friend who checks the weather so you don't have to. Confident, concise, never condescending.
 
 ## Information Architecture
@@ -31,7 +31,7 @@ Instant answer to "Is now a good time?" Show the best upcoming window and the cu
 
 - **Title:** "Tel Aviv Coast" (left-aligned)
 - **Freshness badge** (right-aligned):
-  - "Updated Xm ago" — normal state (neutral color)
+  - "Updated Xm ago" - normal state (neutral color)
   - Yellow badge if data is > 90 minutes old: "Updated 92m ago"
   - Red badge if data is > 180 minutes old: "Updated 3h+ ago"
   - Tap badge to force refresh
@@ -66,16 +66,16 @@ Compact list of the next 6 hours with:
 - Label text ("Perfect", "Good", "Meh", ...)
 - Tap to open hour detail bottom sheet (same as Planner tab detail)
 
-### Today Tab — Empty States
+### Today Tab - Empty States
 
 | Condition | Display |
 |-----------|---------|
 | No forecast data yet (first launch, data loading) | Skeleton shimmer cards. Text below: "Forecast is loading. The coast isn't going anywhere." |
 | Forecast loaded but no good windows today | "No good windows today. Tomorrow looks better." with a button: "Check Planner" |
-| User has no dog but views a dog mode card | Card not shown — only enabled modes appear. If user enables dog mode in Settings without having a dog profile, show: "Add your dog in Profile to see dog-friendly scores." |
+| User has no dog but views a dog mode card | Card not shown - only enabled modes appear. If user enables dog mode in Settings without having a dog profile, show: "Add your dog in Profile to see dog-friendly scores." |
 | All modes disabled | "No activities selected. Head to Profile to pick swim or run." |
 
-### Today Tab — Error States
+### Today Tab - Error States
 
 | Condition | Display |
 |-----------|---------|
@@ -85,11 +85,11 @@ Compact list of the next 6 hours with:
 | Stale data (> 180 min) | Red freshness badge + banner: "Last update was a while ago. Data may be off." |
 | API error (non-network) | "Something went wrong. Pull down to retry." |
 
-### Today Tab — Loading States
+### Today Tab - Loading States
 
 - **Initial load:** Skeleton screen with shimmer effect on all cards and rows. Header shows immediately (static text).
 - **Pull-to-refresh:** Standard Material/Cupertino refresh indicator at top. Existing data remains visible during refresh.
-- **Background refresh:** No visible indicator — data updates silently. Freshness badge updates on completion.
+- **Background refresh:** No visible indicator - data updates silently. Freshness badge updates on completion.
 
 ---
 
@@ -105,7 +105,7 @@ Detailed hourly breakdown for the next 7 days. The power-user view for planning 
 - **Sub-toggle:** Solo / With dog (smaller toggle, below or beside mode selector)
   - "With dog" option shows dog name if available: "With {dog_name}"
   - If user has no dog and taps "With dog": show tooltip "Add your dog in Profile first"
-- **Preset badge:** Small chip showing current preset (e.g., "Balanced"). Tap opens preset selector bottom sheet (same as Settings preset picker). Non-intrusive — informational by default.
+- **Preset badge:** Small chip showing current preset (e.g., "Balanced"). Tap opens preset selector bottom sheet (same as Settings preset picker). Non-intrusive - informational by default.
 
 ### Day Sections
 
@@ -151,14 +151,14 @@ Triggered by tapping any hour row. Slides up with backdrop blur.
 | Wave height | 0.5 | m |
 | Wind gusts | 8 | m/s |
 | Feels like | 26 | C |
-| UV index | 5 | — |
-| Air quality (EU AQI) | 42 | — |
+| UV index | 5 | - |
+| Air quality (EU AQI) | 42 | - |
 | Rain probability | 10 | % |
 | Rain amount | 0.0 | mm |
 
 If a value is null/unavailable: show "--" with "(no data)" caption.
 
-### Planner Tab — Empty States
+### Planner Tab - Empty States
 
 | Condition | Display |
 |-----------|---------|
@@ -166,7 +166,7 @@ If a value is null/unavailable: show "--" with "(no data)" caption.
 | Forecast loaded, all hours are "Nope" for selected mode | Day section shows all dimmed rows. Banner at top: "Rough day for {mode}. Check other modes or try tomorrow." |
 | User selects dog mode without having a dog | Show rows normally but with banner: "Add your dog in Profile to personalize dog scores." Scores use default dog thresholds. |
 
-### Planner Tab — Error States
+### Planner Tab - Error States
 
 | Condition | Display |
 |-----------|---------|
@@ -174,11 +174,11 @@ If a value is null/unavailable: show "--" with "(no data)" caption.
 | Network failure (cached data exists) | Banner: "Offline -- showing last known forecast" + cached data displayed |
 | Partial data (some days missing) | Show available days. Missing days show: "Forecast not available for this day yet." |
 
-### Planner Tab — Loading States
+### Planner Tab - Loading States
 
 - **Initial load:** Skeleton shimmer for day sections and hour rows. Controls bar renders immediately.
 - **Pull-to-refresh:** Standard refresh indicator. Existing data stays visible.
-- **Day expansion:** Instant (no loading state needed — data is already in memory).
+- **Day expansion:** Instant (no loading state needed - data is already in memory).
 
 ---
 
@@ -194,7 +194,7 @@ User identity, personalization, notification control, and account management.
 
 - **Display name:** Editable text field (tap to edit inline). Default: "Beach Buddy".
 - **Dog section:**
-  - If `has_dog = true`: Show dog name, size, coat, heat sensitivity — all editable.
+  - If `has_dog = true`: Show dog name, size, coat, heat sensitivity - all editable.
   - If `has_dog = false`: Show "Add a dog" button. Tapping opens the dog form (same fields as onboarding screen 3).
   - Removing a dog: "Remove dog" text button at bottom of dog section. Confirmation dialog: "Remove {dog_name}? Dog mode scores will use defaults." Sets `has_dog = false` and disables `swim_dog` / `run_dog` notification toggles.
 
@@ -311,7 +311,7 @@ Fast, premium pacing. Under 90 seconds for the full flow. Every screen has one c
 - **Headline:** "You're set. The coast awaits."
 - **Subtext:** "Your first forecast is loading."
 - **Action:** "Let's go" button (transitions to Today tab)
-- **Background:** Success state — brief confetti or checkmark animation (respects Reduce Motion)
+- **Background:** Success state - brief confetti or checkmark animation (respects Reduce Motion)
 
 ---
 
@@ -548,7 +548,7 @@ The voice of Go Now: confident, concise, occasionally funny. Never sarcastic, ne
 
 - The "vibe" line on the Today tab is selected based on the **best score across enabled modes** for the current hour.
 - One line is chosen at random from the pool for the matching tier.
-- The line refreshes when data is updated or the hour changes (not on every screen visit — prevent jarring changes).
+- The line refreshes when data is updated or the hour changes (not on every screen visit - prevent jarring changes).
 - Dog-specific lines are used only when a dog mode is the top-scoring enabled mode.
 
 ---

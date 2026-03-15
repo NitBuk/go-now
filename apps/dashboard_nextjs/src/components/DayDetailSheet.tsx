@@ -330,7 +330,7 @@ export default function DayDetailSheet({ hours, mode, initialMetric = "score", o
             <Graph hours={hours} metric={metric} mode={mode} highlightIndex={highlightIndex} sunTimes={sunTimes} />
           </div>
 
-          {/* Hourly strip — updates based on selected metric */}
+          {/* Hourly strip - updates based on selected metric */}
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="px-4 pt-3 pb-2 border-b border-white/[0.06]">
               <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">

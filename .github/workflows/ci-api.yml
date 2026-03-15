@@ -1,4 +1,4 @@
-name: CI — API
+name: CI - API
 
 on:
   pull_request:

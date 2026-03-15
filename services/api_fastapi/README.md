@@ -1,4 +1,4 @@
-# Go Now — API Service
+# Go Now - API Service
 
 FastAPI service that serves scored forecast data from Firestore to the web frontend.
 
@@ -47,7 +47,7 @@ cp .env.example .env
 
 ## GCP Dependencies
 
-- **Firestore** — reads `forecasts/{area_id}` collection for serving cache
+- **Firestore** - reads `forecasts/{area_id}` collection for serving cache
 
 ## Tests
 

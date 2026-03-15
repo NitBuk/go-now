@@ -71,8 +71,8 @@ Retrieve the current 7-day hourly forecast for an area.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `area_id` | string | yes | — | Area identifier (V1: `tel_aviv_coast` only) |
-| `days` | int | no | `7` | Forecast horizon in days (1–7) |
+| `area_id` | string | yes | - | Area identifier (V1: `tel_aviv_coast` only) |
+| `days` | int | no | `7` | Forecast horizon in days (1-7) |
 
 **Request:**
 ```bash

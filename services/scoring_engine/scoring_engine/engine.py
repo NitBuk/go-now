@@ -1,4 +1,4 @@
-"""Core scoring engine — computes 4 mode scores per hourly forecast.
+"""Core scoring engine - computes 4 mode scores per hourly forecast.
 
 Uses continuous linear ramp penalties: each factor has an ok threshold
 (0 penalty), a bad threshold (max penalty), and linear interpolation
@@ -106,7 +106,7 @@ def _linear_penalty(value: float, ok: float, bad: float, max_penalty: float) -> 
 
 
 # ---------------------------------------------------------------------------
-# Hard gates (binary — not ramped)
+# Hard gates (binary - not ramped)
 # ---------------------------------------------------------------------------
 
 def _is_rain_gated(hour: HourData, t: Thresholds) -> bool:
@@ -147,14 +147,14 @@ def _rain_gate_chip(hour: HourData, t: Thresholds) -> ReasonChip:
 
 def _penalty_text_waves(value: float, penalty: int) -> str:
     if penalty >= 50:
-        return f"Waves {value}m — rough"
+        return f"Waves {value}m - rough"
     return f"Waves {value}m"
 
 
 def _penalty_text_waves_dog(value: float, penalty: int) -> str:
     if penalty >= 50:
         return f"Waves too rough for dog"
-    return f"Waves {value}m — watch your dog"
+    return f"Waves {value}m - watch your dog"
 
 
 def _build_reason_chips(
@@ -284,7 +284,7 @@ def _score_swim_solo(hour: HourData, t: Thresholds) -> ModeScore:
     else:
         penalties.append(("heat", 0, "Temp data unavailable"))
 
-    # UV — not penalized for swim_solo
+    # UV - not penalized for swim_solo
     if hour.uv_index is None:
         penalties.append(("uv", 0, "UV data unavailable"))
 
@@ -295,7 +295,7 @@ def _score_swim_solo(hour: HourData, t: Thresholds) -> ModeScore:
     if sun_mult == 0.0:
         return ModeScore(
             score=0, label="Nope",
-            reasons=[ReasonChip(factor="dark", text="After dark — no night swimming", emoji="danger", penalty=100)],
+            reasons=[ReasonChip(factor="dark", text="After dark - no night swimming", emoji="danger", penalty=100)],
             hard_gated=True,
         )
     elif sun_mult < 1.0:
@@ -341,7 +341,7 @@ def _score_swim_dog(hour: HourData, t: Thresholds) -> ModeScore:
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
 
-    # Dog heat penalty (not hard gate — dogs cool in water)
+    # Dog heat penalty (not hard gate - dogs cool in water)
     if hour.feelslike_c is not None:
         p = _linear_penalty(hour.feelslike_c, t.dog_swim_heat_ok_c, t.dog_swim_heat_bad_c, t.dog_swim_heat_max_penalty)
         if p > 0:
@@ -364,7 +364,7 @@ def _score_swim_dog(hour: HourData, t: Thresholds) -> ModeScore:
     if sun_mult == 0.0:
         return ModeScore(
             score=0, label="Nope",
-            reasons=[ReasonChip(factor="dark", text="After dark — no night swimming", emoji="danger", penalty=100)],
+            reasons=[ReasonChip(factor="dark", text="After dark - no night swimming", emoji="danger", penalty=100)],
             hard_gated=True,
         )
     elif sun_mult < 1.0:
@@ -418,7 +418,7 @@ def _score_run_solo(hour: HourData, t: Thresholds) -> ModeScore:
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
 
-    # Wind (penalty, not gate — already checked gate above)
+    # Wind (penalty, not gate - already checked gate above)
     if hour.gust_ms is not None:
         p = _linear_penalty(hour.gust_ms, t.wind_ok_ms, t.wind_bad_ms, t.wind_run_max_penalty)
         if p > 0:

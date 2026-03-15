@@ -1,6 +1,6 @@
-# Go Now — Scoring Engine
+# Go Now - Scoring Engine
 
-Standalone Python package that computes swim and run activity scores (0–100) from hourly forecast data. No GCP dependencies — pure Python logic.
+Standalone Python package that computes swim and run activity scores (0-100) from hourly forecast data. No GCP dependencies - pure Python logic.
 
 ## Scoring Logic
 
@@ -14,12 +14,12 @@ Scores are computed per hour for 4 activity modes:
 | `run_dog` | Running with a dog (stricter thresholds) |
 
 **Pipeline:**
-1. **Hard gates** — heavy rain sets all scores to 0; extreme wind zeros run scores; night-time zeros swim scores (after sunset)
-2. **Penalty scoring** — start at 100, subtract per factor (waves, heat, UV, AQI, wind, rain)
-3. **Dog modes** — stricter thresholds + 1.2× multipliers on heat/AQI/UV penalties
-4. **Reason chips** — 2–5 chips per mode from top penalty contributors; +1 positive chip if score ≥ 70
+1. **Hard gates** - heavy rain sets all scores to 0; extreme wind zeros run scores; night-time zeros swim scores (after sunset)
+2. **Penalty scoring** - start at 100, subtract per factor (waves, heat, UV, AQI, wind, rain)
+3. **Dog modes** - stricter thresholds + 1.2× multipliers on heat/AQI/UV penalties
+4. **Reason chips** - 2-5 chips per mode from top penalty contributors; +1 positive chip if score ≥ 70
 
-**Labels:** 85–100 "Perfect" · 70–84 "Good" · 45–69 "Meh" · 20–44 "Bad" · 0–19 "Nope"
+**Labels:** 85-100 "Perfect" · 70-84 "Good" · 45-69 "Meh" · 20-44 "Bad" · 0-19 "Nope"
 
 ## Usage
 

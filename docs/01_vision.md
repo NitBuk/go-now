@@ -1,8 +1,8 @@
-# Tel Aviv Coast Buddy — Product Vision (V1)
+# Tel Aviv Coast Buddy - Product Vision (V1)
 
 ## One-Liner
 
-A clean, modern mobile app that tells you — for every hour in the next 7 days — whether it's a good time to **swim or run**, **solo or with your dog**, on the Tel Aviv coast.
+A clean, modern mobile app that tells you - for every hour in the next 7 days - whether it's a good time to **swim or run**, **solo or with your dog**, on the Tel Aviv coast.
 
 ## Problem
 
@@ -10,11 +10,11 @@ People want a simple, confident answer to: **"Should I go now?"**
 
 But the decision is multi-factor:
 
-- **Waves** — safe to swim? Too rough for the dog?
-- **Heat + UV** — especially dangerous for dogs on hot pavement
-- **Wind** — sand + running comfort
-- **Air quality** — dust days (hamsin/sharav)
-- **Rain probability** — nobody wants to get caught out
+- **Waves** - safe to swim? Too rough for the dog?
+- **Heat + UV** - especially dangerous for dogs on hot pavement
+- **Wind** - sand + running comfort
+- **Air quality** - dust days (hamsin/sharav)
+- **Rain probability** - nobody wants to get caught out
 
 Most apps show raw weather data. This app converts it into an opinionated hourly plan with clear reasons.
 
@@ -35,7 +35,7 @@ Most apps show raw weather data. This app converts it into an opinionated hourly
   - Swim (with dog)
   - Run (solo)
   - Run (with dog)
-- **Personalization:** Preset-based only (Chill / Balanced / Strict) — no custom threshold edits
+- **Personalization:** Preset-based only (Chill / Balanced / Strict) - no custom threshold edits
 - **Notifications:** On-device local scheduling (computed from forecast + scoring)
 - **Data pipeline:** Hourly cloud ingestion → 3-layer storage (raw, curated, serving)
 - **Public dashboard:** Pipeline freshness, sample conditions, data quality signals
@@ -66,10 +66,10 @@ Most apps show raw weather data. This app converts it into an opinionated hourly
 
 ## Differentiators
 
-- **Hourly go/no-go score with reasons** — not just raw data, an opinionated recommendation
-- **Dog-aware safety logic** — hard gates block unsafe conditions (heat + UV compound danger)
-- **Minimal UI + occasional humor** — classy microcopy, never noisy
-- **Visible, trustworthy data pipeline** — public dashboard shows freshness, quality, and architecture
+- **Hourly go/no-go score with reasons** - not just raw data, an opinionated recommendation
+- **Dog-aware safety logic** - hard gates block unsafe conditions (heat + UV compound danger)
+- **Minimal UI + occasional humor** - classy microcopy, never noisy
+- **Visible, trustworthy data pipeline** - public dashboard shows freshness, quality, and architecture
 
 ## Success Metrics
 
@@ -83,8 +83,8 @@ Most apps show raw weather data. This app converts it into an opinionated hourly
 
 ## Safety Principles
 
-- **No medical advice** — scores reflect weather suitability, not health guidance
-- **Clear "Nope" gates** — unsafe dog conditions are hard-blocked (score = 0), not just warned
-- **Always show the "why"** — every score includes 2–5 reason chips explaining the rating
-- **Transparent data** — public dashboard shows when data is stale or degraded
-- **Conservative defaults** — Balanced preset errs toward caution for dog modes
+- **No medical advice** - scores reflect weather suitability, not health guidance
+- **Clear "Nope" gates** - unsafe dog conditions are hard-blocked (score = 0), not just warned
+- **Always show the "why"** - every score includes 2-5 reason chips explaining the rating
+- **Transparent data** - public dashboard shows when data is stale or degraded
+- **Conservative defaults** - Balanced preset errs toward caution for dog modes
