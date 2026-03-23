@@ -1,95 +1,125 @@
-# Go Now - Beach & Run Conditions
+# Go Now
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-go--now.dev-blue)](https://go-now.dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![GCP](https://img.shields.io/badge/GCP-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com)
+**Open-source outdoor activity scoring engine.** Combines wave, weather, UV, air quality, and rain data into a single 0-100 score per activity -- so you know whether to go outside without checking four different apps.
 
-[![CI - API](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml)
-[![CI - Dashboard](https://github.com/NitBuk/go-now/actions/workflows/ci-dashboard.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-dashboard.yml)
-[![CI - Ingest](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-ingest.yml)
-[![CI - Scoring](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-scoring.yml)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-go--now.dev-blue)](https://go-now.dev) [![CI - API](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 
-**[Live Demo](https://go-now.dev)**
+<p align="center">
+  <img src="docs/assets/screenshot-hero.png" width="270" alt="Score view showing Perfect 100 for Run with Dog mode" />
+  &nbsp;&nbsp;
+  <img src="docs/assets/screenshot-forecast.png" width="270" alt="Hourly forecast scores and 7-day outlook" />
+  &nbsp;&nbsp;
+  <img src="docs/assets/screenshot-detail.png" width="270" alt="Hour detail sheet showing temperature, waves, wind, UV, AQI, and rain" />
+</p>
+
+> Tel Aviv coast is the first live deployment. The scoring engine is location-agnostic and runs as a standalone Python package with zero cloud dependencies.
 
 ---
 
-## Why this exists
+## Try It
 
-Before Go Now, every coastal trip started the same way: four apps, one decision. I'd check the weather forecast, pull up the surf/wind report on Windguru, look up the UV index, and open an air quality dashboard. Then I'd try to mentally combine all of that - is 1.2m swell too rough? Is AQI 80 acceptable? Is UV high enough to skip it? Every time.
+**Live:** [go-now.dev](https://go-now.dev)
 
-Bringing my dog made it worse. Dogs overheat faster than humans, are more sensitive to air quality, and unlike me, can't tell me when they've had enough. I had to be more conservative and more deliberate - but I was still doing it with the same scattered data across four different tabs.
+**Run locally** (connects to the live API -- no GCP account needed):
 
-So I built Go Now. It pulls wave, weather, UV, AQI, wind, and rain data every hour and runs it through a scoring engine. The result: a single number per activity. 85+ means go. Below 45, stay home. No tab-switching, no mental math.
+```bash
+git clone https://github.com/NitBuk/go-now.git
+cd go-now/apps/dashboard_nextjs
+npm install && npm run dev
+```
+
+Open [localhost:3000](http://localhost:3000). That's it.
 
 ---
 
-## What It Scores
+## Features
 
-Four modes, each scored 0-100. The dog modes use stricter thresholds - dogs can't tell you they're overheating.
+- **4 activity modes** -- swim solo, swim with dog, run solo, run with dog, each scored 0-100
+- **Multi-factor scoring** -- wave height, UV index, air quality (AQI), heat index, wind speed, rain probability, sunset time
+- **Dog-aware** -- stricter thresholds for dog modes (dogs overheat faster and can't tell you)
+- **Reason chips** -- 2-5 human-readable explanations per score ("High UV -15pt", "Calm Waves +0")
+- **Hourly resolution** -- 7-day forecast, updated every hour from Open-Meteo (free, no API key)
+- **Standalone scoring engine** -- pure Python package, no cloud deps, install and use anywhere
+- **Serverless** -- runs on GCP Cloud Run, fits entirely within free tier
 
-| Mode | Score | Label |
-|---|---|---|
-| Swim solo | 0-100 | Perfect / Good / Meh / Bad / Nope |
-| Swim with dog | 0-100 | Stricter thresholds |
-| Run solo | 0-100 | Wind + heat focused |
-| Run with dog | 0-100 | Stricter heat/AQI penalties |
+---
 
-Scores factor in wave height, UV index, air quality (AQI), heat index, wind speed, rain, and sunset time (swim scores drop to 0 after dark).
+## How Scoring Works
+
+Each hour starts at 100 and loses points per environmental factor. Hard gates (heavy rain, extreme wind, dangerous heat for dogs) can drop a score straight to 0.
+
+| Score | Label | Meaning |
+|-------|-------|---------|
+| 85-100 | Perfect | Go. |
+| 70-84 | Good | Good conditions, minor trade-offs |
+| 45-69 | Meh | Possible but not ideal |
+| 20-44 | Bad | Conditions are against you |
+| 0-19 | Nope | Stay home |
+
+Dog modes apply 1.2x multipliers on heat, AQI, and UV penalties. Swim scores drop to 0 after sunset. Full scoring logic: [`docs/04_scoring_engine_v1.md`](docs/04_scoring_engine_v1.md).
 
 ---
 
 ## Architecture
 
 ```
-Cloud Scheduler (hourly) → Pub/Sub → Ingest Worker (Cloud Run, Python)
-                                        ├→ Cloud Storage (raw JSON)
-                                        ├→ BigQuery (normalized hourly data)
-                                        └→ Firestore (serving cache)
-
-API Service (FastAPI, Cloud Run)
-  ├─ GET /v1/public/forecast  - raw hourly forecast data
-  ├─ GET /v1/public/scores    - forecast + pre-computed scores
-  └─ GET /v1/public/health    - pipeline health status
-
-Scoring Engine (Python package, used by API)
-  └─ Hard gates → penalty scoring → reason chips
-
-Next.js Web App (mobile-first, reads from API)
-  ├─ /          - Forecast page (scores, timeline, best windows)
-  └─ /status    - Pipeline health + architecture overview
+Open-Meteo API (free, no key)
+        |
+Cloud Scheduler (hourly)
+        |
+        v
++------------------+
+|  Ingest Worker   |  Cloud Run (Python)
++--+-------+----+--+
+   |       |    |
+   v       v    v
+ Cloud   Big   Firestore
+Storage  Query (serving cache)
+ (raw) (analytics)
+                |
+        +-------v--------+
+        |  FastAPI (API)  |  Cloud Run
+        +---+--------+---+
+            |        |
+   /v1/public/    /v1/public/
+    scores         health
+            |
+    +-------v---------+
+    |  Next.js Web    |  go-now.dev
+    +-----------------+
 ```
 
-**Key design decisions:**
-- Serverless-first, minimal cost (Cloud Run + free tier Open-Meteo)
-- Three storage layers: raw archive (GCS), analytics (BigQuery), serving (Firestore)
-- Scoring engine is a standalone Python package - no GCP deps, fully testable
-- Single location (Tel Aviv coast), Balanced preset for all users in V1
+**Key decisions:**
+- Scoring engine is a standalone Python package -- no GCP deps, fully testable in isolation
+- Three storage layers: raw archive (Cloud Storage), analytics (BigQuery), serving (Firestore)
+- Serverless-first, minimal cost (Cloud Run scale-to-zero + Open-Meteo free tier)
+- Provider abstraction (`ForecastProvider` interface) for swapping data sources
 
 ---
 
 ## Project Structure
 
 ```
-/apps/dashboard_nextjs     # Next.js public web app (mobile-first, Tailwind)
-/apps/mobile_flutter       # (V2) Flutter native app - not yet started
-/services/api_fastapi      # FastAPI on Cloud Run (public endpoints)
-/services/ingest_worker    # Python Cloud Run worker (fetch, normalize, load)
-/services/scoring_engine   # Python scoring engine package (used by API)
-/services/shared_contracts # Shared DTOs: forecast, health, scoring
-/docs                      # Full spec documents
-/infra                     # Infrastructure notes, bootstrap config
+apps/
+  dashboard_nextjs/        # Next.js web app (mobile-first, Tailwind, Framer Motion)
+  mobile_flutter/          # Flutter native app (V2, not yet started)
+
+services/
+  api_fastapi/             # FastAPI on Cloud Run (public endpoints)
+  ingest_worker/           # Data pipeline (fetch, normalize, load)
+  scoring_engine/          # Standalone scoring package (zero cloud deps)
+  shared_contracts/        # Shared DTOs across services
+
+docs/                      # 14 specification documents
+infra/                     # GCP bootstrap notes, schemas, IAM configs
 ```
 
 ---
 
-## Local Setup (Full Stack)
+<details>
+<summary><strong>Full Stack Setup (requires GCP account)</strong></summary>
 
-Running the full stack locally requires a GCP project. For frontend-only dev, see the [web app README](apps/dashboard_nextjs/README.md) - you can point at the live API.
+Running the full stack locally requires a GCP project. For frontend-only dev, use the [Quick Start](#try-it) above.
 
 ### Prerequisites
 
@@ -111,14 +141,14 @@ cd go-now
 
 ```bash
 cp services/ingest_worker/.env.example services/ingest_worker/.env
-# Edit .env - set GOOGLE_CLOUD_PROJECT to your project ID
+# Edit .env -- set GOOGLE_CLOUD_PROJECT to your project ID
 ```
 
 **3. Configure the API**
 
 ```bash
 cp services/api_fastapi/.env.example services/api_fastapi/.env
-# Edit .env - set GOOGLE_CLOUD_PROJECT, remove FIRESTORE_EMULATOR_HOST for real Firestore
+# Edit .env -- set GOOGLE_CLOUD_PROJECT, remove FIRESTORE_EMULATOR_HOST for real Firestore
 ```
 
 **4. Enable GCP APIs**
@@ -136,7 +166,6 @@ gcloud services enable firestore.googleapis.com \
 gcloud iam service-accounts create gonow-local \
   --display-name="Go Now Local Dev"
 
-# Grant required roles
 PROJECT_ID=$(gcloud config get-value project)
 SA="gonow-local@${PROJECT_ID}.iam.gserviceaccount.com"
 
@@ -145,7 +174,6 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.jobUser"
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/storage.objectAdmin"
 
-# Download key
 gcloud iam service-accounts keys create ~/gonow-key.json --iam-account=$SA
 export GOOGLE_APPLICATION_CREDENTIALS=~/gonow-key.json
 ```
@@ -153,13 +181,8 @@ export GOOGLE_APPLICATION_CREDENTIALS=~/gonow-key.json
 **6. Create GCP resources**
 
 ```bash
-# Cloud Storage bucket
 gsutil mb gs://your-project-raw
-
-# BigQuery dataset
 bq mk gonow_v1
-
-# Firestore (native mode, choose a region)
 gcloud firestore databases create --region=europe-west1
 ```
 
@@ -187,11 +210,12 @@ uv run uvicorn src.main:app --reload --port 8080
 cd apps/dashboard_nextjs
 npm install
 cp .env.example .env.local
-# .env.local already points at localhost:8080 - or leave blank to use that default
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [localhost:3000](http://localhost:3000).
+
+</details>
 
 ---
 
@@ -212,34 +236,46 @@ cd services/ingest_worker && uv run pytest tests/ -v
 
 ## CI/CD
 
-Four independent GitHub Actions pipelines - one per service, path-filtered so only the affected pipeline runs on each push.
+Four independent GitHub Actions pipelines, path-filtered so only the affected service runs on each push.
 
-| Pipeline | Trigger paths | PR | Push to main |
-|---|---|---|---|
-| CI - API | `services/api_fastapi/**`, `services/scoring_engine/**` | lint + test | lint + test + build + deploy |
-| CI - Dashboard | `apps/dashboard_nextjs/**` | lint + build | lint + build + deploy |
-| CI - Ingest | `services/ingest_worker/**` | lint + test | lint + test + build + deploy |
-| CI - Scoring | `services/scoring_engine/**` | lint + test | lint + test (library only) |
+| Pipeline | Trigger | PR | Push to main |
+|----------|---------|-----|-------------|
+| API | `services/api_fastapi/**`, `services/scoring_engine/**` | lint + test | + build + deploy |
+| Dashboard | `apps/dashboard_nextjs/**` | lint + build | + deploy |
+| Ingest | `services/ingest_worker/**` | lint + test | + build + deploy |
+| Scoring | `services/scoring_engine/**` | lint + test | test only (library) |
 
-**Deploy steps (push to main):**
-1. Build Docker image tagged with commit SHA
-2. Push to GCP Artifact Registry
-3. Deploy to Cloud Run (`--image <sha>` for reproducible rollbacks)
-
-**Auth:** Keyless via [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) - no service account keys stored in GitHub.
+Deploys use keyless auth via [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) -- no service account keys in GitHub.
 
 ---
 
-## V1 / V2 Roadmap
+## Roadmap
 
-| Feature | V1 (this repo) | V2 (planned) |
-|---|---|---|
-| Scoring | Server-side Python, Balanced preset | On-device Dart, user presets |
-| Auth | None | Firebase (Google + Apple) |
-| Profiles | None | Firestore user profiles |
-| Notifications | None | Local push notifications |
-| UI | Next.js web (mobile-first) | Flutter native app |
-| Personalization | None | Chill / Balanced / Strict presets |
+- [ ] Multi-location support (scoring engine is already location-agnostic)
+- [ ] Additional activity types (cycling, hiking, sailing)
+- [ ] Docker Compose for full-stack local dev
+- [ ] User preference presets (Chill / Balanced / Strict)
+- [ ] Flutter mobile app with on-device scoring
+- [ ] Push notifications for optimal windows
+- [ ] Additional data providers beyond Open-Meteo
+
+---
+
+## Contributing
+
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines.
+
+Good first issues are labeled [`good first issue`](https://github.com/NitBuk/go-now/labels/good%20first%20issue).
+
+---
+
+## Background
+
+Before Go Now, every coastal trip started the same way: four apps, one decision. Check the weather, pull up the surf report, look up the UV index, open an air quality dashboard. Then try to mentally combine all of it -- is 1.2m swell too rough? Is AQI 80 acceptable? Is UV high enough to skip it?
+
+Bringing a dog made it worse. Dogs overheat faster, are more sensitive to air quality, and can't tell you when they've had enough.
+
+Go Now pulls wave, weather, UV, AQI, wind, and rain data every hour and runs it through a scoring engine. The result: a single number per activity. 85+ means go. Below 45, stay home. No tab-switching, no mental math.
 
 ---
 

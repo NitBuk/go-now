@@ -1,0 +1,28 @@
+name: Feature Request
+description: Suggest a feature or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like?
+      description: A clear description of the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Why is this useful?
+      description: What problem does this solve or what use case does it support?
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the project would this affect?
+      options:
+        - Web App (dashboard)
+        - API
+        - Scoring Engine
+        - Ingest Worker
+        - New component
+        - Not sure
