@@ -30,6 +30,15 @@ npm install && npm run dev
 
 Open [localhost:3000](http://localhost:3000). That's it.
 
+**Use the scoring engine standalone** (pure Python, no cloud, no UI):
+
+```bash
+cd services/scoring_engine
+uv run pytest tests/ -v   # 40+ tests, no setup needed
+```
+
+Or install as a package and call `score_hour()` directly. See [`services/scoring_engine/README.md`](services/scoring_engine/README.md).
+
 ---
 
 ## Features
@@ -66,6 +75,9 @@ Dog modes apply 1.2x multipliers on heat, AQI, and UV penalties. Swim scores dro
 Open-Meteo API (free, no key)
         |
 Cloud Scheduler (hourly)
+        |
+        v
+   Pub/Sub topic
         |
         v
 +------------------+
@@ -112,6 +124,7 @@ services/
 
 docs/                      # 14 specification documents
 infra/                     # GCP bootstrap notes, schemas, IAM configs
+scripts/                   # Operational runbooks (diagnose-ingest.sh)
 ```
 
 ---
@@ -266,6 +279,8 @@ Deploys use keyless auth via [Workload Identity Federation](https://cloud.google
 Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines.
 
 Good first issues are labeled [`good first issue`](https://github.com/NitBuk/go-now/labels/good%20first%20issue).
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ---
 

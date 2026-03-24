@@ -10,6 +10,26 @@ FastAPI service that serves scored forecast data from Firestore to the web front
 | `GET /v1/public/scores` | Forecast + pre-computed scores (Balanced preset) |
 | `GET /v1/public/health` | Pipeline health status |
 
+## Example Requests
+
+With the dev server running on port 8080:
+
+```bash
+# Pipeline health
+curl http://localhost:8080/v1/public/health
+
+# Scored forecast (truncated)
+curl "http://localhost:8080/v1/public/scores?area_id=tel_aviv_coast&days=1" \
+  | python3 -m json.tool | head -60
+```
+
+Interactive docs (Swagger UI): [http://localhost:8080/docs](http://localhost:8080/docs)
+
+To find the Cloud Run URL after deployment:
+```bash
+gcloud run services describe api-fastapi --region europe-west1 --format="value(status.url)"
+```
+
 ## Stack
 
 - **Python 3.11+**

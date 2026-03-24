@@ -1,6 +1,6 @@
 # Go Now - Scoring Engine
 
-Standalone Python package that computes swim and run activity scores (0-100) from hourly forecast data. No GCP dependencies - pure Python logic.
+Standalone Python package that computes swim and run activity scores (0-100) from hourly forecast data. Zero cloud dependencies -- works with any location's forecast data. Tel Aviv coast is the first live deployment.
 
 ## Scoring Logic
 
@@ -25,12 +25,28 @@ Scores are computed per hour for 4 activity modes:
 
 ```python
 from scoring_engine import score_hour, BALANCED_THRESHOLDS
+from shared_contracts.python.forecast import ForecastHourly
+from datetime import datetime, timezone
+
+forecast_row = ForecastHourly(
+    hour_utc=datetime(2025, 6, 1, 9, 0, tzinfo=timezone.utc),
+    wave_height_m=0.8,
+    air_temp_c=28.0,
+    feelslike_c=31.0,
+    wind_ms=4.5,
+    uv_index=6.0,
+    eu_aqi=35,
+    precip_prob_pct=5,
+    precip_mm=0.0,
+)
 
 result = score_hour(forecast_row, BALANCED_THRESHOLDS, sunset_utc="2025-06-01T18:30:00Z")
 
-print(result.swim_solo)   # ScoreResult(score=82, label="Good", reasons=[...])
-print(result.run_dog)     # ScoreResult(score=45, label="Meh", reasons=[...])
+print(result.swim_solo)   # ModeScore(score=82, label="Good", reasons=[...])
+print(result.run_dog)     # ModeScore(score=45, label="Meh", reasons=[...])
 ```
+
+See [`services/shared_contracts/`](../shared_contracts/README.md) for the full `ForecastHourly` field definitions.
 
 ## Install as a Dependency
 
