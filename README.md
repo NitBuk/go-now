@@ -1,6 +1,6 @@
 # Go Now
 
-**Open-source outdoor activity scoring engine.** Combines wave, weather, UV, air quality, and rain data into a single 0-100 score per activity -- so you know whether to go outside without checking four different apps.
+**Open-source outdoor activity scoring platform.** Combines wave, weather, UV, air quality, and rain data into a single 0-100 score per activity -- so you know whether to go outside without checking four different apps. Built end-to-end: an hourly data pipeline, a standalone Python scoring library, a REST API, and a mobile-first web app.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-go--now.dev-blue)](https://go-now.dev) [![CI - API](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 
@@ -102,10 +102,10 @@ Storage  Query (serving cache)
 ```
 
 **Key decisions:**
-- Scoring engine is a standalone Python package -- no GCP deps, fully testable in isolation
-- Three storage layers: raw archive (Cloud Storage), analytics (BigQuery), serving (Firestore)
-- Serverless-first, minimal cost (Cloud Run scale-to-zero + Open-Meteo free tier)
-- Provider abstraction (`ForecastProvider` interface) for swapping data sources
+- Scoring engine is a standalone Python package -- no GCP deps, tested in isolation, and designed to port to Dart for V2 on-device scoring
+- Three storage layers: raw archive (Cloud Storage), analytics (BigQuery), serving cache (Firestore) -- each optimized for a distinct access pattern
+- Cloud Run scale-to-zero fits the hourly pipeline cadence; the full stack runs within GCP free tier
+- `ForecastProvider` interface decouples data ingestion from scoring -- add a new weather source without touching the API or scoring logic
 
 ---
 
@@ -265,12 +265,12 @@ Deploys use keyless auth via [Workload Identity Federation](https://cloud.google
 ## Roadmap
 
 - [ ] Multi-location support (scoring engine is already location-agnostic)
-- [ ] Additional activity types (cycling, hiking, sailing)
-- [ ] Docker Compose for full-stack local dev
+- [ ] Flutter mobile app with on-device scoring (scoring engine designed for portability)
 - [ ] User preference presets (Chill / Balanced / Strict)
-- [ ] Flutter mobile app with on-device scoring
-- [ ] Push notifications for optimal windows
+- [ ] Additional activity types (cycling, hiking, sailing)
 - [ ] Additional data providers beyond Open-Meteo
+- [ ] Push notifications for optimal windows
+- [ ] Docker Compose for full-stack local dev
 
 ---
 
