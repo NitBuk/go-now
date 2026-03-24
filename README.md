@@ -5,11 +5,11 @@
 [![Live Demo](https://img.shields.io/badge/Live_Demo-go--now.dev-blue)](https://go-now.dev) [![CI - API](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml/badge.svg)](https://github.com/NitBuk/go-now/actions/workflows/ci-api.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 
 <p align="center">
-  <img src="docs/assets/screenshot-hero.png" width="270" alt="Score view showing Perfect 100 for Run with Dog mode" />
+  <img src="docs/assets/run-dog-hero.png" width="270" alt="Score view showing Perfect 100 for Run with Dog mode" />
   &nbsp;&nbsp;
-  <img src="docs/assets/screenshot-forecast.png" width="270" alt="Hourly forecast scores and 7-day outlook" />
+  <img src="docs/assets/7-day-forcast.png" width="270" alt="Hourly forecast scores and 7-day outlook" />
   &nbsp;&nbsp;
-  <img src="docs/assets/screenshot-detail.png" width="270" alt="Hour detail sheet showing temperature, waves, wind, UV, AQI, and rain" />
+  <img src="docs/assets/hourly-conditions.png" width="270" alt="Hour detail sheet showing temperature, waves, wind, UV, AQI, and rain" />
 </p>
 
 > Tel Aviv coast is the first live deployment. The scoring engine is location-agnostic and runs as a standalone Python package with zero cloud dependencies.
@@ -67,6 +67,10 @@ Each hour starts at 100 and loses points per environmental factor. Hard gates (h
 
 Dog modes apply 1.2x multipliers on heat, AQI, and UV penalties. Swim scores drop to 0 after sunset. Full scoring logic: [`docs/04_scoring_engine_v1.md`](docs/04_scoring_engine_v1.md).
 
+<p align="center">
+  <img src="docs/assets/daily-graph.png" width="270" alt="Daily score curve showing sunrise/sunset gates and per-hour scoring" />
+</p>
+
 ---
 
 ## Architecture
@@ -106,6 +110,12 @@ Storage  Query (serving cache)
 - Three storage layers: raw archive (Cloud Storage), analytics (BigQuery), serving cache (Firestore) -- each optimized for a distinct access pattern
 - Cloud Run scale-to-zero fits the hourly pipeline cadence; the full stack runs within GCP free tier
 - `ForecastProvider` interface decouples data ingestion from scoring -- add a new weather source without touching the API or scoring logic
+
+The `/status` page exposes pipeline health and a live architecture diagram:
+
+<p align="center">
+  <img src="docs/assets/status-page.png" width="270" alt="Live /status page showing pipeline health and architecture overview" />
+</p>
 
 ---
 
