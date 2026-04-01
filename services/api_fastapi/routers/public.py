@@ -37,6 +37,28 @@ _TEL_AVIV_LAT = 32.08
 _TEL_AVIV_LON = 34.78
 
 
+def _compute_sunrise_utc(
+    target_date: date, lat: float = _TEL_AVIV_LAT, lon: float = _TEL_AVIV_LON
+) -> datetime:
+    """Compute approximate sunrise time (UTC) for a given date and location.
+
+    Symmetric to _compute_sunset_utc. Accuracy: ±5 minutes.
+    """
+    day_of_year = target_date.timetuple().tm_yday
+    declination = math.radians(-23.45 * math.cos(math.radians((360 / 365) * (day_of_year + 10))))
+    lat_rad = math.radians(lat)
+    cos_h = -math.tan(lat_rad) * math.tan(declination)
+    cos_h = max(-1.0, min(1.0, cos_h))
+    hour_angle = math.degrees(math.acos(cos_h))
+    sunrise_solar = 12.0 - hour_angle / 15.0
+    sunrise_utc_hours = sunrise_solar - lon / 15.0
+    h = int(sunrise_utc_hours)
+    m = int(round((sunrise_utc_hours - h) * 60))
+    if m == 60:
+        h, m = h + 1, 0
+    return datetime(target_date.year, target_date.month, target_date.day, h, m, 0, tzinfo=UTC)
+
+
 def _compute_sunset_utc(
     target_date: date, lat: float = _TEL_AVIV_LAT, lon: float = _TEL_AVIV_LON
 ) -> datetime:
@@ -176,6 +198,7 @@ async def get_health() -> HealthResponse:
 
 def _score_hour_data(
     h: dict,
+    sunrise_lookup: dict[str, datetime] | None = None,
     sunset_lookup: dict[str, datetime] | None = None,
 ) -> dict[str, ModeScoreResponse]:
     """Score a single hour's forecast data and return mode scores."""
@@ -186,11 +209,12 @@ def _score_hour_data(
         hour_dt = datetime.now(UTC)
 
     date_key = hour_dt.date().isoformat()
-    if sunset_lookup:
-        sunset_utc = sunset_lookup.get(date_key)
-    else:
-        sunset_utc = None
-    # Fallback: compute approximate sunset when Firestore daily data is missing
+
+    sunrise_utc = sunrise_lookup.get(date_key) if sunrise_lookup else None
+    if sunrise_utc is None:
+        sunrise_utc = _compute_sunrise_utc(hour_dt.date())
+
+    sunset_utc = sunset_lookup.get(date_key) if sunset_lookup else None
     if sunset_utc is None:
         sunset_utc = _compute_sunset_utc(hour_dt.date())
 
@@ -203,6 +227,7 @@ def _score_hour_data(
         precip_mm=h.get("precip_mm"),
         uv_index=h.get("uv_index"),
         eu_aqi=h.get("eu_aqi"),
+        sunrise_utc=sunrise_utc,
         sunset_utc=sunset_utc,
     )
     result = score_hour(hour_data, BALANCED_THRESHOLDS)
@@ -246,12 +271,16 @@ async def get_scores(
     updated_at = doc.get("updated_at_utc", "")
     age_minutes, freshness = _compute_freshness(updated_at)
 
-    # Build sunset lookup: date_str -> sunset_utc datetime
-    # Falls back to computed astronomical sunset when Firestore daily data is absent.
+    # Build sunrise/sunset lookups: date_str -> utc datetime
+    # Falls back to computed astronomical times when Firestore daily data is absent.
+    sunrise_lookup: dict[str, datetime] = {}
     sunset_lookup: dict[str, datetime] = {}
     daily_raw = doc.get("daily", [])
     for entry in daily_raw:
         try:
+            sunrise_lookup[entry["date"]] = datetime.fromisoformat(
+                entry["sunrise_utc"].replace("Z", "+00:00")
+            )
             sunset_lookup[entry["date"]] = datetime.fromisoformat(
                 entry["sunset_utc"].replace("Z", "+00:00")
             )
@@ -270,7 +299,7 @@ async def get_scores(
         except (ValueError, AttributeError):
             continue
         if hour_dt >= now and len(scored_hours) < max_hours:
-            scores = _score_hour_data(h, sunset_lookup)
+            scores = _score_hour_data(h, sunrise_lookup, sunset_lookup)
             scored_hours.append(
                 ScoredHourResponse(
                     hour_utc=h.get("hour_utc", ""),

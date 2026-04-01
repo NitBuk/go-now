@@ -56,18 +56,36 @@ class HourData:
     uv_index: Optional[float] = None
     eu_aqi: Optional[int] = None
     sunset_utc: Optional[datetime] = None
+    sunrise_utc: Optional[datetime] = None
 
 
-def _sunset_multiplier(hour_utc: datetime, sunset_utc: Optional[datetime]) -> float:
-    """1.0 before/at sunset, ramps to 0.0 over 30 min, then 0.0."""
-    if sunset_utc is None:
-        return 1.0
-    delta = (hour_utc.replace(tzinfo=None) - sunset_utc.replace(tzinfo=None)).total_seconds()
-    if delta <= 0:
-        return 1.0
-    if delta >= 1800:
-        return 0.0
-    return 1.0 - (delta / 1800)
+def _sun_multiplier(
+    hour_utc: datetime,
+    sunrise_utc: Optional[datetime],
+    sunset_utc: Optional[datetime],
+) -> float:
+    """0.0 before sunrise-30min or after sunset+30min, ramps at edges, 1.0 in daylight."""
+    naive = hour_utc.replace(tzinfo=None)
+
+    # Before-sunrise gate
+    if sunrise_utc is not None:
+        sr = sunrise_utc.replace(tzinfo=None)
+        delta_sr = (naive - sr).total_seconds()  # negative before sunrise
+        if delta_sr <= -1800:
+            return 0.0
+        if delta_sr < 0:
+            return 1.0 - abs(delta_sr) / 1800  # ramp 0→1 in the 30 min before sunrise
+
+    # After-sunset gate
+    if sunset_utc is not None:
+        ss = sunset_utc.replace(tzinfo=None)
+        delta_ss = (naive - ss).total_seconds()  # positive after sunset
+        if delta_ss >= 1800:
+            return 0.0
+        if delta_ss > 0:
+            return 1.0 - delta_ss / 1800  # ramp 1→0 in the 30 min after sunset
+
+    return 1.0
 
 
 def score_to_label(score: int) -> str:
@@ -291,7 +309,7 @@ def _score_swim_solo(hour: HourData, t: Thresholds) -> ModeScore:
     total = sum(p[1] for p in penalties)
     score = max(0, min(100, 100 + total))
 
-    sun_mult = _sunset_multiplier(hour.hour_utc, hour.sunset_utc)
+    sun_mult = _sun_multiplier(hour.hour_utc, hour.sunrise_utc, hour.sunset_utc)
     if sun_mult == 0.0:
         return ModeScore(
             score=0, label="Nope",
@@ -360,7 +378,7 @@ def _score_swim_dog(hour: HourData, t: Thresholds) -> ModeScore:
     total = sum(p[1] for p in penalties)
     score = max(0, min(100, 100 + total))
 
-    sun_mult = _sunset_multiplier(hour.hour_utc, hour.sunset_utc)
+    sun_mult = _sun_multiplier(hour.hour_utc, hour.sunrise_utc, hour.sunset_utc)
     if sun_mult == 0.0:
         return ModeScore(
             score=0, label="Nope",
