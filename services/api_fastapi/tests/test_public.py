@@ -1,5 +1,7 @@
 """Tests for public API endpoints."""
 
+from datetime import UTC, datetime, timedelta
+
 from fastapi.testclient import TestClient
 
 
@@ -145,6 +147,43 @@ class TestScoresEndpoint:
                 assert "text" in chip
                 assert "emoji" in chip
                 assert "penalty" in chip
+
+
+class TestSunriseSunsetGate:
+    """Issue #18 - swim score must be 0 before sunrise and after sunset."""
+
+    def test_scores_endpoint_uses_sunrise_from_daily(self, client_with_forecast: TestClient) -> None:
+        """Scores endpoint should pass sunrise/sunset from daily[] to the engine."""
+        resp = client_with_forecast.get("/v1/public/scores?area_id=tel_aviv_coast")
+        assert resp.status_code == 200
+        data = resp.json()
+        # Fixture daily[] has sunrise=04:00 UTC, sunset=17:00 UTC per day.
+        # Fixture hours start at 2025-06-01 00:00 UTC. Hours at 00, 01, 02, 03
+        # are > 30 min before sunrise → swim scores must be 0 and hard_gated.
+        pre_dawn_hours = [
+            h for h in data["hours"]
+            if h["hour_utc"].startswith("2025-06-01T0") and
+            int(h["hour_utc"][11:13]) < 3  # 00, 01, 02
+        ]
+        for h in pre_dawn_hours:
+            swim = h["scores"]["swim_solo"]
+            assert swim["score"] == 0, f"Expected 0 at {h['hour_utc']}, got {swim['score']}"
+            assert swim["hard_gated"], f"Expected hard_gated at {h['hour_utc']}"
+            assert swim["reasons"][0]["factor"] == "dark"
+
+    def test_run_score_not_gated_at_night(self, client_with_forecast: TestClient) -> None:
+        """Run scores should not be zeroed by the dark gate."""
+        resp = client_with_forecast.get("/v1/public/scores?area_id=tel_aviv_coast")
+        data = resp.json()
+        pre_dawn_hours = [
+            h for h in data["hours"]
+            if h["hour_utc"].startswith("2025-06-01T0") and
+            int(h["hour_utc"][11:13]) < 3
+        ]
+        for h in pre_dawn_hours:
+            run = h["scores"]["run_solo"]
+            assert run["score"] > 0, f"Run score should not be 0 at {h['hour_utc']}"
+            assert not run["hard_gated"]
 
 
 class TestRoot:

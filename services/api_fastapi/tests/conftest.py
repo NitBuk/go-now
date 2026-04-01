@@ -91,6 +91,15 @@ def make_forecast_doc(
             }
         )
 
+    daily = [
+        {
+            "date": (base_time + timedelta(days=d)).date().isoformat(),
+            "sunrise_utc": (base_time + timedelta(days=d, hours=4)).isoformat(),
+            "sunset_utc": (base_time + timedelta(days=d, hours=17)).isoformat(),
+        }
+        for d in range(7)
+    ]
+
     return {
         "area_id": "tel_aviv_coast",
         "updated_at_utc": updated_at.isoformat(),
@@ -98,6 +107,7 @@ def make_forecast_doc(
         "horizon_days": 7,
         "ingest_status": ingest_status,
         "hours": hours,
+        "daily": daily,
     }
 
 

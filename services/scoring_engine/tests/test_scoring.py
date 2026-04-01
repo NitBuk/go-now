@@ -289,6 +289,83 @@ class TestReasonChips:
         assert result.swim_solo.reasons[0].emoji == "danger"
 
 
+class TestDarkHoursScoring:
+    """Tests for the sunrise/sunset swim gate."""
+
+    # Scenario: sunrise 04:00 UTC, sunset 17:00 UTC
+
+    def _dark_hour(self, hour: int, **overrides) -> HourData:
+        """Create a perfect hour at the given UTC hour with fixed sunrise/sunset."""
+        return _perfect_hour(
+            hour_utc=datetime(2025, 6, 1, hour, 0, tzinfo=timezone.utc),
+            sunrise_utc=datetime(2025, 6, 1, 4, 0, tzinfo=timezone.utc),
+            sunset_utc=datetime(2025, 6, 1, 17, 0, tzinfo=timezone.utc),
+            **overrides,
+        )
+
+    def test_swim_before_sunrise_window_is_zero(self) -> None:
+        """Hour > 30 min before sunrise → swim score 0, hard gated."""
+        result = score_hour(self._dark_hour(1))  # 01:00, sunrise 04:00 → -3h
+        assert result.swim_solo.score == 0
+        assert result.swim_solo.hard_gated
+        assert result.swim_solo.reasons[0].factor == "dark"
+        assert result.swim_dog.score == 0
+        assert result.swim_dog.hard_gated
+
+    def test_swim_ramp_before_sunrise(self) -> None:
+        """Hour 15 min before sunrise → score is ~50% of daytime score."""
+        h = _perfect_hour(
+            hour_utc=datetime(2025, 6, 1, 3, 45, tzinfo=timezone.utc),  # 15 min before 04:00
+            sunrise_utc=datetime(2025, 6, 1, 4, 0, tzinfo=timezone.utc),
+            sunset_utc=datetime(2025, 6, 1, 17, 0, tzinfo=timezone.utc),
+        )
+        result = score_hour(h)
+        # 15 min into 30-min window → multiplier = 0.5 → score ~50
+        assert 0 < result.swim_solo.score < 100
+        assert not result.swim_solo.hard_gated
+
+    def test_swim_at_sunrise_is_full_score(self) -> None:
+        """Exactly at sunrise → full daytime score."""
+        result = score_hour(self._dark_hour(4))  # 04:00 == sunrise
+        assert result.swim_solo.score == 100
+
+    def test_swim_after_sunset_window_is_zero(self) -> None:
+        """Hour > 30 min after sunset → swim score 0, hard gated."""
+        result = score_hour(self._dark_hour(18))  # 18:00, sunset 17:00 → +1h
+        assert result.swim_solo.score == 0
+        assert result.swim_solo.hard_gated
+
+    def test_swim_ramp_after_sunset(self) -> None:
+        """Hour 15 min after sunset → score is ~50% of daytime score."""
+        h = _perfect_hour(
+            hour_utc=datetime(2025, 6, 1, 17, 15, tzinfo=timezone.utc),  # 15 min after 17:00
+            sunrise_utc=datetime(2025, 6, 1, 4, 0, tzinfo=timezone.utc),
+            sunset_utc=datetime(2025, 6, 1, 17, 0, tzinfo=timezone.utc),
+        )
+        result = score_hour(h)
+        assert 0 < result.swim_solo.score < 100
+        assert not result.swim_solo.hard_gated
+
+    def test_run_unaffected_by_dark(self) -> None:
+        """Run scores are never gated by dark (no sun gate for run modes)."""
+        result = score_hour(self._dark_hour(1))  # well before sunrise
+        assert result.run_solo.score == 100
+        assert not result.run_solo.hard_gated
+        assert result.run_dog.score == 100
+        assert not result.run_dog.hard_gated
+
+    def test_no_sunrise_data_falls_back_gracefully(self) -> None:
+        """Without sunrise_utc, only sunset gate applies (no regression)."""
+        h = _perfect_hour(
+            hour_utc=datetime(2025, 6, 1, 2, 0, tzinfo=timezone.utc),
+            sunrise_utc=None,
+            sunset_utc=datetime(2025, 6, 1, 17, 0, tzinfo=timezone.utc),
+        )
+        result = score_hour(h)
+        # No sunrise data → hour is well before sunset → score should be full
+        assert result.swim_solo.score == 100
+
+
 class TestScoringVersion:
     def test_scoring_version(self) -> None:
         result = score_hour(_hour())
