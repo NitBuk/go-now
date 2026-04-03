@@ -39,7 +39,7 @@ def _generate_run_id() -> str:
     return f"run_{now:%Y%m%d}_{now:%H%M%S}_{suffix}"
 
 
-async def run_ingest(area_id: str, horizon_days: int) -> dict:
+async def run_ingest(area_id: str, horizon_days: int, force: bool = False) -> dict:
     """Execute the full ingestion pipeline.
 
     Returns a dict with run_id, status, and hours_ingested.
@@ -53,18 +53,21 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
         extra={"area_id": area_id, "ingest_run_id": run_id},
     )
 
-    # Step 1: Idempotency check
+    # Step 1: Idempotency check (skipped when force=True)
     hour_bucket = f"{started_at:%Y-%m-%dT%H}"
-    try:
-        if check_idempotency(config.BQ_DATASET, area_id, hour_bucket):
-            logger.info(
-                "ingest_skipped",
-                extra={"reason": "idempotency", "area_id": area_id, "hour_bucket": hour_bucket},
-            )
-            return {"run_id": run_id, "status": "skipped", "hours_ingested": 0}
-    except Exception:
-        # If idempotency check fails (e.g., BQ unavailable), proceed with ingest
-        logger.warning("idempotency_check_failed", extra={"area_id": area_id})
+    if force:
+        logger.info("ingest_force", extra={"area_id": area_id, "hour_bucket": hour_bucket})
+    else:
+        try:
+            if check_idempotency(config.BQ_DATASET, area_id, hour_bucket):
+                logger.info(
+                    "ingest_skipped",
+                    extra={"reason": "idempotency", "area_id": area_id, "hour_bucket": hour_bucket},
+                )
+                return {"run_id": run_id, "status": "skipped", "hours_ingested": 0}
+        except Exception:
+            # If idempotency check fails (e.g., BQ unavailable), proceed with ingest
+            logger.warning("idempotency_check_failed", extra={"area_id": area_id})
 
     # Step 2: Fetch raw data from provider
     provider = OpenMeteoProviderV1(
@@ -203,8 +206,9 @@ class PubSubHandler(BaseHTTPRequestHandler):
 
         area_id = message.get("area_id", Config.AREA_ID)
         horizon_days = message.get("horizon_days", Config.HORIZON_DAYS)
+        force = bool(message.get("force", False))
 
-        result = asyncio.run(run_ingest(area_id, horizon_days))
+        result = asyncio.run(run_ingest(area_id, horizon_days, force=force))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -222,7 +226,8 @@ def main() -> None:
         payload = json.loads(sys.argv[2]) if len(sys.argv) > 2 else {}
         area_id = payload.get("area_id", Config.AREA_ID)
         horizon_days = payload.get("horizon_days", Config.HORIZON_DAYS)
-        result = asyncio.run(run_ingest(area_id, horizon_days))
+        force = bool(payload.get("force", False))
+        result = asyncio.run(run_ingest(area_id, horizon_days, force=force))
         print(json.dumps(result, indent=2))
         return
 
