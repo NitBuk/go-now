@@ -118,11 +118,13 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
     status = "success"
     if dq_result.is_degraded:
         status = "degraded"
-    # If any endpoint was missing, also mark degraded
-    if len(raw) < 3:
+    # If any core Open-Meteo endpoint was missing, also mark degraded
+    # (aqicn is supplementary — its absence is handled in normalize, not a hard failure)
+    core_endpoints = {"weather", "marine", "air_quality"}
+    missing = core_endpoints - set(raw.keys())
+    if missing:
         status = "degraded"
-        missing = {"weather", "marine", "air_quality"} - set(raw.keys())
-        dq_result.flags.append(f"missing_endpoints:{','.join(missing)}")
+        dq_result.flags.append(f"missing_endpoints:{','.join(sorted(missing))}")
 
     # Step 6: Load to BigQuery
     bq_ok = True

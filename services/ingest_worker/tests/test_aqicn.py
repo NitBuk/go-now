@@ -13,13 +13,13 @@ AQICN_URL = f"https://api.waqi.info/feed/{STATION_ID}/"
 
 @pytest.mark.asyncio
 class TestAqicnClient:
-    async def test_fetch_success(self, sample_air_quality_response: dict) -> None:
+    async def test_fetch_success(self, sample_aqicn_response: dict) -> None:
         """Successful fetch returns the raw response dict."""
         client = AqicnClient()
 
         with respx.mock:
             respx.get(AQICN_URL).mock(
-                return_value=httpx.Response(200, json=sample_air_quality_response)
+                return_value=httpx.Response(200, json=sample_aqicn_response)
             )
             result = await client.fetch(STATION_ID, TOKEN)
             await client.close()

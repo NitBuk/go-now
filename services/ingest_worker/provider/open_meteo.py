@@ -19,8 +19,38 @@ BASE_DELAY_S = 1.0
 JITTER_MAX_MS = 500
 
 
+def _pm25_to_us_aqi(pm25: float) -> int:
+    """Convert PM2.5 concentration (µg/m³) to US EPA AQI.
+
+    Uses the standard EPA linear interpolation formula between breakpoints.
+    Reference: https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf
+    """
+    breakpoints = [
+        (0.0,   12.0,   0,   50),
+        (12.1,  35.4,  51,  100),
+        (35.5,  55.4, 101,  150),
+        (55.5, 150.4, 151,  200),
+        (150.5, 250.4, 201, 300),
+        (250.5, 350.4, 301, 400),
+        (350.5, 500.4, 401, 500),
+    ]
+    for bp_lo, bp_hi, aqi_lo, aqi_hi in breakpoints:
+        if bp_lo <= pm25 <= bp_hi:
+            return round((aqi_hi - aqi_lo) / (bp_hi - bp_lo) * (pm25 - bp_lo) + aqi_lo)
+    return 500  # above 500.4 µg/m³
+
+
 class OpenMeteoProviderV1(ForecastProvider):
-    """Open-Meteo free tier provider - weather, marine, and air quality endpoints."""
+    """Hybrid air quality provider.
+
+    Weather + marine + PM2.5/PM10 forecast from Open-Meteo (free tier).
+    Real-time AQI from AQICN ground sensor station (more accurate than CAMS model).
+
+    AQI strategy per forecast hour:
+    - Today (matching AQICN measurement date): use AQICN real-time US AQI directly.
+    - Future days: compute US AQI from Open-Meteo PM2.5 forecast via EPA formula.
+    - Fallback (no PM2.5 data): forward-fill real-time AQICN reading.
+    """
 
     def __init__(
         self,
@@ -62,6 +92,10 @@ class OpenMeteoProviderV1(ForecastProvider):
             "marine": (
                 f"https://marine-api.open-meteo.com/v1/marine?{base_params}"
                 "&hourly=wave_height,wave_period,wave_direction"
+            ),
+            "air_quality": (
+                f"https://air-quality-api.open-meteo.com/v1/air-quality?{base_params}"
+                "&hourly=pm2_5,pm10"
             ),
         }
 
@@ -111,12 +145,13 @@ class OpenMeteoProviderV1(ForecastProvider):
     async def fetch_raw(
         self, area_id: str, lat: float, lon: float, horizon_days: int
     ) -> dict[str, dict]:
-        """Fetch weather + marine from Open-Meteo and air quality from AQICN."""
+        """Fetch weather + marine + AQ forecast from Open-Meteo, and real-time AQI from AQICN."""
         urls = self._build_urls(lat, lon, horizon_days)
 
-        weather_result, marine_result = await asyncio.gather(
+        weather_result, marine_result, aq_result = await asyncio.gather(
             self._fetch_endpoint_with_retry("weather", urls["weather"]),
             self._fetch_endpoint_with_retry("marine", urls["marine"]),
+            self._fetch_endpoint_with_retry("air_quality", urls["air_quality"]),
         )
 
         raw: dict[str, dict] = {}
@@ -124,13 +159,15 @@ class OpenMeteoProviderV1(ForecastProvider):
             raw["weather"] = weather_result
         if marine_result is not None:
             raw["marine"] = marine_result
+        if aq_result is not None:
+            raw["air_quality"] = aq_result
 
-        # Fetch air quality from AQICN ground sensor (US AQI)
-        # eu_aqi field stores US AQI from AQICN (field rename deferred)
+        # Fetch real-time AQI from AQICN ground sensor
+        # eu_aqi field stores US AQI (field rename to aqi deferred to issue #40)
         if self.aqicn_token and self.aqicn_station_id:
-            aq_result = await self._aqicn.fetch(self.aqicn_station_id, self.aqicn_token)
-            if aq_result is not None:
-                raw["air_quality"] = aq_result
+            aqicn_result = await self._aqicn.fetch(self.aqicn_station_id, self.aqicn_token)
+            if aqicn_result is not None:
+                raw["aqicn"] = aqicn_result
         else:
             logger.warning("aqicn_token_missing", extra={"area_id": area_id})
 
@@ -139,10 +176,14 @@ class OpenMeteoProviderV1(ForecastProvider):
     def normalize(
         self, raw: dict[str, dict], area_id: str, fetched_at_utc: datetime
     ) -> tuple[list[NormalizedHourlyRow], list[DailySunRow]]:
-        """Merge 3 endpoint responses into normalized hourly rows and daily sun times.
+        """Merge endpoint responses into normalized hourly rows and daily sun times.
 
         Wind speed and gust are converted from km/h to m/s (÷ 3.6).
-        Missing endpoints result in null fields for those variables.
+
+        AQI hybrid strategy:
+        - Today (AQICN measurement date): AQICN real-time US AQI
+        - Future hours: US AQI computed from Open-Meteo PM2.5 via EPA formula
+        - Fallback: forward-fill real-time AQICN reading if PM2.5 unavailable
         """
         # Parse daily sun times from weather endpoint
         daily_sun: list[DailySunRow] = []
@@ -161,11 +202,12 @@ class OpenMeteoProviderV1(ForecastProvider):
                 except (IndexError, ValueError):
                     pass
 
-        # Collect all hours from weather (primary time axis)
+        # Collect all hours from Open-Meteo endpoints (primary time axis)
+        # Exclude aqicn which has no hourly array
         hours_set: set[str] = set()
-        for endpoint_data in raw.values():
-            hourly = endpoint_data.get("hourly", {})
-            times = hourly.get("time", [])
+        for key in ("weather", "marine", "air_quality"):
+            endpoint_data = raw.get(key, {})
+            times = endpoint_data.get("hourly", {}).get("time", [])
             hours_set.update(times)
 
         if not hours_set:
@@ -181,9 +223,11 @@ class OpenMeteoProviderV1(ForecastProvider):
 
         weather_idx = _build_index(raw["weather"]) if "weather" in raw else {}
         marine_idx = _build_index(raw["marine"]) if "marine" in raw else {}
+        aq_idx = _build_index(raw["air_quality"]) if "air_quality" in raw else {}
 
         weather_hourly = raw.get("weather", {}).get("hourly", {})
         marine_hourly = raw.get("marine", {}).get("hourly", {})
+        aq_hourly = raw.get("air_quality", {}).get("hourly", {})
 
         def _get(hourly: dict, field: str, idx_map: dict[str, int], time_str: str) -> Any:
             i = idx_map.get(time_str)
@@ -194,53 +238,31 @@ class OpenMeteoProviderV1(ForecastProvider):
                 return None
             return values[i]
 
-        # Build date-keyed lookups from AQICN response
-        # eu_aqi field stores US AQI from AQICN ground sensor (field rename deferred)
-        # Station @5783 provides no aqi forecast — only real-time + pm10/pm25 forecasts
-        # (pm10 forecast entries may be stale; only use if within 30 days of today)
-        aqicn_aqi_by_date: dict[str, int] = {}
-        aqicn_pm10_by_date: dict[str, float] = {}
-        aqicn_pm25_by_date: dict[str, float] = {}
-        rt_aqi_fallback: int | None = None  # real-time AQI used for all future hours
-        aq_data = raw.get("air_quality", {}).get("data", {})
-        if aq_data:
-            today_utc = fetched_at_utc.date()
-            for entry in aq_data.get("forecast", {}).get("daily", {}).get("aqi", []):
-                try:
-                    aqicn_aqi_by_date[entry["day"]] = int(entry["avg"])
-                except (KeyError, TypeError, ValueError):
-                    pass
-            for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm10", []):
-                try:
-                    # Skip stale entries (more than 30 days old)
-                    entry_date = datetime.fromisoformat(entry["day"]).date()
-                    if abs((entry_date - today_utc).days) <= 30:
-                        aqicn_pm10_by_date[entry["day"]] = float(entry["avg"])
-                except (KeyError, TypeError, ValueError):
-                    pass
-            for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm25", []):
-                try:
-                    entry_date = datetime.fromisoformat(entry["day"]).date()
-                    if abs((entry_date - today_utc).days) <= 30:
-                        aqicn_pm25_by_date[entry["day"]] = float(entry["avg"])
-                except (KeyError, TypeError, ValueError):
-                    pass
-            # Real-time AQI: set for today's date and use as fallback for all future hours.
-            # Station @5783 has no aqi forecast, so this is the only AQI signal available.
-            rt_aqi = aq_data.get("aqi")
-            rt_time_s = aq_data.get("time", {}).get("s", "")
-            if rt_aqi is not None:
-                rt_aqi_fallback = int(rt_aqi)
+        # --- AQICN real-time signal ---
+        # Used for today's date; also kept as fallback for hours with no PM2.5 data
+        rt_aqi_fallback: int | None = None
+        rt_date: str | None = None          # date string matching AQICN measurement
+        rt_pm10: float | None = None        # real-time PM10 from AQICN iaqi
+        rt_pm25: float | None = None        # real-time PM2.5 from AQICN iaqi
+
+        aqicn_data = raw.get("aqicn", {}).get("data", {})
+        if aqicn_data:
+            rt_aqi_val = aqicn_data.get("aqi")
+            if rt_aqi_val is not None:
+                rt_aqi_fallback = int(rt_aqi_val)
+                rt_time_s = aqicn_data.get("time", {}).get("s", "")
                 if rt_time_s:
                     try:
-                        today = datetime.fromisoformat(rt_time_s).date().isoformat()
-                        aqicn_aqi_by_date[today] = int(rt_aqi)
+                        rt_date = datetime.fromisoformat(rt_time_s).date().isoformat()
                     except (ValueError, AttributeError):
                         pass
+            rt_pm10 = (aqicn_data.get("iaqi", {}).get("pm10") or {}).get("v")
+            rt_pm25 = (aqicn_data.get("iaqi", {}).get("pm25") or {}).get("v")
 
         rows: list[NormalizedHourlyRow] = []
         for time_str in sorted_hours:
             hour_utc = datetime.fromisoformat(time_str).replace(tzinfo=UTC)
+            date_key = hour_utc.date().isoformat()
 
             # Weather fields
             temp = _get(weather_hourly, "temperature_2m", weather_idx, time_str)
@@ -257,11 +279,28 @@ class OpenMeteoProviderV1(ForecastProvider):
             wave_h = _get(marine_hourly, "wave_height", marine_idx, time_str)
             wave_p = _get(marine_hourly, "wave_period", marine_idx, time_str)
 
-            # Air quality fields from AQICN (keyed by date; fallback to real-time AQI)
-            date_key = hour_utc.date().isoformat()
-            aqi = aqicn_aqi_by_date.get(date_key, rt_aqi_fallback)
-            pm10_val = aqicn_pm10_by_date.get(date_key)
-            pm25_val = aqicn_pm25_by_date.get(date_key)
+            # AQI (eu_aqi field, stores US AQI — see issue #40 for rename):
+            # Priority: AQICN real-time (today) → PM2.5→AQI formula → forward-fill fallback
+            if date_key == rt_date and rt_aqi_fallback is not None:
+                aqi: int | None = rt_aqi_fallback
+            else:
+                om_pm25 = _get(aq_hourly, "pm2_5", aq_idx, time_str)
+                if om_pm25 is not None:
+                    aqi = _pm25_to_us_aqi(float(om_pm25))
+                else:
+                    aqi = rt_aqi_fallback  # last resort: forward-fill
+
+            # PM10: AQICN real-time for today, Open-Meteo forecast for future hours
+            if date_key == rt_date and rt_pm10 is not None:
+                pm10_val: float | None = rt_pm10
+            else:
+                pm10_val = _get(aq_hourly, "pm10", aq_idx, time_str)
+
+            # PM2.5: AQICN real-time for today, Open-Meteo forecast for future hours
+            if date_key == rt_date and rt_pm25 is not None:
+                pm25_val: float | None = rt_pm25
+            else:
+                pm25_val = _get(aq_hourly, "pm2_5", aq_idx, time_str)
 
             # Convert wind from km/h to m/s
             wind_ms = round(wind_kmh / 3.6, 2) if wind_kmh is not None else None
@@ -280,7 +319,7 @@ class OpenMeteoProviderV1(ForecastProvider):
                     precip_prob_pct=int(precip_prob) if precip_prob is not None else None,
                     precip_mm=precip_mm,
                     uv_index=uv,
-                    eu_aqi=int(aqi) if aqi is not None else None,
+                    eu_aqi=aqi,
                     pm10=pm10_val,
                     pm2_5=pm25_val,
                 )

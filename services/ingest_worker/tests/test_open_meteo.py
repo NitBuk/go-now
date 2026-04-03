@@ -11,11 +11,12 @@ AQICN_URL = "https://api.waqi.info/feed/@5783/"
 
 @pytest.mark.asyncio
 class TestOpenMeteoFetch:
-    async def test_fetch_raw_returns_three_endpoints(
+    async def test_fetch_raw_returns_four_endpoints(
         self,
         sample_weather_response: dict,
         sample_marine_response: dict,
         sample_air_quality_response: dict,
+        sample_aqicn_response: dict,
     ) -> None:
         provider = OpenMeteoProviderV1(
             base_url="https://api.open-meteo.com",
@@ -30,8 +31,11 @@ class TestOpenMeteoFetch:
             respx.get("https://marine-api.open-meteo.com/v1/marine").mock(
                 return_value=httpx.Response(200, json=sample_marine_response)
             )
-            respx.get(AQICN_URL).mock(
+            respx.get("https://air-quality-api.open-meteo.com/v1/air-quality").mock(
                 return_value=httpx.Response(200, json=sample_air_quality_response)
+            )
+            respx.get(AQICN_URL).mock(
+                return_value=httpx.Response(200, json=sample_aqicn_response)
             )
 
             raw = await provider.fetch_raw("tel_aviv_coast", 32.08, 34.77, 7)
@@ -40,13 +44,15 @@ class TestOpenMeteoFetch:
         assert "weather" in raw
         assert "marine" in raw
         assert "air_quality" in raw
+        assert "aqicn" in raw
 
-    async def test_fetch_raw_handles_single_endpoint_failure(
+    async def test_fetch_raw_handles_marine_failure(
         self,
         sample_weather_response: dict,
         sample_air_quality_response: dict,
+        sample_aqicn_response: dict,
     ) -> None:
-        """If marine fails after retries, weather and air_quality still succeed."""
+        """If marine fails, the other three endpoints still succeed."""
         provider = OpenMeteoProviderV1(
             base_url="https://api.open-meteo.com",
             aqicn_station_id="@5783",
@@ -60,8 +66,11 @@ class TestOpenMeteoFetch:
             respx.get("https://marine-api.open-meteo.com/v1/marine").mock(
                 return_value=httpx.Response(500, text="Server Error")
             )
-            respx.get(AQICN_URL).mock(
+            respx.get("https://air-quality-api.open-meteo.com/v1/air-quality").mock(
                 return_value=httpx.Response(200, json=sample_air_quality_response)
+            )
+            respx.get(AQICN_URL).mock(
+                return_value=httpx.Response(200, json=sample_aqicn_response)
             )
 
             raw = await provider.fetch_raw("tel_aviv_coast", 32.08, 34.77, 7)
@@ -70,6 +79,42 @@ class TestOpenMeteoFetch:
         assert "weather" in raw
         assert "marine" not in raw
         assert "air_quality" in raw
+        assert "aqicn" in raw
+
+    async def test_fetch_raw_aqicn_failure_still_returns_forecast(
+        self,
+        sample_weather_response: dict,
+        sample_marine_response: dict,
+        sample_air_quality_response: dict,
+    ) -> None:
+        """If AQICN fails, Open-Meteo forecast data still comes through."""
+        provider = OpenMeteoProviderV1(
+            base_url="https://api.open-meteo.com",
+            aqicn_station_id="@5783",
+            aqicn_token="testtoken",
+        )
+
+        with respx.mock:
+            respx.get("https://api.open-meteo.com/v1/forecast").mock(
+                return_value=httpx.Response(200, json=sample_weather_response)
+            )
+            respx.get("https://marine-api.open-meteo.com/v1/marine").mock(
+                return_value=httpx.Response(200, json=sample_marine_response)
+            )
+            respx.get("https://air-quality-api.open-meteo.com/v1/air-quality").mock(
+                return_value=httpx.Response(200, json=sample_air_quality_response)
+            )
+            respx.get(AQICN_URL).mock(
+                return_value=httpx.Response(500, text="Error")
+            )
+
+            raw = await provider.fetch_raw("tel_aviv_coast", 32.08, 34.77, 7)
+            await provider.close()
+
+        assert "weather" in raw
+        assert "marine" in raw
+        assert "air_quality" in raw
+        assert "aqicn" not in raw
 
     async def test_fetch_raw_all_endpoints_fail(self) -> None:
         """If all endpoints fail, return empty dict."""
@@ -86,6 +131,9 @@ class TestOpenMeteoFetch:
             respx.get("https://marine-api.open-meteo.com/v1/marine").mock(
                 return_value=httpx.Response(500, text="Error")
             )
+            respx.get("https://air-quality-api.open-meteo.com/v1/air-quality").mock(
+                return_value=httpx.Response(500, text="Error")
+            )
             respx.get(AQICN_URL).mock(
                 return_value=httpx.Response(500, text="Error")
             )
@@ -93,6 +141,4 @@ class TestOpenMeteoFetch:
             raw = await provider.fetch_raw("tel_aviv_coast", 32.08, 34.77, 7)
             await provider.close()
 
-        assert "weather" not in raw
-        assert "marine" not in raw
-        assert "air_quality" not in raw
+        assert raw == {}
