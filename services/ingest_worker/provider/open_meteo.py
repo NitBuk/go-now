@@ -196,11 +196,15 @@ class OpenMeteoProviderV1(ForecastProvider):
 
         # Build date-keyed lookups from AQICN response
         # eu_aqi field stores US AQI from AQICN ground sensor (field rename deferred)
+        # Station @5783 provides no aqi forecast — only real-time + pm10/pm25 forecasts
+        # (pm10 forecast entries may be stale; only use if within 30 days of today)
         aqicn_aqi_by_date: dict[str, int] = {}
         aqicn_pm10_by_date: dict[str, float] = {}
         aqicn_pm25_by_date: dict[str, float] = {}
+        rt_aqi_fallback: int | None = None  # real-time AQI used for all future hours
         aq_data = raw.get("air_quality", {}).get("data", {})
         if aq_data:
+            today_utc = fetched_at_utc.date()
             for entry in aq_data.get("forecast", {}).get("daily", {}).get("aqi", []):
                 try:
                     aqicn_aqi_by_date[entry["day"]] = int(entry["avg"])
@@ -208,23 +212,31 @@ class OpenMeteoProviderV1(ForecastProvider):
                     pass
             for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm10", []):
                 try:
-                    aqicn_pm10_by_date[entry["day"]] = float(entry["avg"])
+                    # Skip stale entries (more than 30 days old)
+                    entry_date = datetime.fromisoformat(entry["day"]).date()
+                    if abs((entry_date - today_utc).days) <= 30:
+                        aqicn_pm10_by_date[entry["day"]] = float(entry["avg"])
                 except (KeyError, TypeError, ValueError):
                     pass
             for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm25", []):
                 try:
-                    aqicn_pm25_by_date[entry["day"]] = float(entry["avg"])
+                    entry_date = datetime.fromisoformat(entry["day"]).date()
+                    if abs((entry_date - today_utc).days) <= 30:
+                        aqicn_pm25_by_date[entry["day"]] = float(entry["avg"])
                 except (KeyError, TypeError, ValueError):
                     pass
-            # Override today with real-time reading (more accurate than daily avg)
+            # Real-time AQI: set for today's date and use as fallback for all future hours.
+            # Station @5783 has no aqi forecast, so this is the only AQI signal available.
             rt_aqi = aq_data.get("aqi")
             rt_time_s = aq_data.get("time", {}).get("s", "")
-            if rt_aqi is not None and rt_time_s:
-                try:
-                    today = datetime.fromisoformat(rt_time_s).date().isoformat()
-                    aqicn_aqi_by_date[today] = int(rt_aqi)
-                except (ValueError, AttributeError):
-                    pass
+            if rt_aqi is not None:
+                rt_aqi_fallback = int(rt_aqi)
+                if rt_time_s:
+                    try:
+                        today = datetime.fromisoformat(rt_time_s).date().isoformat()
+                        aqicn_aqi_by_date[today] = int(rt_aqi)
+                    except (ValueError, AttributeError):
+                        pass
 
         rows: list[NormalizedHourlyRow] = []
         for time_str in sorted_hours:
@@ -245,9 +257,9 @@ class OpenMeteoProviderV1(ForecastProvider):
             wave_h = _get(marine_hourly, "wave_height", marine_idx, time_str)
             wave_p = _get(marine_hourly, "wave_period", marine_idx, time_str)
 
-            # Air quality fields from AQICN (keyed by date)
+            # Air quality fields from AQICN (keyed by date; fallback to real-time AQI)
             date_key = hour_utc.date().isoformat()
-            aqi = aqicn_aqi_by_date.get(date_key)
+            aqi = aqicn_aqi_by_date.get(date_key, rt_aqi_fallback)
             pm10_val = aqicn_pm10_by_date.get(date_key)
             pm25_val = aqicn_pm25_by_date.get(date_key)
 
