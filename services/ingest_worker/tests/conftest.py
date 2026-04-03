@@ -91,19 +91,29 @@ def sample_marine_response() -> dict:
 
 @pytest.fixture
 def sample_air_quality_response() -> dict:
-    """Minimal Open-Meteo air quality response with 3 hours."""
+    """Minimal AQICN response with real-time AQI and 2-day daily forecast."""
     return {
-        "latitude": 32.08,
-        "longitude": 34.78,
-        "hourly": {
-            "time": [
-                "2025-06-01T00:00",
-                "2025-06-01T01:00",
-                "2025-06-01T02:00",
-            ],
-            "european_aqi": [42, 45, 38],
-            "pm10": [18.5, 20.0, 16.0],
-            "pm2_5": [8.2, 9.0, 7.5],
+        "status": "ok",
+        "data": {
+            "aqi": 42,
+            "time": {"s": "2025-06-01 00:00:00"},
+            "iaqi": {"pm25": {"v": 8.2}, "pm10": {"v": 18.5}},
+            "forecast": {
+                "daily": {
+                    "aqi": [
+                        {"avg": 42, "day": "2025-06-01", "max": 50, "min": 35},
+                        {"avg": 38, "day": "2025-06-02", "max": 45, "min": 30},
+                    ],
+                    "pm10": [
+                        {"avg": 18.5, "day": "2025-06-01", "max": 22.0, "min": 15.0},
+                        {"avg": 16.0, "day": "2025-06-02", "max": 20.0, "min": 12.0},
+                    ],
+                    "pm25": [
+                        {"avg": 8.2, "day": "2025-06-01", "max": 10.0, "min": 6.0},
+                        {"avg": 7.5, "day": "2025-06-02", "max": 9.0, "min": 5.5},
+                    ],
+                }
+            },
         },
     }
 

@@ -52,16 +52,10 @@ class Thresholds:
     uv_swim_dog_max_penalty: float = 15  # swim_dog UV penalty
 
     # --- AQI ---
-    aqi_ok: int = 40
-    aqi_bad: int = 120
+    aqi_ok: int = 50    # US AQI Good threshold (source: AQICN ground sensor)
+    aqi_bad: int = 150  # US AQI Unhealthy threshold
     aqi_swim_max_penalty: float = 25
     aqi_run_max_penalty: float = 40
-
-    # --- PM10 / Dust ---
-    pm10_ok: float = 50.0       # EU daily limit; below = typical Tel Aviv
-    pm10_bad: float = 150.0     # Full penalty; Hamsin easily exceeds (200-800+)
-    pm10_swim_max_penalty: float = 15   # Less severe for water activities
-    pm10_run_max_penalty: float = 30    # Runners breathe heavily in dust
 
     # --- Wind ---
     wind_ok_ms: float = 7.0

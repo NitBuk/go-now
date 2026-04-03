@@ -67,7 +67,11 @@ async def run_ingest(area_id: str, horizon_days: int) -> dict:
         logger.warning("idempotency_check_failed", extra={"area_id": area_id})
 
     # Step 2: Fetch raw data from provider
-    provider = OpenMeteoProviderV1(base_url=config.OPEN_METEO_BASE_URL)
+    provider = OpenMeteoProviderV1(
+        base_url=config.OPEN_METEO_BASE_URL,
+        aqicn_station_id=config.AQICN_STATION_ID,
+        aqicn_token=config.AQICN_TOKEN,
+    )
     try:
         raw = await provider.fetch_raw(area_id, config.LAT, config.LON, horizon_days)
     finally:
