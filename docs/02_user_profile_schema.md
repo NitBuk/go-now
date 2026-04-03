@@ -208,7 +208,7 @@ This is the **single source of truth** for how presets map to threshold values. 
 | `uv_warn` | 7 | 6 | 5 |
 | `uv_bad` | 9 | 8 | 7 |
 | `aqi_ok` | 60 | 50 | 40 |
-| `aqi_bad` | 175 | 150 | 125 |
+| `aqi_bad` | 325 | 300 | 275 |
 | `wind_warn_ms` | 10 | 10 | 10 |
 | `wind_bad_ms` | 14 | 14 | 14 |
 

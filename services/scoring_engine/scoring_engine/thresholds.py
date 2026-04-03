@@ -53,9 +53,9 @@ class Thresholds:
 
     # --- AQI ---
     aqi_ok: int = 50    # US AQI Good threshold (source: AQICN ground sensor)
-    aqi_bad: int = 150  # US AQI Unhealthy threshold
-    aqi_swim_max_penalty: float = 25
-    aqi_run_max_penalty: float = 40
+    aqi_bad: int = 300  # US AQI Very Unhealthy threshold (Hamsin peaks at 400-600)
+    aqi_swim_max_penalty: float = 50
+    aqi_run_max_penalty: float = 80
 
     # --- Wind ---
     wind_ok_ms: float = 7.0

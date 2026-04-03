@@ -144,7 +144,7 @@ Start with `base_score = 100`. Subtract penalties per factor. Clamp result to `[
 | Waves | `wave_height_m >= swim_wave_bad_m` | -70 | "Waves {X}m - rough" |
 | Waves | `wave_height_m >= swim_wave_meh_m` (and < bad) | -35 | "Waves {X}m" |
 | Wind | `gust_ms >= wind_warn_ms` | -15 | "Gusty {X}m/s" |
-| AQI | linear ramp: `eu_aqi` 50→150 | 0→-25 | "Air quality poor" / "AQI moderate" |
+| AQI | linear ramp: `eu_aqi` 50→300 | 0→-50 | "Air quality poor" / "AQI moderate" |
 | Cold | `feelslike_c <= 14` | -10 | "Chilly {X}°C" |
 | Heat | `feelslike_c >= 32` | -10 | "Hot {X}°C" |
 
@@ -171,11 +171,11 @@ Same as swim_solo, with these changes:
 | Heat | `feelslike_c >= run_hot_feelslike_warn_c` (and < bad) | -30 | "Warm {X}°C" |
 | UV | `uv_index >= uv_bad` | -25 | "UV very high" |
 | UV | `uv_index >= uv_warn` (and < bad) | -12 | "UV elevated" |
-| AQI | linear ramp: `eu_aqi` 50→150 | 0→-40 | "Air quality poor" / "AQI moderate" |
+| AQI | linear ramp: `eu_aqi` 50→300 | 0→-80 | "Air quality poor" / "AQI moderate" |
 | Wind | `gust_ms >= wind_warn_ms` | -12 | "Gusty {X}m/s" |
 | Rain | `precip_prob_pct` in [30, 79] | 0→-10 | "Rain possible" |
 
-> AQI source is US EPA scale from AQICN ground sensor. Penalty ramps linearly: 0 at US AQI ≤ 50, max -40 at US AQI ≥ 150.
+> AQI source is US EPA scale from AQICN ground sensor. Penalty ramps linearly: 0 at US AQI ≤ 50 (Good), max -80 at US AQI ≥ 300 (Very Unhealthy). Hamsin events typically reach 400–600.
 
 ### run_dog
 
@@ -185,7 +185,7 @@ Same penalty structure as run_solo, with the **1.2x dog multiplier** applied to 
 |--------|-----------|---------------|---------|
 | Heat | -60 | × 1.2 | -72 |
 | UV | -25 | × 1.2 | -30 |
-| AQI | -40 (at US AQI ≥ 150) | × 1.2 | -48 |
+| AQI | -80 (at US AQI ≥ 300) | × 1.2 | -96 |
 | Wind | -12 | no multiplier | -12 |
 | Rain | -10 | no multiplier | -10 |
 
@@ -250,9 +250,9 @@ def score_swim_solo(hour: HourlyForecast, t: Thresholds) -> ModeScore:
         if hour.gust_ms >= t.wind_warn_ms:
             penalties.append(("wind", -15, f"Gusty {hour.gust_ms:.0f}m/s"))
 
-    # AQI (US AQI from AQICN ground sensor; linear ramp ok=50 → bad=150)
+    # AQI (US AQI from AQICN ground sensor; linear ramp ok=50 → bad=300)
     if hour.eu_aqi is not None:
-        p = linear_penalty(hour.eu_aqi, ok=50, bad=150, max_penalty=25)
+        p = linear_penalty(hour.eu_aqi, ok=50, bad=300, max_penalty=50)
         if p > 0:
             text = "Air quality poor" if p >= 25 * 0.7 else "AQI moderate"
             penalties.append(("aqi", -round(p), text))

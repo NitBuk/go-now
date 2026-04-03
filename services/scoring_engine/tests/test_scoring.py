@@ -195,14 +195,16 @@ class TestContinuousScoring:
         assert r10 == 75  # 100 - 25 max penalty
 
     def test_aqi_scales_linearly_for_run(self) -> None:
-        """Run AQI penalty grows linearly from 50 to 150 (US AQI scale)."""
+        """Run AQI penalty grows linearly from 50 to 300 (US AQI scale), max -80."""
         r50 = score_hour(_perfect_hour(eu_aqi=50)).run_solo.score
-        r100 = score_hour(_perfect_hour(eu_aqi=100)).run_solo.score
-        r150 = score_hour(_perfect_hour(eu_aqi=150)).run_solo.score
+        r175 = score_hour(_perfect_hour(eu_aqi=175)).run_solo.score
+        r300 = score_hour(_perfect_hour(eu_aqi=300)).run_solo.score
 
-        assert r50 == 100  # at ok threshold
-        assert r50 > r100 > r150
-        assert r150 == 60  # 100 - 40 max penalty
+        assert r50 == 100   # at ok threshold — zero penalty
+        assert r50 > r175 > r300
+        # 175 is midpoint of 50-300 → 50% of 80 = 40 penalty → score 60
+        assert r175 == 60
+        assert r300 == 20   # 100 - 80 max penalty
 
     def test_cold_scales_for_swim(self) -> None:
         """Swim cold penalty grows as temp drops below 18°C."""
