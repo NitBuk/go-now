@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 
+from .aqicn import AqicnClient
 from .base import DailySunRow, ForecastProvider, NormalizedHourlyRow
 
 logger = logging.getLogger(__name__)
@@ -21,9 +22,17 @@ JITTER_MAX_MS = 500
 class OpenMeteoProviderV1(ForecastProvider):
     """Open-Meteo free tier provider - weather, marine, and air quality endpoints."""
 
-    def __init__(self, base_url: str = "https://api.open-meteo.com") -> None:
+    def __init__(
+        self,
+        base_url: str = "https://api.open-meteo.com",
+        aqicn_station_id: str = "",
+        aqicn_token: str = "",
+    ) -> None:
         self.base_url = base_url.rstrip("/")
+        self.aqicn_station_id = aqicn_station_id
+        self.aqicn_token = aqicn_token
         self._client: httpx.AsyncClient | None = None
+        self._aqicn = AqicnClient()
 
     async def _get_client(self) -> httpx.AsyncClient:
         if self._client is None or self._client.is_closed:
@@ -33,6 +42,7 @@ class OpenMeteoProviderV1(ForecastProvider):
     async def close(self) -> None:
         if self._client and not self._client.is_closed:
             await self._client.aclose()
+        await self._aqicn.close()
 
     def _build_urls(
         self, lat: float, lon: float, horizon_days: int
@@ -52,10 +62,6 @@ class OpenMeteoProviderV1(ForecastProvider):
             "marine": (
                 f"https://marine-api.open-meteo.com/v1/marine?{base_params}"
                 "&hourly=wave_height,wave_period,wave_direction"
-            ),
-            "air_quality": (
-                f"https://air-quality-api.open-meteo.com/v1/air-quality?{base_params}"
-                "&hourly=european_aqi,pm10,pm2_5"
             ),
         }
 
@@ -105,20 +111,28 @@ class OpenMeteoProviderV1(ForecastProvider):
     async def fetch_raw(
         self, area_id: str, lat: float, lon: float, horizon_days: int
     ) -> dict[str, dict]:
-        """Fetch all 3 Open-Meteo endpoints concurrently with per-endpoint retry."""
+        """Fetch weather + marine from Open-Meteo and air quality from AQICN."""
         urls = self._build_urls(lat, lon, horizon_days)
 
-        results = await asyncio.gather(
+        weather_result, marine_result = await asyncio.gather(
             self._fetch_endpoint_with_retry("weather", urls["weather"]),
             self._fetch_endpoint_with_retry("marine", urls["marine"]),
-            self._fetch_endpoint_with_retry("air_quality", urls["air_quality"]),
         )
 
         raw: dict[str, dict] = {}
-        endpoint_names = ["weather", "marine", "air_quality"]
-        for name, result in zip(endpoint_names, results):
-            if result is not None:
-                raw[name] = result
+        if weather_result is not None:
+            raw["weather"] = weather_result
+        if marine_result is not None:
+            raw["marine"] = marine_result
+
+        # Fetch air quality from AQICN ground sensor (US AQI)
+        # eu_aqi field stores US AQI from AQICN (field rename deferred)
+        if self.aqicn_token and self.aqicn_station_id:
+            aq_result = await self._aqicn.fetch(self.aqicn_station_id, self.aqicn_token)
+            if aq_result is not None:
+                raw["air_quality"] = aq_result
+        else:
+            logger.warning("aqicn_token_missing", extra={"area_id": area_id})
 
         return raw
 
@@ -167,11 +181,9 @@ class OpenMeteoProviderV1(ForecastProvider):
 
         weather_idx = _build_index(raw["weather"]) if "weather" in raw else {}
         marine_idx = _build_index(raw["marine"]) if "marine" in raw else {}
-        aq_idx = _build_index(raw["air_quality"]) if "air_quality" in raw else {}
 
         weather_hourly = raw.get("weather", {}).get("hourly", {})
         marine_hourly = raw.get("marine", {}).get("hourly", {})
-        aq_hourly = raw.get("air_quality", {}).get("hourly", {})
 
         def _get(hourly: dict, field: str, idx_map: dict[str, int], time_str: str) -> Any:
             i = idx_map.get(time_str)
@@ -181,6 +193,38 @@ class OpenMeteoProviderV1(ForecastProvider):
             if i >= len(values):
                 return None
             return values[i]
+
+        # Build date-keyed lookups from AQICN response
+        # eu_aqi field stores US AQI from AQICN ground sensor (field rename deferred)
+        aqicn_aqi_by_date: dict[str, int] = {}
+        aqicn_pm10_by_date: dict[str, float] = {}
+        aqicn_pm25_by_date: dict[str, float] = {}
+        aq_data = raw.get("air_quality", {}).get("data", {})
+        if aq_data:
+            for entry in aq_data.get("forecast", {}).get("daily", {}).get("aqi", []):
+                try:
+                    aqicn_aqi_by_date[entry["day"]] = int(entry["avg"])
+                except (KeyError, TypeError, ValueError):
+                    pass
+            for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm10", []):
+                try:
+                    aqicn_pm10_by_date[entry["day"]] = float(entry["avg"])
+                except (KeyError, TypeError, ValueError):
+                    pass
+            for entry in aq_data.get("forecast", {}).get("daily", {}).get("pm25", []):
+                try:
+                    aqicn_pm25_by_date[entry["day"]] = float(entry["avg"])
+                except (KeyError, TypeError, ValueError):
+                    pass
+            # Override today with real-time reading (more accurate than daily avg)
+            rt_aqi = aq_data.get("aqi")
+            rt_time_s = aq_data.get("time", {}).get("s", "")
+            if rt_aqi is not None and rt_time_s:
+                try:
+                    today = datetime.fromisoformat(rt_time_s).date().isoformat()
+                    aqicn_aqi_by_date[today] = int(rt_aqi)
+                except (ValueError, AttributeError):
+                    pass
 
         rows: list[NormalizedHourlyRow] = []
         for time_str in sorted_hours:
@@ -201,10 +245,11 @@ class OpenMeteoProviderV1(ForecastProvider):
             wave_h = _get(marine_hourly, "wave_height", marine_idx, time_str)
             wave_p = _get(marine_hourly, "wave_period", marine_idx, time_str)
 
-            # Air quality fields
-            aqi = _get(aq_hourly, "european_aqi", aq_idx, time_str)
-            pm10_val = _get(aq_hourly, "pm10", aq_idx, time_str)
-            pm25_val = _get(aq_hourly, "pm2_5", aq_idx, time_str)
+            # Air quality fields from AQICN (keyed by date)
+            date_key = hour_utc.date().isoformat()
+            aqi = aqicn_aqi_by_date.get(date_key)
+            pm10_val = aqicn_pm10_by_date.get(date_key)
+            pm25_val = aqicn_pm25_by_date.get(date_key)
 
             # Convert wind from km/h to m/s
             wind_ms = round(wind_kmh / 3.6, 2) if wind_kmh is not None else None

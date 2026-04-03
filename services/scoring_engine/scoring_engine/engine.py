@@ -14,7 +14,7 @@ from typing import Optional
 from scoring_engine.thresholds import BALANCED_THRESHOLDS, Thresholds
 
 # Factor priority for tie-breaking (higher index = lower priority)
-FACTOR_PRIORITY = ["rain", "heat", "waves", "uv", "aqi", "dust", "wind", "cold"]
+FACTOR_PRIORITY = ["rain", "heat", "waves", "uv", "aqi", "wind", "cold"]
 
 
 @dataclass
@@ -55,7 +55,6 @@ class HourData:
     precip_mm: Optional[float] = None
     uv_index: Optional[float] = None
     eu_aqi: Optional[int] = None
-    pm10: Optional[float] = None
     sunset_utc: Optional[datetime] = None
     sunrise_utc: Optional[datetime] = None
 
@@ -176,12 +175,6 @@ def _penalty_text_waves_dog(value: float, penalty: int) -> str:
     return f"Waves {value}m - watch your dog"
 
 
-def _dust_penalty_text(pm10: float, penalty: float, max_penalty: float) -> str:
-    if penalty >= max_penalty * 0.7:
-        return f"Dusty air (PM10 {pm10:.0f})"
-    return "Some dust in air"
-
-
 def _build_reason_chips(
     penalties: list[tuple[str, int, str]], score: int, mode: str
 ) -> list[ReasonChip]:
@@ -250,7 +243,6 @@ def _select_positive_chip(
         ("heat", "Nice temperature"),
         ("uv", "UV low"),
         ("aqi", "Air quality good"),
-        ("dust", "Air is clear"),
         ("wind", "Calm wind"),
     ])
 
@@ -298,14 +290,6 @@ def _score_swim_solo(hour: HourData, t: Thresholds) -> ModeScore:
             penalties.append(("aqi", -round(p), text))
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
-
-    # PM10 / Dust
-    if hour.pm10 is not None:
-        p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_swim_max_penalty)
-        if p > 0:
-            penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_swim_max_penalty)))
-    else:
-        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Heat
     if hour.feelslike_c is not None:
@@ -374,14 +358,6 @@ def _score_swim_dog(hour: HourData, t: Thresholds) -> ModeScore:
             penalties.append(("aqi", -round(p), text))
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
-
-    # PM10 / Dust
-    if hour.pm10 is not None:
-        p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_swim_max_penalty)
-        if p > 0:
-            penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_swim_max_penalty)))
-    else:
-        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Dog heat penalty (not hard gate - dogs cool in water)
     if hour.feelslike_c is not None:
@@ -460,14 +436,6 @@ def _score_run_solo(hour: HourData, t: Thresholds) -> ModeScore:
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
 
-    # PM10 / Dust
-    if hour.pm10 is not None:
-        p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_run_max_penalty)
-        if p > 0:
-            penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_run_max_penalty)))
-    else:
-        penalties.append(("dust", 0, "PM10 data unavailable"))
-
     # Wind (penalty, not gate - already checked gate above)
     if hour.gust_ms is not None:
         p = _linear_penalty(hour.gust_ms, t.wind_ok_ms, t.wind_bad_ms, t.wind_run_max_penalty)
@@ -541,15 +509,6 @@ def _score_run_dog(hour: HourData, t: Thresholds) -> ModeScore:
             penalties.append(("aqi", -round(p), text))
     else:
         penalties.append(("aqi", 0, "AQI data unavailable"))
-
-    # PM10 / Dust (1.2x multiplier)
-    if hour.pm10 is not None:
-        p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_run_max_penalty)
-        p = p * dog_mult
-        if p > 0:
-            penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_run_max_penalty * dog_mult)))
-    else:
-        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Wind (no multiplier)
     if hour.gust_ms is not None:

@@ -17,6 +17,8 @@ class Config:
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "INFO")
     ENV: str = os.environ.get("ENV", "dev")
     PORT: int = int(os.environ.get("PORT", "8080"))
+    AQICN_TOKEN: str = os.environ.get("AQICN_TOKEN", "")
+    AQICN_STATION_ID: str = os.environ.get("AQICN_STATION_ID", "@5783")
 
     # Tel Aviv Coast - single location in V1
     AREA_ID: str = "tel_aviv_coast"
