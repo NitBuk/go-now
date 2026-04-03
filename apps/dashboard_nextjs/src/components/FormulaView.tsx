@@ -150,7 +150,7 @@ interface PenaltyRow {
 const SWIM_PENALTIES: PenaltyRow[] = [
   { icon: Waves, factor: "Waves", comfort: "0.3m", bad: "1.5m", penalty: -70 },
   { icon: Wind, factor: "Wind gusts", comfort: "7 m/s", bad: "14 m/s", penalty: -15 },
-  { icon: Activity, factor: "AQI", comfort: "40", bad: "120", penalty: -25 },
+  { icon: Activity, factor: "AQI (US)", comfort: "50", bad: "150", penalty: -25 },
   { icon: Thermometer, factor: "Heat", comfort: "28\u00B0C", bad: "40\u00B0C", penalty: -10 },
   { icon: Thermometer, factor: "Cold", comfort: "18\u00B0C", bad: "10\u00B0C", penalty: -15 },
 ];
@@ -158,7 +158,7 @@ const SWIM_PENALTIES: PenaltyRow[] = [
 const RUN_PENALTIES: PenaltyRow[] = [
   { icon: Thermometer, factor: "Heat", comfort: "26\u00B0C", bad: "38\u00B0C", penalty: -60 },
   { icon: Sun, factor: "UV index", comfort: "4", bad: "10", penalty: -25 },
-  { icon: Activity, factor: "AQI", comfort: "40", bad: "120", penalty: -40 },
+  { icon: Activity, factor: "AQI (US)", comfort: "50", bad: "150", penalty: -40 },
   { icon: Wind, factor: "Wind gusts", comfort: "7 m/s", bad: "14 m/s", penalty: -12 },
   { icon: CloudRain, factor: "Rain prob", comfort: "30%", bad: "79%", penalty: -10 },
 ];
@@ -375,6 +375,9 @@ export default function FormulaView() {
 
         <div className="bg-white/[0.04] rounded-xl p-3 text-[12px] text-slate-400">
           Missing data never penalizes - an info chip is shown instead so you know the score may be less reliable.
+        </div>
+        <div className="bg-white/[0.04] rounded-xl p-3 mt-2 text-[12px] text-slate-400">
+          <span className="font-medium text-slate-300">AQI source:</span> US EPA scale from the AQICN Tel Aviv ground sensor — not a forecast model. Good ≤ 50 · Moderate ≤ 100 · Unhealthy ≥ 150. During Hamsin dust storms the ground sensor can read 400–600+.
         </div>
       </ScrollReveal>
     </div>
