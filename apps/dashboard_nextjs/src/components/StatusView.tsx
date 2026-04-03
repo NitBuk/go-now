@@ -260,10 +260,10 @@ export default function StatusView({ health }: StatusViewProps) {
             <text x="270" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">STORAGE</text>
             <text x="375" y="16" textAnchor="middle" fill="#64748B" fontSize="8" fontFamily="monospace">SERVING</text>
 
-            <path d="M95 72 C105 72 110 55 115 55" className="data-flow-fast" stroke="#3B82F6" strokeWidth="1.5" fill="none" filter="url(#glow)"/>
-            <path d="M95 84 C105 84 110 75 115 75" className="data-flow-fast" stroke="#22C55E" strokeWidth="1.5" fill="none"/>
-            <path d="M95 96 C105 96 110 95 115 95" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
-            <path d="M95 143 C105 143 110 115 115 115" className="data-flow" stroke="#F97316" strokeWidth="1" fill="none"/>
+            <path d="M95 66 C105 66 110 55 115 55" className="data-flow-fast" stroke="#3B82F6" strokeWidth="1.5" fill="none" filter="url(#glow)"/>
+            <path d="M95 76 C105 76 110 75 115 75" className="data-flow-fast" stroke="#22C55E" strokeWidth="1.5" fill="none"/>
+            <path d="M95 86 C105 86 110 95 115 95" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
+            <path d="M95 120 C105 120 110 115 115 115" className="data-flow" stroke="#F97316" strokeWidth="1" fill="none"/>
 
             <path d="M195 55 C220 55 230 45 240 45" className="data-flow-fast" stroke="#3B82F6" strokeWidth="1.5" fill="none"/>
             <path d="M195 75 C220 75 230 90 240 90" className="data-flow-fast" stroke="#22C55E" strokeWidth="1.5" fill="none"/>
@@ -274,15 +274,15 @@ export default function StatusView({ health }: StatusViewProps) {
             <path d="M310 135 C330 135 340 135 345 135" className="data-flow" stroke="#F59E0B" strokeWidth="1" fill="none"/>
 
             <g>
-              <rect x="5" y="30" width="90" height="130" rx="8" fill="rgba(30,41,59,0.8)" stroke="#3B82F6" strokeWidth="1.5"/>
-              <text x="50" y="50" textAnchor="middle" fill="#3B82F6" fontSize="9" fontWeight="bold" fontFamily="monospace">Open-Meteo</text>
-              <line x1="15" y1="57" x2="85" y2="57" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
-              <text x="15" y="72" fill="#94A3B8" fontSize="8" fontFamily="monospace">Waves</text>
-              <text x="15" y="84" fill="#94A3B8" fontSize="8" fontFamily="monospace">Weather</text>
-              <text x="15" y="96" fill="#94A3B8" fontSize="8" fontFamily="monospace">UV / Rain</text>
-              <line x1="15" y1="107" x2="85" y2="107" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
-              <text x="50" y="120" textAnchor="middle" fill="#F97316" fontSize="9" fontWeight="bold" fontFamily="monospace">AQICN</text>
-              <text x="15" y="143" fill="#F97316" fontSize="8" fontFamily="monospace">AQI (US)</text>
+              <rect x="5" y="30" width="90" height="100" rx="8" fill="rgba(30,41,59,0.8)" stroke="#3B82F6" strokeWidth="1.5"/>
+              <text x="50" y="48" textAnchor="middle" fill="#3B82F6" fontSize="9" fontWeight="bold" fontFamily="monospace">Open-Meteo</text>
+              <line x1="15" y1="55" x2="85" y2="55" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
+              <text x="15" y="66" fill="#94A3B8" fontSize="8" fontFamily="monospace">Waves</text>
+              <text x="15" y="76" fill="#94A3B8" fontSize="8" fontFamily="monospace">Weather</text>
+              <text x="15" y="86" fill="#94A3B8" fontSize="8" fontFamily="monospace">UV / Rain</text>
+              <line x1="15" y1="95" x2="85" y2="95" stroke="rgba(51,65,85,0.5)" strokeWidth="0.5"/>
+              <text x="50" y="108" textAnchor="middle" fill="#F97316" fontSize="9" fontWeight="bold" fontFamily="monospace">AQICN</text>
+              <text x="15" y="120" fill="#F97316" fontSize="8" fontFamily="monospace">AQI (US)</text>
             </g>
 
             <g>
@@ -328,13 +328,13 @@ export default function StatusView({ health }: StatusViewProps) {
             </g>
 
             <circle r="3" fill="#3B82F6" filter="url(#glow)">
-              <animateMotion dur="3s" repeatCount="indefinite" path="M50 76 L115 55 L195 55 L265 45 L370 55"/>
+              <animateMotion dur="3s" repeatCount="indefinite" path="M50 66 L115 55 L195 55 L265 45 L370 55"/>
             </circle>
             <circle r="2.5" fill="#22C55E">
-              <animateMotion dur="4s" repeatCount="indefinite" path="M50 90 L115 75 L195 75 L265 90 L370 95" begin="0.8s"/>
+              <animateMotion dur="4s" repeatCount="indefinite" path="M50 76 L115 75 L195 75 L265 90 L370 95" begin="0.8s"/>
             </circle>
             <circle r="2" fill="#F97316">
-              <animateMotion dur="5s" repeatCount="indefinite" path="M50 143 L115 115 L195 95 L265 135 L370 135" begin="1.6s"/>
+              <animateMotion dur="5s" repeatCount="indefinite" path="M50 120 L115 115 L195 95 L265 135 L370 135" begin="1.6s"/>
             </circle>
 
             <text x="50" y="155" textAnchor="middle" fill="#64748B" fontSize="7" fontFamily="monospace">Hourly via</text>
