@@ -158,8 +158,8 @@
 | `dog_heat_bad_feelslike_c` | float | °C | [22, 40] | Dog heat hard-gate threshold |
 | `uv_warn` | float | UV index | [1, 12] | UV level where penalties start |
 | `uv_bad` | float | UV index | [3, 15] | UV level where penalties are severe |
-| `aqi_warn_eu` | int | EU AQI | [10, 200] | AQI where penalties start |
-| `aqi_bad_eu` | int | EU AQI | [30, 300] | AQI where penalties are severe |
+| `aqi_ok` | int | US AQI | [10, 200] | AQI where penalties start (US EPA scale; Good = 0–50) |
+| `aqi_bad` | int | US AQI | [30, 300] | AQI where penalties reach maximum (Unhealthy = 150+) |
 | `wind_warn_ms` | float | m/s | [3, 20] | Gust speed where penalties start |
 | `wind_bad_ms` | float | m/s | [5, 25] | Gust speed that hard-gates running |
 
@@ -207,12 +207,12 @@ This is the **single source of truth** for how presets map to threshold values. 
 | `dog_heat_bad_feelslike_c` | 30.5 | 29.0 | 27.5 |
 | `uv_warn` | 7 | 6 | 5 |
 | `uv_bad` | 9 | 8 | 7 |
-| `aqi_warn_eu` | 80 | 60 | 40 |
-| `aqi_bad_eu` | 120 | 100 | 80 |
+| `aqi_ok` | 60 | 50 | 40 |
+| `aqi_bad` | 175 | 150 | 125 |
 | `wind_warn_ms` | 10 | 10 | 10 |
 | `wind_bad_ms` | 14 | 14 | 14 |
 
-**Derivation:** Balanced is the baseline. Chill adds tolerance (+0.15m waves, +1.5°C heat, +20 EU AQI, +1 UV). Strict subtracts the same amounts. Wind thresholds are safety-critical and do not vary by preset.
+**Derivation:** Balanced is the baseline. Chill adds tolerance (+0.15m waves, +1.5°C heat, +10 US AQI ok / +25 bad, +1 UV). Strict subtracts the same amounts. Wind thresholds are safety-critical and do not vary by preset. AQI values are US EPA scale (source: AQICN ground sensor).
 
 ## Required Fields at Onboarding
 

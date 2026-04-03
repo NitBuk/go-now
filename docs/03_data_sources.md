@@ -7,23 +7,27 @@
 - **Refresh cadence:** Every 1 hour (backend ingestion job via Cloud Scheduler → Pub/Sub).
 - **Client access:** App reads from our API (`/v1/public/forecast`), never directly from the provider.
 
-## Provider: Open-Meteo (V1)
+## Providers (V1)
 
-Three Open-Meteo API endpoints, all free tier:
+Three endpoints across two providers:
 
-| Endpoint | Variables | URL |
-|----------|-----------|-----|
-| Weather Forecast | temperature, feels-like, wind, gusts, precip, UV | `https://api.open-meteo.com/v1/forecast` |
-| Marine Forecast | wave height, wave period, wave direction | `https://marine-api.open-meteo.com/v1/marine` |
-| Air Quality | EU AQI, PM10, PM2.5 | `https://air-quality-api.open-meteo.com/v1/air-quality` |
+| Endpoint | Provider | Variables | Notes |
+|----------|----------|-----------|-------|
+| Weather Forecast | Open-Meteo (free tier) | temperature, feels-like, wind, gusts, precip, UV, sunrise/sunset | `https://api.open-meteo.com/v1/forecast` |
+| Marine Forecast | Open-Meteo (free tier) | wave height, wave period, wave direction | `https://marine-api.open-meteo.com/v1/marine` |
+| Air Quality | AQICN / WAQI (free tier) | US AQI (real-time + 3-day daily forecast), PM10, PM2.5 | Station `@5783` — Tel Aviv ground sensor |
 
-> **License:** Open-Meteo free tier is non-commercial. Monetization requires a paid plan or provider swap. The `ForecastProvider` abstraction enables swapping without app changes.
+> **Why AQICN instead of Open-Meteo for air quality?** Open-Meteo uses the CAMS regional atmospheric model (~10–40 km resolution). During Hamsin dust storm events it reported PM10 ≈ 140 µg/m³ while the Tel Aviv ground sensor measured PM10 ≈ 560 µg/m³ (4× gap). AQICN reads directly from the Israel Ministry of Environment ground sensor network. See issue #35 / PR #39.
+
+> **License:** Open-Meteo free tier is non-commercial. Monetization requires a paid plan or provider swap. AQICN free tier requires attribution. The `ForecastProvider` abstraction enables swapping without app changes.
+
+> **Configuration:** `AQICN_TOKEN` env var (Cloud Run secret). `AQICN_STATION_ID` defaults to `@5783`.
 
 ### Sample API URLs
 
 **Weather:**
 ```
-https://api.open-meteo.com/v1/forecast?latitude=32.08&longitude=34.77&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation_probability,precipitation,uv_index&forecast_days=7&timezone=UTC
+https://api.open-meteo.com/v1/forecast?latitude=32.08&longitude=34.77&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation_probability,precipitation,uv_index&daily=sunrise,sunset&forecast_days=7&timezone=UTC
 ```
 
 **Marine:**
@@ -31,10 +35,16 @@ https://api.open-meteo.com/v1/forecast?latitude=32.08&longitude=34.77&hourly=tem
 https://marine-api.open-meteo.com/v1/marine?latitude=32.08&longitude=34.77&hourly=wave_height,wave_period,wave_direction&forecast_days=7&timezone=UTC
 ```
 
-**Air Quality:**
+**Air Quality (AQICN):**
 ```
-https://air-quality-api.open-meteo.com/v1/air-quality?latitude=32.08&longitude=34.77&hourly=european_aqi,pm10,pm2_5&forecast_days=7&timezone=UTC
+https://api.waqi.info/feed/@5783/?token={AQICN_TOKEN}
 ```
+
+Response structure used:
+- `data.aqi` — real-time US AQI (overrides today's daily value)
+- `data.forecast.daily.aqi[].avg` — daily average US AQI per date (used for future hours)
+- `data.forecast.daily.pm10[].avg` — daily average PM10 per date (stored, not scored)
+- `data.forecast.daily.pm25[].avg` — daily average PM2.5 per date (stored, not scored)
 
 ### Sample Response Shape (Weather, abbreviated)
 
@@ -86,8 +96,8 @@ Explicit mapping from raw Open-Meteo variable names to our curated/serving field
 | `precipitation_probability` | % | `precip_prob_pct` | % (0-100) | passthrough |
 | `precipitation` | mm | `precip_mm` | mm | passthrough |
 | `uv_index` | - | `uv_index` | - | passthrough |
-| `european_aqi` | EU AQI | `eu_aqi` | EU AQI (0-500) | passthrough |
-| `pm10` | µg/m³ | `pm10` | µg/m³ | passthrough |
+| AQICN `data.aqi` / `forecast.daily.aqi[].avg` | US AQI | `eu_aqi` | US AQI (0-500+) | real-time overrides daily avg for current date; field rename to `aqi` pending issue #40 |
+| AQICN `forecast.daily.pm10[].avg` | µg/m³ | `pm10` | µg/m³ | daily avg applied to each hour of that date |
 | `pm2_5` | µg/m³ | `pm2_5` | µg/m³ | passthrough |
 
 **Key conversions:**
@@ -316,7 +326,7 @@ Run after normalization, before loading:
 |-------|------|--------|
 | Hour count | >= 140 of expected 168 | Warning if < 140; degraded if < 100 |
 | Wave height range | [0, 10] m | Flag out-of-range; don't reject row |
-| EU AQI range | [0, 500] | Flag out-of-range; don't reject row |
+| US AQI range | [0, 500] | Flag out-of-range; don't reject row |
 | UV index range | [0, 15] | Flag out-of-range; don't reject row |
 | Feels-like range | [-5, 55] °C | Flag out-of-range; don't reject row |
 | Wind speed range | [0, 50] m/s | Flag out-of-range; don't reject row |
@@ -331,5 +341,6 @@ Run after normalization, before loading:
 
 - Backend is the **only** component calling the provider (app never calls Open-Meteo directly).
 - Request volume: 1 area × 3 endpoints × 1/hour = **72 calls/day**.
-- Well within Open-Meteo's free tier limit (10,000 calls/day).
+  - 2 Open-Meteo endpoints (weather, marine): well within free tier (10,000 calls/day).
+  - 1 AQICN endpoint: well within free tier (1,000 requests/second).
 - Idempotency prevents duplicate fetches from scheduler re-fires.

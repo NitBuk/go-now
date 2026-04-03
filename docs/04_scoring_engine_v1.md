@@ -45,7 +45,7 @@ For each hourly forecast entry, the scoring engine produces:
 
 ```json
 {
-  "factor": "waves|heat|uv|aqi|wind|rain|cold",
+  "factor": "waves|heat|uv|aqi|wind|rain|cold|dark",
   "text": "string (short, user-facing)",
   "emoji": "check|warning|danger|info",
   "penalty": -35
@@ -71,7 +71,7 @@ The engine receives one `HourlyForecast` object per hour (from `/v1/public/forec
 | `precip_prob_pct` | int? | `precip_prob_pct` | all modes (hard gate + penalty) |
 | `precip_mm` | float? | `precip_mm` | all modes (hard gate) |
 | `uv_index` | float? | `uv_index` | run_solo, run_dog, swim_dog (heat gate) |
-| `eu_aqi` | int? | `eu_aqi` | all modes |
+| `eu_aqi` | int? | `eu_aqi` | all modes | Stores **US AQI** from AQICN ground sensor (field renamed in issue #40) |
 
 ### Threshold Fields (from profile)
 
@@ -144,10 +144,11 @@ Start with `base_score = 100`. Subtract penalties per factor. Clamp result to `[
 | Waves | `wave_height_m >= swim_wave_bad_m` | -70 | "Waves {X}m - rough" |
 | Waves | `wave_height_m >= swim_wave_meh_m` (and < bad) | -35 | "Waves {X}m" |
 | Wind | `gust_ms >= wind_warn_ms` | -15 | "Gusty {X}m/s" |
-| AQI | `eu_aqi >= aqi_bad_eu` | -25 | "Air quality poor" |
-| AQI | `eu_aqi >= aqi_warn_eu` (and < bad) | -12 | "AQI moderate" |
+| AQI | linear ramp: `eu_aqi` 50→150 | 0→-25 | "Air quality poor" / "AQI moderate" |
 | Cold | `feelslike_c <= 14` | -10 | "Chilly {X}°C" |
 | Heat | `feelslike_c >= 32` | -10 | "Hot {X}°C" |
+
+> AQI source is US EPA scale from AQICN ground sensor. Penalty ramps linearly: 0 at US AQI ≤ 50 (Good), max at US AQI ≥ 150 (Unhealthy).
 
 ### swim_dog
 
@@ -170,23 +171,21 @@ Same as swim_solo, with these changes:
 | Heat | `feelslike_c >= run_hot_feelslike_warn_c` (and < bad) | -30 | "Warm {X}°C" |
 | UV | `uv_index >= uv_bad` | -25 | "UV very high" |
 | UV | `uv_index >= uv_warn` (and < bad) | -12 | "UV elevated" |
-| AQI | `eu_aqi >= aqi_bad_eu` | -40 | "Air quality poor" |
-| AQI | `eu_aqi >= aqi_warn_eu` (and < bad) | -18 | "AQI moderate" |
+| AQI | linear ramp: `eu_aqi` 50→150 | 0→-40 | "Air quality poor" / "AQI moderate" |
 | Wind | `gust_ms >= wind_warn_ms` | -12 | "Gusty {X}m/s" |
-| Rain | `precip_prob_pct` in [40, 79] | -10 | "Rain possible" |
+| Rain | `precip_prob_pct` in [30, 79] | 0→-10 | "Rain possible" |
+
+> AQI source is US EPA scale from AQICN ground sensor. Penalty ramps linearly: 0 at US AQI ≤ 50, max -40 at US AQI ≥ 150.
 
 ### run_dog
 
 Same penalty structure as run_solo, with the **1.2x dog multiplier** applied to heat, AQI, and UV penalties:
 
-| Factor | Base Penalty | Dog Multiplied | Applied |
-|--------|-------------|---------------|---------|
-| Heat (bad) | -60 | × 1.2 = -72 | -72 |
-| Heat (warn) | -30 | × 1.2 = -36 | -36 |
-| UV (bad) | -25 | × 1.2 = -30 | -30 |
-| UV (warn) | -12 | × 1.2 = -14.4 | -14 (rounded) |
-| AQI (bad) | -40 | × 1.2 = -48 | -48 |
-| AQI (warn) | -18 | × 1.2 = -21.6 | -22 (rounded) |
+| Factor | Base (max) | Dog Multiplied | Applied |
+|--------|-----------|---------------|---------|
+| Heat | -60 | × 1.2 | -72 |
+| UV | -25 | × 1.2 | -30 |
+| AQI | -40 (at US AQI ≥ 150) | × 1.2 | -48 |
 | Wind | -12 | no multiplier | -12 |
 | Rain | -10 | no multiplier | -10 |
 
@@ -212,7 +211,7 @@ Same penalty structure as run_solo, with the **1.2x dog multiplier** applied to 
 
 When two factors have the same absolute penalty:
 
-1. Use this priority order: rain > heat > waves > uv > aqi > wind > cold
+1. Use this priority order: `rain > heat > waves > uv > aqi > wind > cold`
 2. If still tied, include both (up to the 4-chip max for negative chips)
 
 ### Positive Chip Selection
@@ -251,12 +250,12 @@ def score_swim_solo(hour: HourlyForecast, t: Thresholds) -> ModeScore:
         if hour.gust_ms >= t.wind_warn_ms:
             penalties.append(("wind", -15, f"Gusty {hour.gust_ms:.0f}m/s"))
 
-    # AQI
+    # AQI (US AQI from AQICN ground sensor; linear ramp ok=50 → bad=150)
     if hour.eu_aqi is not None:
-        if hour.eu_aqi >= t.aqi_bad_eu:
-            penalties.append(("aqi", -25, "Air quality poor"))
-        elif hour.eu_aqi >= t.aqi_warn_eu:
-            penalties.append(("aqi", -12, "AQI moderate"))
+        p = linear_penalty(hour.eu_aqi, ok=50, bad=150, max_penalty=25)
+        if p > 0:
+            text = "Air quality poor" if p >= 25 * 0.7 else "AQI moderate"
+            penalties.append(("aqi", -round(p), text))
 
     # Cold comfort
     if hour.feelslike_c is not None:
@@ -325,5 +324,6 @@ When computing "best time" windows for notifications or the "Today" tab:
 
 ## Versioning
 
-- **`scoring_version`:** `"score_v1"` - included in every scoring output, notification event, and recommendation log.
+- **`scoring_version`:** `"score_v2"` - included in every scoring output, notification event, and recommendation log.
 - **Purpose:** When scoring logic changes (e.g., new penalty values, new factors), the version increments. This allows debugging why a past notification was sent and comparing scoring accuracy across versions.
+- **score_v2 vs score_v1:** v2 replaced cliff-edge penalty tiers with continuous linear ramps for all factors. AQI source changed from Open-Meteo CAMS (EU AQI) to AQICN ground sensor (US AQI), with thresholds recalibrated to US EPA scale.
