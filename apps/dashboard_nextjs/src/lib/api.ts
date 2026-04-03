@@ -6,7 +6,7 @@ const AREA_ID = "tel_aviv_coast";
 export async function fetchScores(days: number = 7): Promise<ScoredForecastResponse> {
   const res = await fetch(
     `${API_BASE}/v1/public/scores?area_id=${AREA_ID}&days=${days}`,
-    { next: { revalidate: 300 } }
+    { cache: 'no-store' }
   );
   if (!res.ok) {
     throw new Error(`API error: ${res.status}`);
@@ -16,7 +16,7 @@ export async function fetchScores(days: number = 7): Promise<ScoredForecastRespo
 
 export async function fetchHealth(): Promise<HealthResponse> {
   const res = await fetch(`${API_BASE}/v1/public/health`, {
-    next: { revalidate: 60 },
+    cache: 'no-store',
   });
   if (!res.ok) {
     throw new Error(`API error: ${res.status}`);
