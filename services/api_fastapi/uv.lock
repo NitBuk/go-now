@@ -65,11 +65,11 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.111,<1.0" },
-    { name = "firebase-admin", specifier = ">=6.5,<7.0" },
+    { name = "firebase-admin", specifier = ">=6.5,<8.0" },
     { name = "google-cloud-firestore", specifier = ">=2.14,<3.0" },
     { name = "python-dotenv", specifier = ">=1.0,<2.0" },
     { name = "scoring-engine", directory = "../scoring_engine" },
-    { name = "structlog", specifier = ">=24.1,<25.0" },
+    { name = "structlog", specifier = ">=24.1,<26.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
 
@@ -79,7 +79,7 @@ dev = [
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "mypy", specifier = ">=1.10" },
     { name = "pytest", specifier = ">=8.0,<9.0" },
-    { name = "pytest-asyncio", specifier = ">=0.23,<1.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23,<2.0" },
     { name = "ruff", specifier = ">=0.4" },
 ]
 
@@ -1365,7 +1365,7 @@ source = { directory = "../scoring_engine" }
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.0,<9.0" }]
+dev = [{ name = "pytest", specifier = ">=8.0,<10.0" }]
 
 [[package]]
 name = "starlette"
