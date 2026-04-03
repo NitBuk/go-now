@@ -416,10 +416,13 @@ class TestDustPenalty:
         assert r150 == 70
 
     def test_pm10_null_no_penalty(self) -> None:
-        """PM10 null produces no penalty."""
+        """PM10 null produces no penalty and no positive dust chip."""
         result = score_hour(_perfect_hour(pm10=None))
         assert result.run_solo.score == 100
         assert result.swim_solo.score == 100
+        # Ensure "Air is clear" is not shown when PM10 data is missing
+        dust_chips = [r for r in result.run_solo.reasons if r.factor == "dust"]
+        assert all(c.text != "Air is clear" for c in dust_chips)
 
     def test_hamsin_scenario(self) -> None:
         """Hamsin: high PM10 + moderate EU AQI drops run_solo from Good to Meh.
@@ -456,12 +459,10 @@ class TestDustPenalty:
 
     def test_swim_dog_no_dust_multiplier(self) -> None:
         """swim_dog dust penalty is same as swim_solo (no dog multiplier for swim)."""
-        r_solo = score_hour(_perfect_hour(pm10=150.0)).swim_solo.score
-        r_dog = score_hour(_perfect_hour(pm10=150.0)).swim_dog.score
-        # Both use pm10_swim_max_penalty=15; swim_dog may have other factors differ
-        # but the dust component is identical
-        swim_solo_dust_chips = [r for r in score_hour(_perfect_hour(pm10=150.0)).swim_solo.reasons if r.factor == "dust"]
-        swim_dog_dust_chips = [r for r in score_hour(_perfect_hour(pm10=150.0)).swim_dog.reasons if r.factor == "dust"]
+        result_solo = score_hour(_perfect_hour(pm10=150.0))
+        result_dog = score_hour(_perfect_hour(pm10=150.0))
+        swim_solo_dust_chips = [r for r in result_solo.swim_solo.reasons if r.factor == "dust"]
+        swim_dog_dust_chips = [r for r in result_dog.swim_dog.reasons if r.factor == "dust"]
         assert len(swim_solo_dust_chips) == 1
         assert len(swim_dog_dust_chips) == 1
         assert swim_solo_dust_chips[0].penalty == swim_dog_dust_chips[0].penalty

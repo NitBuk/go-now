@@ -304,6 +304,8 @@ def _score_swim_solo(hour: HourData, t: Thresholds) -> ModeScore:
         p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_swim_max_penalty)
         if p > 0:
             penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_swim_max_penalty)))
+    else:
+        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Heat
     if hour.feelslike_c is not None:
@@ -378,6 +380,8 @@ def _score_swim_dog(hour: HourData, t: Thresholds) -> ModeScore:
         p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_swim_max_penalty)
         if p > 0:
             penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_swim_max_penalty)))
+    else:
+        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Dog heat penalty (not hard gate - dogs cool in water)
     if hour.feelslike_c is not None:
@@ -461,6 +465,8 @@ def _score_run_solo(hour: HourData, t: Thresholds) -> ModeScore:
         p = _linear_penalty(hour.pm10, t.pm10_ok, t.pm10_bad, t.pm10_run_max_penalty)
         if p > 0:
             penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_run_max_penalty)))
+    else:
+        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Wind (penalty, not gate - already checked gate above)
     if hour.gust_ms is not None:
@@ -542,6 +548,8 @@ def _score_run_dog(hour: HourData, t: Thresholds) -> ModeScore:
         p = p * dog_mult
         if p > 0:
             penalties.append(("dust", -round(p), _dust_penalty_text(hour.pm10, p, t.pm10_run_max_penalty * dog_mult)))
+    else:
+        penalties.append(("dust", 0, "PM10 data unavailable"))
 
     # Wind (no multiplier)
     if hour.gust_ms is not None:
