@@ -227,6 +227,7 @@ def _score_hour_data(
         precip_mm=h.get("precip_mm"),
         uv_index=h.get("uv_index"),
         eu_aqi=h.get("eu_aqi"),
+        pm10=h.get("pm10"),
         sunrise_utc=sunrise_utc,
         sunset_utc=sunset_utc,
     )

@@ -25,6 +25,7 @@ def _perfect_hour(**overrides) -> HourData:
         feelslike_c=24.0,
         uv_index=3.0,
         eu_aqi=30,
+        pm10=10.0,
         gust_ms=5.0,
         precip_prob_pct=0,
         precip_mm=0.0,
@@ -247,6 +248,7 @@ class TestContinuousScoring:
             uv_index=3.9,        # just below uv ok=4
             eu_aqi=39,           # just below aqi ok=40
             gust_ms=6.9,         # just below wind ok=7
+            pm10=49.0,           # just below pm10 ok=50
         )
         result = score_hour(hour)
         assert result.swim_solo.score == 100
@@ -370,3 +372,97 @@ class TestScoringVersion:
     def test_scoring_version(self) -> None:
         result = score_hour(_hour())
         assert result.scoring_version == "score_v2"
+
+
+class TestDustPenalty:
+    """Tests for PM10/dust penalty factor (Hamsin dust storm detection)."""
+
+    def test_pm10_below_ok_no_penalty(self) -> None:
+        """PM10 at 40 (below ok=50) produces no penalty."""
+        result = score_hour(_perfect_hour(pm10=40.0))
+        assert result.run_solo.score == 100
+        assert result.swim_solo.score == 100
+
+    def test_pm10_at_ok_no_penalty(self) -> None:
+        """PM10 exactly at ok threshold (50) produces no penalty."""
+        result = score_hour(_perfect_hour(pm10=50.0))
+        assert result.run_solo.score == 100
+
+    def test_pm10_at_bad_run_solo(self) -> None:
+        """PM10 at bad threshold (150) gives full run penalty of 30."""
+        result = score_hour(_perfect_hour(pm10=150.0))
+        assert result.run_solo.score == 70  # 100 - 30
+
+    def test_pm10_above_bad_caps_at_max(self) -> None:
+        """PM10 at 500 (severe Hamsin) caps at max penalty."""
+        result = score_hour(_perfect_hour(pm10=500.0))
+        assert result.run_solo.score == 70  # still 100 - 30 max
+
+    def test_pm10_swim_lower_penalty_than_run(self) -> None:
+        """Swim dust penalty (max 15) is less than run (max 30)."""
+        result = score_hour(_perfect_hour(pm10=150.0))
+        assert result.swim_solo.score == 85  # 100 - 15
+        assert result.run_solo.score == 70   # 100 - 30
+        assert result.swim_solo.score > result.run_solo.score
+
+    def test_pm10_scales_linearly(self) -> None:
+        """Dust penalty scales linearly between ok and bad."""
+        r50 = score_hour(_perfect_hour(pm10=50.0)).run_solo.score
+        r100 = score_hour(_perfect_hour(pm10=100.0)).run_solo.score
+        r150 = score_hour(_perfect_hour(pm10=150.0)).run_solo.score
+
+        assert r50 == 100
+        assert r50 > r100 > r150
+        assert r150 == 70
+
+    def test_pm10_null_no_penalty(self) -> None:
+        """PM10 null produces no penalty and no positive dust chip."""
+        result = score_hour(_perfect_hour(pm10=None))
+        assert result.run_solo.score == 100
+        assert result.swim_solo.score == 100
+        # Ensure "Air is clear" is not shown when PM10 data is missing
+        dust_chips = [r for r in result.run_solo.reasons if r.factor == "dust"]
+        assert all(c.text != "Air is clear" for c in dust_chips)
+
+    def test_hamsin_scenario(self) -> None:
+        """Hamsin: high PM10 + moderate EU AQI drops run_solo from Good to Meh.
+
+        EU AQI=74 penalty: linear(74, 40, 120, 40) = (74-40)/(120-40)*40 = 17
+        PM10=400 penalty: linear(400, 50, 150, 30) = 30 (capped at max)
+        Total: 17 + 30 = 47 → score = 53 → Meh
+        """
+        result = score_hour(_perfect_hour(eu_aqi=74, pm10=400.0))
+        assert result.run_solo.score == 53
+        assert result.run_solo.label == "Meh"
+
+    def test_hamsin_run_dog_worse_than_run_solo(self) -> None:
+        """Hamsin: run_dog score is lower than run_solo due to 1.2x multiplier."""
+        result = score_hour(_perfect_hour(eu_aqi=74, pm10=400.0))
+        assert result.run_dog.score < result.run_solo.score
+
+    def test_dust_reason_chip_present(self) -> None:
+        """High PM10 produces a dust reason chip."""
+        result = score_hour(_perfect_hour(pm10=150.0))
+        dust_chips = [r for r in result.run_solo.reasons if r.factor == "dust"]
+        assert len(dust_chips) == 1
+        assert "PM10" in dust_chips[0].text or "dust" in dust_chips[0].text.lower()
+
+    def test_dog_multiplier_applied_to_dust_for_run_dog(self) -> None:
+        """run_dog dust penalty is 1.2x the base run penalty."""
+        r_solo = score_hour(_perfect_hour(pm10=100.0)).run_solo.score
+        r_dog = score_hour(_perfect_hour(pm10=100.0)).run_dog.score
+        # Solo: midpoint penalty = 15 → score 85
+        assert r_solo == 85
+        # Dog: 15 * 1.2 = 18 → score 82
+        assert r_dog == 82
+        assert r_dog < r_solo
+
+    def test_swim_dog_no_dust_multiplier(self) -> None:
+        """swim_dog dust penalty is same as swim_solo (no dog multiplier for swim)."""
+        result_solo = score_hour(_perfect_hour(pm10=150.0))
+        result_dog = score_hour(_perfect_hour(pm10=150.0))
+        swim_solo_dust_chips = [r for r in result_solo.swim_solo.reasons if r.factor == "dust"]
+        swim_dog_dust_chips = [r for r in result_dog.swim_dog.reasons if r.factor == "dust"]
+        assert len(swim_solo_dust_chips) == 1
+        assert len(swim_dog_dust_chips) == 1
+        assert swim_solo_dust_chips[0].penalty == swim_dog_dust_chips[0].penalty

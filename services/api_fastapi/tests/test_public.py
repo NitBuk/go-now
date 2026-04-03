@@ -1,6 +1,5 @@
 """Tests for public API endpoints."""
 
-from datetime import UTC, datetime, timedelta
 
 from fastapi.testclient import TestClient
 
@@ -152,7 +151,7 @@ class TestScoresEndpoint:
 class TestSunriseSunsetGate:
     """Issue #18 - swim score must be 0 before sunrise and after sunset."""
 
-    def test_scores_endpoint_uses_sunrise_from_daily(self, client_with_forecast: TestClient) -> None:
+    def test_scores_endpoint_uses_sunrise_from_daily(self, client_with_forecast: TestClient) -> None:  # noqa: E501
         """Scores endpoint should pass sunrise/sunset from daily[] to the engine."""
         resp = client_with_forecast.get("/v1/public/scores?area_id=tel_aviv_coast")
         assert resp.status_code == 200
