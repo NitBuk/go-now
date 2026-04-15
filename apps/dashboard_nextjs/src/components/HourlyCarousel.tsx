@@ -85,7 +85,7 @@ export default function HourlyCarousel({ hours, mode, daily = [] }: HourlyCarous
       }
     }
     return map;
-  }, [todayHours]);
+  }, [todayHours, daily]);
 
   useEffect(() => {
     if (nowRef.current && scrollRef.current) {

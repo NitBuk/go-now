@@ -25,19 +25,17 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("auto");
-
-  // Read from localStorage on mount (client only)
-  useEffect(() => {
+  // Initialize directly from localStorage — avoids a cascading setState in effect
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "auto";
     try {
       const saved = localStorage.getItem("theme") as Theme | null;
-      if (saved === "light" || saved === "dark" || saved === "auto") {
-        setThemeState(saved);
-      }
+      if (saved === "light" || saved === "dark" || saved === "auto") return saved;
     } catch {
       // localStorage unavailable (private browsing, etc.)
     }
-  }, []);
+    return "auto";
+  });
 
   // Apply theme class to <html> and persist
   useEffect(() => {

@@ -64,7 +64,6 @@ export default function RootLayout({
     // so server HTML and client HTML intentionally differ on <html>.
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
       </head>
       <body
