@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,8 +44,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0A0E1A",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0A0E1A" },
+    { media: "(prefers-color-scheme: light)", color: "#f0f4f8" },
+  ],
 };
+
+// Inline script injected in <head> before any paint to prevent flash-of-wrong-theme.
+// Reads localStorage, falls back to system preference.
+const noFlashScript = `(function(){try{var t=localStorage.getItem('theme')||'auto';var d=t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})()`;
 
 export default function RootLayout({
   children,
@@ -52,13 +60,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    // suppressHydrationWarning: the dark class is added by JS before hydration,
+    // so server HTML and client HTML intentionally differ on <html>.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-gray-900 dark:text-white`}
       >
-        <NavBar />
-        <main className="max-w-lg mx-auto px-4 py-4">{children}</main>
-        <Footer />
+        <ThemeProvider>
+          <NavBar />
+          <main className="max-w-6xl mx-auto px-4 lg:px-8 py-4">
+            {children}
+          </main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -64,8 +64,8 @@ export default function BestWindow({ hours, mode }: BestWindowProps) {
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
-      <div className="px-4 pt-3 pb-2 border-b border-white/[0.06]">
-        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+      <div className="px-4 pt-3 pb-2 border-b border-black/[0.06] dark:border-white/[0.06]">
+        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest">
           Next Best Window
         </span>
       </div>
@@ -83,7 +83,7 @@ export default function BestWindow({ hours, mode }: BestWindowProps) {
             <Sparkles size={14} style={{ color: scoreHex(window.label) }} className="shrink-0 sparkle-anim" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-[13px] font-medium text-slate-200 truncate">
+                <span className="text-[13px] font-medium text-slate-700 dark:text-slate-200 truncate">
                   {formatDay(window.startHour.hour_utc)} {formatHour(window.startHour.hour_utc)}&ndash;{formatHour(window.endHour.hour_utc)}
                 </span>
                 <span

@@ -94,7 +94,7 @@ export default function HeroSection({ hour, mode }: HeroSectionProps) {
             >
               {modeScore.label}
             </span>
-            <p className="text-[13px] text-slate-400 italic max-w-[260px]">
+            <p className="text-[13px] text-slate-600 dark:text-slate-400 italic max-w-[260px]">
               {vibeLine}
             </p>
           </motion.div>

@@ -22,6 +22,12 @@ const container = {
   show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
 };
 
+// Panel variant: stagger its motion children independently
+const panel = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0 } },
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
@@ -61,34 +67,41 @@ export default function ForecastView({ data }: ForecastViewProps) {
           background: `radial-gradient(ellipse at 50% 30%, ${scoreBgTint(currentLabel)}, transparent 70%)`,
         }}
       />
+
+      {/* Mobile: vertical stack. Desktop (lg+): two-column grid */}
       <motion.div
-        className="relative space-y-3"
+        className="relative lg:grid lg:grid-cols-[380px_1fr] lg:gap-6 lg:items-start space-y-3 lg:space-y-0"
         variants={container}
         initial="hidden"
         animate="show"
       >
-        <motion.div variants={fadeUp}>
-          <ModeSelector selected={mode} onChange={setMode} />
-        </motion.div>
-
-        {currentHour && (
-          <motion.div variants={heroReveal}>
-            <HeroSection hour={currentHour} mode={mode} />
+        {/* Left panel: mode selector + hero score */}
+        <motion.div className="space-y-3" variants={panel}>
+          <motion.div variants={fadeUp}>
+            <ModeSelector selected={mode} onChange={setMode} />
           </motion.div>
-        )}
 
-        <motion.div variants={fadeUp}>
-          <HourlyCarousel hours={data.hours} mode={mode} daily={data.daily} />
+          {currentHour && (
+            <motion.div variants={heroReveal}>
+              <HeroSection hour={currentHour} mode={mode} />
+            </motion.div>
+          )}
         </motion.div>
 
-        <motion.div variants={fadeUp}>
-          <BestWindow hours={data.hours} mode={mode} />
-        </motion.div>
+        {/* Right panel: hourly timeline + best window + 7-day */}
+        <motion.div className="space-y-3" variants={panel}>
+          <motion.div variants={fadeUp}>
+            <HourlyCarousel hours={data.hours} mode={mode} daily={data.daily} />
+          </motion.div>
 
-        <motion.div variants={fadeUp}>
-          <DailyForecast hours={data.hours} mode={mode} />
-        </motion.div>
+          <motion.div variants={fadeUp}>
+            <BestWindow hours={data.hours} mode={mode} />
+          </motion.div>
 
+          <motion.div variants={fadeUp}>
+            <DailyForecast hours={data.hours} mode={mode} />
+          </motion.div>
+        </motion.div>
       </motion.div>
     </div>
   );

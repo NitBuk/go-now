@@ -217,7 +217,7 @@ export default function FormulaView() {
         Scoring Formula
       </motion.h1>
 
-      {/* Core formula - always above the fold */}
+      {/* Row 1: Core formula — full width, but 2-col internally on desktop */}
       <motion.div
         className="glass-card rounded-2xl p-5"
         variants={cardVariants}
@@ -232,47 +232,52 @@ export default function FormulaView() {
           </span>
         </div>
 
-        <div className="bg-white/[0.04] rounded-xl p-4 mb-4">
-          <motion.p
-            className="text-[14px] font-mono text-slate-200 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: formulaRevealed ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.span
-              animate={formulaRevealed ? { textShadow: ["0 0 0px transparent", "0 0 12px rgba(96,165,250,0.4)", "0 0 0px transparent"] } : {}}
-              transition={{ duration: 1.5, delay: 0.5 }}
-            >
-              Score = 100 - {"\u03A3"} penalties
-            </motion.span>
-          </motion.p>
-          <p className="text-[12px] text-slate-400 text-center mt-1.5">
-            Penalties scale <span className="font-medium text-slate-200">linearly</span> between comfort and bad thresholds
-          </p>
-          <p className="text-[11px] text-slate-400 text-center mt-1">
-            Below comfort {"\u2192"} 0 penalty &middot; Above bad {"\u2192"} max penalty &middot; Between {"\u2192"} proportional
-          </p>
-        </div>
+        <div className="lg:grid lg:grid-cols-[1fr_1fr] lg:gap-6 lg:items-start">
+          {/* Left: formula equation */}
+          <div>
+            <div className="bg-white/[0.04] rounded-xl p-4 mb-4 lg:mb-0">
+              <motion.p
+                className="text-[14px] font-mono text-slate-200 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: formulaRevealed ? 1 : 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.span
+                  animate={formulaRevealed ? { textShadow: ["0 0 0px transparent", "0 0 12px rgba(96,165,250,0.4)", "0 0 0px transparent"] } : {}}
+                  transition={{ duration: 1.5, delay: 0.5 }}
+                >
+                  Score = 100 - {"\u03A3"} penalties
+                </motion.span>
+              </motion.p>
+              <p className="text-[12px] text-slate-400 text-center mt-1.5">
+                Penalties scale <span className="font-medium text-slate-200">linearly</span> between comfort and bad thresholds
+              </p>
+              <p className="text-[11px] text-slate-400 text-center mt-1">
+                Below comfort {"\u2192"} 0 penalty &middot; Above bad {"\u2192"} max penalty &middot; Between {"\u2192"} proportional
+              </p>
+            </div>
+          </div>
 
-        {/* Score tiers */}
-        <div className="space-y-2 mb-1">
-          {TIERS.map((tier, i) => (
-            <ScrollReveal
-              key={tier.label}
-              className="flex items-center gap-2"
-              variants={tierVariants}
-              custom={i}
-            >
-              <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${tier.bg} ${tier.text} shrink-0`}>
-                {tier.range} {tier.label}
-              </span>
-              <span className="text-[12px] text-slate-400">{tier.desc}</span>
-            </ScrollReveal>
-          ))}
+          {/* Right: score tiers */}
+          <div className="space-y-2 mt-4 lg:mt-0">
+            {TIERS.map((tier, i) => (
+              <ScrollReveal
+                key={tier.label}
+                className="flex items-center gap-2"
+                variants={tierVariants}
+                custom={i}
+              >
+                <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${tier.bg} ${tier.text} shrink-0`}>
+                  {tier.range} {tier.label}
+                </span>
+                <span className="text-[12px] text-slate-400">{tier.desc}</span>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </motion.div>
 
-      {/* Hard Gates */}
+      {/* Hard Gates — full width, 2×2 grid on desktop */}
       <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
         <div className="flex items-center gap-1.5 mb-3">
           <ShieldAlert size={14} className="text-red-400" />
@@ -281,7 +286,7 @@ export default function FormulaView() {
           </span>
           <span className="text-[11px] text-slate-400 ml-1">Score forced to 0</span>
         </div>
-        <div className="space-y-3 ml-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {GATES.map((gate, i) => {
             const Icon = gate.icon;
             return (
@@ -304,29 +309,7 @@ export default function FormulaView() {
         </div>
       </ScrollReveal>
 
-      {/* Swim Penalties */}
-      <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
-        <div className="flex items-center gap-1.5 mb-3">
-          <Waves size={14} className="text-blue-400" />
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
-            Swim Penalties
-          </span>
-        </div>
-        <PenaltyTable rows={SWIM_PENALTIES} accentColor="text-amber-400" />
-      </ScrollReveal>
-
-      {/* Run Penalties */}
-      <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
-        <div className="flex items-center gap-1.5 mb-3">
-          <PersonStanding size={14} className="text-amber-400" />
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
-            Run Penalties
-          </span>
-        </div>
-        <PenaltyTable rows={RUN_PENALTIES} accentColor="text-orange-400" />
-      </ScrollReveal>
-
-      {/* Dog Modes */}
+      {/* Dog Mode — full width, 2 items in one row on desktop */}
       <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
         <div className="flex items-center gap-1.5 mb-3">
           <Dog size={14} className="text-orange-400" />
@@ -334,7 +317,7 @@ export default function FormulaView() {
             Dog Mode Adjustments
           </span>
         </div>
-        <div className="space-y-2 text-[13px] text-slate-400">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 text-[13px] text-slate-400">
           <ScrollReveal className="bg-white/[0.04] rounded-xl p-3" variants={bounceIn} custom={0}>
             <p className="font-medium text-slate-200 mb-1">1.2x penalty multiplier</p>
             <p className="text-[12px]">Heat, UV, and AQI penalties are amplified by 1.2x for dog modes. Dogs regulate temperature through panting - less efficient than sweating - making them more vulnerable to heat stress and poor air quality.</p>
@@ -346,7 +329,32 @@ export default function FormulaView() {
         </div>
       </ScrollReveal>
 
-      {/* Example */}
+      {/* Row 3: Swim + Run penalties — side by side on desktop */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-4 space-y-4 lg:space-y-0">
+        {/* Swim Penalties */}
+        <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
+          <div className="flex items-center gap-1.5 mb-3">
+            <Waves size={14} className="text-blue-400" />
+            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+              Swim Penalties
+            </span>
+          </div>
+          <PenaltyTable rows={SWIM_PENALTIES} accentColor="text-amber-400" />
+        </ScrollReveal>
+
+        {/* Run Penalties */}
+        <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
+          <div className="flex items-center gap-1.5 mb-3">
+            <PersonStanding size={14} className="text-amber-400" />
+            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+              Run Penalties
+            </span>
+          </div>
+          <PenaltyTable rows={RUN_PENALTIES} accentColor="text-orange-400" />
+        </ScrollReveal>
+      </div>
+
+      {/* Row 4: Example — full width */}
       <ScrollReveal className="glass-card rounded-2xl p-5" variants={cardVariants} custom={0}>
         <div className="flex items-center gap-1.5 mb-3">
           <Calculator size={14} className="text-slate-400" />
@@ -354,30 +362,33 @@ export default function FormulaView() {
             Example Calculation
           </span>
         </div>
-        <div className="bg-white/[0.04] rounded-xl p-3 mb-3 space-y-2">
-          <ScrollReveal className="" variants={stepVariants} custom={0}>
-            <p className="text-[12px] font-medium text-slate-200">Example: 32°C run score</p>
-          </ScrollReveal>
-          <ScrollReveal className="" variants={stepVariants} custom={1}>
-            <p className="text-[12px] text-slate-400">32°C is 50% through the 26-38°C ramp</p>
-          </ScrollReveal>
-          <ScrollReveal className="" variants={stepVariants} custom={2}>
-            <p className="text-[12px] text-slate-400">
-              {"\u2192"} penalty = 50% of 60 = <span className="font-mono font-medium text-orange-400">-30</span>
-            </p>
-          </ScrollReveal>
-          <ScrollReveal className="" variants={stepVariants} custom={3}>
-            <p className="text-[12px] text-slate-400">
-              {"\u2192"} score <span className="font-mono font-medium text-slate-200">70</span> (Good)
-            </p>
-          </ScrollReveal>
-        </div>
-
-        <div className="bg-white/[0.04] rounded-xl p-3 text-[12px] text-slate-400">
-          Missing data never penalizes - an info chip is shown instead so you know the score may be less reliable.
-        </div>
-        <div className="bg-white/[0.04] rounded-xl p-3 mt-2 text-[12px] text-slate-400">
-          <span className="font-medium text-slate-300">AQI source:</span> US EPA scale from the AQICN Tel Aviv ground sensor — not a forecast model. Good ≤ 50 · Moderate ≤ 100 · Unhealthy ≥ 150 · Very Unhealthy ≥ 200 · Hazardous ≥ 300. During Hamsin dust storms the ground sensor can read 400–600+.
+        <div className="lg:grid lg:grid-cols-[1fr_1fr] lg:gap-4">
+          <div className="bg-white/[0.04] rounded-xl p-3 mb-3 lg:mb-0 space-y-2">
+            <ScrollReveal className="" variants={stepVariants} custom={0}>
+              <p className="text-[12px] font-medium text-slate-200">Example: 32°C run score</p>
+            </ScrollReveal>
+            <ScrollReveal className="" variants={stepVariants} custom={1}>
+              <p className="text-[12px] text-slate-400">32°C is 50% through the 26-38°C ramp</p>
+            </ScrollReveal>
+            <ScrollReveal className="" variants={stepVariants} custom={2}>
+              <p className="text-[12px] text-slate-400">
+                {"\u2192"} penalty = 50% of 60 = <span className="font-mono font-medium text-orange-400">-30</span>
+              </p>
+            </ScrollReveal>
+            <ScrollReveal className="" variants={stepVariants} custom={3}>
+              <p className="text-[12px] text-slate-400">
+                {"\u2192"} score <span className="font-mono font-medium text-slate-200">70</span> (Good)
+              </p>
+            </ScrollReveal>
+          </div>
+          <div className="space-y-3">
+            <div className="bg-white/[0.04] rounded-xl p-3 text-[12px] text-slate-400">
+              Missing data never penalizes - an info chip is shown instead so you know the score may be less reliable.
+            </div>
+            <div className="bg-white/[0.04] rounded-xl p-3 text-[12px] text-slate-400">
+              <span className="font-medium text-slate-300">AQI source:</span> US EPA scale from the AQICN Tel Aviv ground sensor — not a forecast model. Good ≤ 50 · Moderate ≤ 100 · Unhealthy ≥ 150 · Very Unhealthy ≥ 200 · Hazardous ≥ 300. During Hamsin dust storms the ground sensor can read 400–600+.
+            </div>
+          </div>
         </div>
       </ScrollReveal>
     </div>

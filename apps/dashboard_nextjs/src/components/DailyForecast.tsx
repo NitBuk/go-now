@@ -80,7 +80,7 @@ function RangeBar({
   const right = ((max - globalMin) / range) * 100;
 
   return (
-    <div className="relative h-[4px] w-full bg-white/[0.06] rounded-full overflow-hidden">
+    <div className="relative h-[4px] w-full bg-black/[0.08] dark:bg-white/[0.06] rounded-full overflow-hidden">
       <motion.div
         className="absolute top-0 h-full rounded-full"
         initial={{ width: 0 }}
@@ -160,23 +160,23 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
   return (
     <>
       <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-white/[0.06] flex items-center justify-between">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+        <div className="px-4 pt-3 pb-2 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest">
             7-Day Forecast
           </span>
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.1] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] transition-colors cursor-pointer"
               aria-label={`Showing ${metricDef.label}. Click to change metric.`}
               aria-expanded={menuOpen}
               aria-haspopup="listbox"
             >
               <Icon size={12} style={{ color: metricDef.color }} />
-              <span className="text-[11px] font-medium text-slate-300">{metricDef.label}</span>
+              <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">{metricDef.label}</span>
               <ChevronDown
                 size={10}
-                className={`text-slate-400 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
+                className={`text-slate-500 dark:text-slate-400 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
               />
             </button>
 
@@ -189,7 +189,7 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[148px] py-1 rounded-xl bg-[#1A2234] border border-white/[0.1] shadow-xl shadow-black/40 backdrop-blur-xl overflow-hidden"
+                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[148px] py-1 rounded-xl bg-white dark:bg-[#1A2234] border border-black/[0.08] dark:border-white/[0.1] shadow-xl shadow-black/10 dark:shadow-black/40 backdrop-blur-xl overflow-hidden"
                 >
                   {METRICS.map((m) => {
                     const MIcon = m.icon;
@@ -201,11 +201,13 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
                         aria-selected={active}
                         onClick={() => { setMetric(m.key); setMenuOpen(false); }}
                         className={`w-full flex items-center gap-2 px-3 py-2 text-left cursor-pointer transition-colors ${
-                          active ? "bg-white/[0.08]" : "hover:bg-white/[0.05]"
+                          active
+                            ? "bg-black/[0.06] dark:bg-white/[0.08]"
+                            : "hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
                         }`}
                       >
                         <MIcon size={13} style={{ color: m.color }} />
-                        <span className={`text-[12px] font-medium ${active ? "text-white" : "text-slate-300"}`}>
+                        <span className={`text-[12px] font-medium ${active ? "text-gray-900 dark:text-white" : "text-slate-600 dark:text-slate-300"}`}>
                           {m.label}
                         </span>
                       </button>
@@ -217,7 +219,7 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
           </div>
         </div>
 
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-black/[0.05] dark:divide-white/[0.04]">
           {dayGroups.map((group, index) => (
             <motion.button
               key={group.day}
@@ -227,9 +229,9 @@ export default function DailyForecast({ hours, mode }: DailyForecastProps) {
               whileInView="visible"
               viewport={{ once: true, margin: "-20px" }}
               whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-white/[0.03] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors cursor-pointer"
             >
-              <span className="text-[13px] font-medium text-slate-300 w-[72px] shrink-0 whitespace-nowrap">
+              <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300 w-[72px] shrink-0 whitespace-nowrap">
                 {group.day}
               </span>
 

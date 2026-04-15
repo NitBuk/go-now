@@ -101,8 +101,8 @@ export default function HourlyCarousel({ hours, mode, daily = [] }: HourlyCarous
   return (
     <>
       <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-white/[0.06]">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+        <div className="px-4 pt-3 pb-2 border-b border-black/[0.06] dark:border-white/[0.06]">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest">
             Hourly Forecast
           </span>
         </div>
@@ -125,39 +125,40 @@ export default function HourlyCarousel({ hours, mode, daily = [] }: HourlyCarous
                   animate="show"
                   custom={i}
                   whileTap={{ scale: 0.95 }}
-                  className={`flex flex-col items-center gap-1.5 px-2.5 min-w-[58px] snap-start cursor-pointer hover:bg-white/[0.03] transition-colors rounded-lg ${
-                    isCurrent ? "bg-white/[0.04]" : ""
+                  className={`flex flex-col items-center gap-1.5 px-2.5 min-w-[58px] snap-start cursor-pointer hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors rounded-lg ${
+                    isCurrent ? "bg-black/[0.04] dark:bg-white/[0.04]" : ""
                   } ${
                     i < todayHours.length - 1
-                      ? "border-r border-white/[0.04]"
+                      ? "border-r border-black/[0.05] dark:border-white/[0.04]"
                       : ""
                   }`}
                 >
                   <span
                     className={`text-[11px] font-medium ${
-                      isCurrent ? "text-white" : "text-slate-500"
+                      isCurrent ? "text-gray-900 dark:text-white" : "text-slate-500"
                     }`}
                   >
                     {isCurrent ? "Now" : formatHour(hour.hour_utc)}
                   </span>
 
                   <div
-                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${scoreGradient(ms.label)} flex items-center justify-center text-white text-[11px] font-semibold ${
+                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${scoreGradient(ms.label)} flex items-center justify-center text-[11px] font-semibold ${
                       isCurrent ? "score-glow" : ""
                     }`}
                     style={
                       isCurrent
                         ? ({
                             "--glow-color": scoreGlow(ms.label),
+                            color: "white",
                           } as React.CSSProperties)
-                        : undefined
+                        : { color: "white" }
                     }
                   >
                     {ms.score}
                   </div>
 
                   {hour.feelslike_c != null && (
-                    <span className="text-[11px] text-slate-400 font-medium">
+                    <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
                       {Math.round(hour.feelslike_c)}°
                     </span>
                   )}

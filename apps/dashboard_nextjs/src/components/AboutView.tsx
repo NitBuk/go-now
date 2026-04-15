@@ -235,7 +235,7 @@ function AppCombiner() {
           }
           transition={{ duration: 0.5 }}
         >
-          <span className="text-sm font-bold text-white tabular-nums">
+          <span className="text-sm font-bold tabular-nums" style={{ color: "white" }}>
             {phase === 4 ? scoreVal : "?"}
           </span>
         </motion.div>
