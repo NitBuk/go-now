@@ -14,7 +14,7 @@ dependencies = [
     "uvicorn[standard]>=0.30,<1.0",
     "google-cloud-firestore>=2.14,<3.0",
     "firebase-admin>=6.5,<8.0",
-    "python-dotenv>=1.0,<2.0",
+    "python-dotenv>=1.2.2,<2.0",
     "structlog>=24.1,<26.0",
     "scoring-engine",
 ]
