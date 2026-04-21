@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
@@ -22,8 +22,8 @@ export default function NavBar() {
       style={{ background: "var(--nav-bg)", borderColor: "var(--nav-border)" }}
     >
       <div className="max-w-6xl mx-auto px-4 lg:px-8 h-12 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-          <Image src="/logo.svg" alt="Go Now" width={140} height={42} priority />
+        <Link href="/" className="flex items-center text-gray-900 dark:text-white">
+          <Logo width={140} height={42} />
         </Link>
         <div className="flex items-center gap-1">
           {NAV_LINKS.map((link) => {
