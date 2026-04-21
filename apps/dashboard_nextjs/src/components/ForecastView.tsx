@@ -68,9 +68,9 @@ export default function ForecastView({ data }: ForecastViewProps) {
         }}
       />
 
-      {/* Mobile: vertical stack. Desktop (lg+): two-column grid */}
+      {/* Vertical stack at all breakpoints */}
       <motion.div
-        className="relative lg:grid lg:grid-cols-[380px_1fr] lg:gap-6 lg:items-start space-y-3 lg:space-y-0"
+        className="relative space-y-3"
         variants={container}
         initial="hidden"
         animate="show"
