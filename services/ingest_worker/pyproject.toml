@@ -15,7 +15,7 @@ dependencies = [
     "google-cloud-bigquery>=3.17,<4.0",
     "google-cloud-firestore>=2.26.0,<3.0",
     "structlog>=24.1,<26.0",
-    "python-dotenv>=1.0,<2.0",
+    "python-dotenv>=1.2.2,<2.0",
 ]
 
 [dependency-groups]
