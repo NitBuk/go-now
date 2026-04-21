@@ -26,7 +26,7 @@ scoring-engine = { path = "../scoring_engine" }
 dev = [
     "pytest>=9.0.3,<10.0",
     "pytest-asyncio>=0.23,<2.0",
-    "httpx>=0.27,<1.0",
+    "httpx>=0.28.1,<1.0",
     "black>=26.3.1",
     "ruff>=0.4",
     "mypy>=1.10",
