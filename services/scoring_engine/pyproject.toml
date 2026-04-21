@@ -10,7 +10,8 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "pytest>=8.0,<10.0",
+    "pytest>=9.0.3,<10.0",
+    "Pygments>=2.20.0",
 ]
 
 [tool.hatch.build.targets.wheel]
