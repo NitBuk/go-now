@@ -20,10 +20,6 @@ export default function NavBar() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -123,6 +119,7 @@ export default function NavBar() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={() => setOpen(false)}
                     className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
                       isActive(link.href)
                         ? "text-gray-900 dark:text-white bg-black/[0.06] dark:bg-white/[0.08]"
