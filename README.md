@@ -107,6 +107,7 @@ Storage  Query (serving cache)
 
 **Key decisions:**
 - Scoring engine is a standalone Python package -- no GCP deps, tested in isolation, and designed to port to Dart for V2 on-device scoring
+- First-release native iOS uses the backend `/v1/public/scores` contract as the scoring source of truth, keeping web and iOS maintainable from one API surface
 - Three storage layers: raw archive (Cloud Storage), analytics (BigQuery), serving cache (Firestore) -- each optimized for a distinct access pattern
 - Cloud Run scale-to-zero fits the hourly pipeline cadence; the full stack runs within GCP free tier
 - `ForecastProvider` interface decouples data ingestion from scoring -- add a new weather source without touching the API or scoring logic
@@ -124,6 +125,7 @@ The `/status` page exposes pipeline health and a live architecture diagram:
 ```
 apps/
   dashboard_nextjs/        # Next.js web app (mobile-first, Tailwind, Framer Motion)
+  ios_go_now/              # Native SwiftUI iPhone app (primary V2 product surface)
   mobile_flutter/          # Flutter native app (V2, not yet started)
 
 services/
@@ -132,7 +134,7 @@ services/
   scoring_engine/          # Standalone scoring package (zero cloud deps)
   shared_contracts/        # Shared DTOs across services
 
-docs/                      # 14 specification documents
+docs/                      # Specification documents
 infra/                     # GCP bootstrap notes, schemas, IAM configs
 scripts/                   # Operational runbooks (diagnose-ingest.sh)
 ```
