@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import GithubIcon from "./GithubIcon";
 
 export default function Footer() {
   return (
@@ -9,7 +9,7 @@ export default function Footer() {
         rel="noopener noreferrer"
         className="flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700 dark:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
       >
-        <Github size={14} />
+        <GithubIcon size={14} />
         <span className="text-[11px] font-medium">Built by NitBuk</span>
       </a>
     </footer>
