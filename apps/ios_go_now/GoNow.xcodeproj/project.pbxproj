@@ -1,0 +1,149 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		010000000000000000000001 /* GoNowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000001 /* GoNowApp.swift */; };
+		010000000000000000000002 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000002 /* AppRootView.swift */; };
+		010000000000000000000003 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* AppTab.swift */; };
+		010000000000000000000004 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* Models.swift */; };
+		010000000000000000000005 /* ForecastAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000005 /* ForecastAnalytics.swift */; };
+		010000000000000000000006 /* ForecastAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* ForecastAPIClient.swift */; };
+		010000000000000000000007 /* ForecastStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000007 /* ForecastStore.swift */; };
+		010000000000000000000008 /* ScoreStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000008 /* ScoreStyle.swift */; };
+		010000000000000000000009 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000009 /* Components.swift */; };
+		01000000000000000000000A /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000A /* TodayView.swift */; };
+		01000000000000000000000B /* PlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000B /* PlannerView.swift */; };
+		01000000000000000000000C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000C /* ProfileView.swift */; };
+		01000000000000000000000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000D /* Assets.xcassets */; };
+		010000000000000000000014 /* ForecastMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000014 /* ForecastMetric.swift */; };
+		010000000000000000000015 /* HealthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000015 /* HealthModels.swift */; };
+		010000000000000000000016 /* DayDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000016 /* DayDetailSheet.swift */; };
+		010000000000000000000017 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000017 /* StatusView.swift */; };
+		010000000000000000000018 /* FormulaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000018 /* FormulaView.swift */; };
+		010000000000000000000019 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000019 /* AboutView.swift */; };
+		010000000000000000000020 /* GoNowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000020 /* GoNowTests.swift */; };
+		010000000000000000000021 /* ForecastAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000021 /* ForecastAnalyticsTests.swift */; };
+		010000000000000000000022 /* ForecastAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000022 /* ForecastAPITests.swift */; };
+		010000000000000000000023 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000023 /* Fixtures.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		030000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 040000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 050000000000000000000001;
+			remoteInfo = GoNow;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		020000000000000000000001 /* GoNowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoNowApp.swift; sourceTree = "<group>"; };
+		020000000000000000000002 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		020000000000000000000003 /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
+		020000000000000000000004 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		020000000000000000000005 /* ForecastAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAnalytics.swift; sourceTree = "<group>"; };
+		020000000000000000000006 /* ForecastAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAPIClient.swift; sourceTree = "<group>"; };
+		020000000000000000000007 /* ForecastStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastStore.swift; sourceTree = "<group>"; };
+		020000000000000000000008 /* ScoreStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreStyle.swift; sourceTree = "<group>"; };
+		020000000000000000000009 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		02000000000000000000000A /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		02000000000000000000000B /* PlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannerView.swift; sourceTree = "<group>"; };
+		02000000000000000000000C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		02000000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		02000000000000000000000E /* Preview Content */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Preview Content"; sourceTree = "<group>"; };
+		020000000000000000000014 /* ForecastMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastMetric.swift; sourceTree = "<group>"; };
+		020000000000000000000015 /* HealthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModels.swift; sourceTree = "<group>"; };
+		020000000000000000000016 /* DayDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayDetailSheet.swift; sourceTree = "<group>"; };
+		020000000000000000000017 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
+		020000000000000000000018 /* FormulaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaView.swift; sourceTree = "<group>"; };
+		020000000000000000000019 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		020000000000000000000010 /* GoNow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoNow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		020000000000000000000020 /* GoNowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoNowTests.swift; sourceTree = "<group>"; };
+		020000000000000000000021 /* ForecastAnalyticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAnalyticsTests.swift; sourceTree = "<group>"; };
+		020000000000000000000022 /* ForecastAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAPITests.swift; sourceTree = "<group>"; };
+		020000000000000000000023 /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
+		020000000000000000000030 /* GoNowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoNowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		060000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		060000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		070000000000000000000001 = {isa = PBXGroup; children = (070000000000000000000002 /* GoNow */, 070000000000000000000020 /* GoNowTests */, 070000000000000000000030 /* Products */); sourceTree = "<group>"; };
+		070000000000000000000002 /* GoNow */ = {isa = PBXGroup; children = (020000000000000000000001 /* GoNowApp.swift */, 070000000000000000000003 /* App */, 070000000000000000000004 /* Domain */, 070000000000000000000005 /* Networking */, 070000000000000000000006 /* State */, 070000000000000000000007 /* DesignSystem */, 070000000000000000000008 /* Features */, 02000000000000000000000D /* Assets.xcassets */, 02000000000000000000000E /* Preview Content */); path = GoNow; sourceTree = "<group>"; };
+		070000000000000000000003 /* App */ = {isa = PBXGroup; children = (020000000000000000000002 /* AppRootView.swift */, 020000000000000000000003 /* AppTab.swift */); path = App; sourceTree = "<group>"; };
+		070000000000000000000004 /* Domain */ = {isa = PBXGroup; children = (020000000000000000000004 /* Models.swift */, 020000000000000000000014 /* ForecastMetric.swift */, 020000000000000000000015 /* HealthModels.swift */, 020000000000000000000005 /* ForecastAnalytics.swift */); path = Domain; sourceTree = "<group>"; };
+		070000000000000000000005 /* Networking */ = {isa = PBXGroup; children = (020000000000000000000006 /* ForecastAPIClient.swift */); path = Networking; sourceTree = "<group>"; };
+		070000000000000000000006 /* State */ = {isa = PBXGroup; children = (020000000000000000000007 /* ForecastStore.swift */); path = State; sourceTree = "<group>"; };
+		070000000000000000000007 /* DesignSystem */ = {isa = PBXGroup; children = (020000000000000000000008 /* ScoreStyle.swift */, 020000000000000000000009 /* Components.swift */); path = DesignSystem; sourceTree = "<group>"; };
+		070000000000000000000008 /* Features */ = {isa = PBXGroup; children = (070000000000000000000009 /* Today */, 07000000000000000000000A /* Planner */, 07000000000000000000000C /* ForecastDetails */, 07000000000000000000000B /* Profile */); path = Features; sourceTree = "<group>"; };
+		070000000000000000000009 /* Today */ = {isa = PBXGroup; children = (02000000000000000000000A /* TodayView.swift */); path = Today; sourceTree = "<group>"; };
+		07000000000000000000000A /* Planner */ = {isa = PBXGroup; children = (02000000000000000000000B /* PlannerView.swift */); path = Planner; sourceTree = "<group>"; };
+		07000000000000000000000B /* Profile */ = {isa = PBXGroup; children = (02000000000000000000000C /* ProfileView.swift */, 020000000000000000000017 /* StatusView.swift */, 020000000000000000000018 /* FormulaView.swift */, 020000000000000000000019 /* AboutView.swift */); path = Profile; sourceTree = "<group>"; };
+		07000000000000000000000C /* ForecastDetails */ = {isa = PBXGroup; children = (020000000000000000000016 /* DayDetailSheet.swift */); path = ForecastDetails; sourceTree = "<group>"; };
+		070000000000000000000020 /* GoNowTests */ = {isa = PBXGroup; children = (020000000000000000000020 /* GoNowTests.swift */, 020000000000000000000021 /* ForecastAnalyticsTests.swift */, 020000000000000000000022 /* ForecastAPITests.swift */, 020000000000000000000023 /* Fixtures.swift */); path = GoNowTests; sourceTree = "<group>"; };
+		070000000000000000000030 /* Products */ = {isa = PBXGroup; children = (020000000000000000000010 /* GoNow.app */, 020000000000000000000030 /* GoNowTests.xctest */); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		050000000000000000000001 /* GoNow */ = {isa = PBXNativeTarget; buildConfigurationList = 080000000000000000000010 /* Build configuration list for PBXNativeTarget "GoNow" */; buildPhases = (090000000000000000000001 /* Sources */, 060000000000000000000001 /* Frameworks */, 090000000000000000000002 /* Resources */); buildRules = (); dependencies = (); name = GoNow; productName = GoNow; productReference = 020000000000000000000010 /* GoNow.app */; productType = "com.apple.product-type.application"; };
+		050000000000000000000002 /* GoNowTests */ = {isa = PBXNativeTarget; buildConfigurationList = 080000000000000000000020 /* Build configuration list for PBXNativeTarget "GoNowTests" */; buildPhases = (090000000000000000000003 /* Sources */, 060000000000000000000002 /* Frameworks */, 090000000000000000000004 /* Resources */); buildRules = (); dependencies = (0A0000000000000000000001 /* PBXTargetDependency */); name = GoNowTests; productName = GoNowTests; productReference = 020000000000000000000030 /* GoNowTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		040000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {050000000000000000000001 = {CreatedOnToolsVersion = 26.2; }; 050000000000000000000002 = {CreatedOnToolsVersion = 26.2; TestTargetID = 050000000000000000000001; }; }; };
+			buildConfigurationList = 080000000000000000000001 /* Build configuration list for PBXProject "GoNow" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = 070000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			productRefGroup = 070000000000000000000030 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (050000000000000000000001 /* GoNow */, 050000000000000000000002 /* GoNowTests */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		090000000000000000000002 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		090000000000000000000004 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		090000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (010000000000000000000001 /* GoNowApp.swift in Sources */, 010000000000000000000002 /* AppRootView.swift in Sources */, 010000000000000000000003 /* AppTab.swift in Sources */, 010000000000000000000004 /* Models.swift in Sources */, 010000000000000000000014 /* ForecastMetric.swift in Sources */, 010000000000000000000015 /* HealthModels.swift in Sources */, 010000000000000000000005 /* ForecastAnalytics.swift in Sources */, 010000000000000000000006 /* ForecastAPIClient.swift in Sources */, 010000000000000000000007 /* ForecastStore.swift in Sources */, 010000000000000000000008 /* ScoreStyle.swift in Sources */, 010000000000000000000009 /* Components.swift in Sources */, 01000000000000000000000A /* TodayView.swift in Sources */, 01000000000000000000000B /* PlannerView.swift in Sources */, 010000000000000000000016 /* DayDetailSheet.swift in Sources */, 01000000000000000000000C /* ProfileView.swift in Sources */, 010000000000000000000017 /* StatusView.swift in Sources */, 010000000000000000000018 /* FormulaView.swift in Sources */, 010000000000000000000019 /* AboutView.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+		090000000000000000000003 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (010000000000000000000020 /* GoNowTests.swift in Sources */, 010000000000000000000021 /* ForecastAnalyticsTests.swift in Sources */, 010000000000000000000022 /* ForecastAPITests.swift in Sources */, 010000000000000000000023 /* Fixtures.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A0000000000000000000001 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 050000000000000000000001 /* GoNow */; targetProxy = 030000000000000000000001 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0B000000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES; CLANG_ANALYZER_NONNULL = YES; CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_ENABLE_OBJC_WEAK = YES; CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES; CLANG_WARN_BOOL_CONVERSION = YES; CLANG_WARN_COMMA = YES; CLANG_WARN_CONSTANT_CONVERSION = YES; CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES; CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; CLANG_WARN_EMPTY_BODY = YES; CLANG_WARN_ENUM_CONVERSION = YES; CLANG_WARN_INFINITE_RECURSION = YES; CLANG_WARN_INT_CONVERSION = YES; CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES; CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES; CLANG_WARN_OBJC_LITERAL_CONVERSION = YES; CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; CLANG_WARN_RANGE_LOOP_ANALYSIS = YES; CLANG_WARN_STRICT_PROTOTYPES = YES; CLANG_WARN_SUSPICIOUS_MOVE = YES; CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE; CLANG_WARN_UNREACHABLE_CODE = YES; CLANG_WARN__DUPLICATE_METHOD_MATCH = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_STRICT_OBJC_MSGSEND = YES; ENABLE_TESTABILITY = YES; ENABLE_USER_SCRIPT_SANDBOXING = YES; "EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_DYNAMIC_NO_PIC = NO; GCC_NO_COMMON_BLOCKS = YES; GCC_OPTIMIZATION_LEVEL = 0; GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)"); GCC_WARN_64_TO_32_BIT_CONVERSION = YES; GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR; GCC_WARN_UNDECLARED_SELECTOR = YES; GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE; GCC_WARN_UNUSED_FUNCTION = YES; GCC_WARN_UNUSED_VARIABLE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; LOCALIZATION_PREFERS_STRING_CATALOGS = YES; MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE; MTL_FAST_MATH = YES; ONLY_ACTIVE_ARCH = YES; SDKROOT = iphoneos; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
+		0B000000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES; CLANG_ANALYZER_NONNULL = YES; CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_ENABLE_OBJC_WEAK = YES; CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES; CLANG_WARN_BOOL_CONVERSION = YES; CLANG_WARN_COMMA = YES; CLANG_WARN_CONSTANT_CONVERSION = YES; CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES; CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; CLANG_WARN_EMPTY_BODY = YES; CLANG_WARN_ENUM_CONVERSION = YES; CLANG_WARN_INFINITE_RECURSION = YES; CLANG_WARN_INT_CONVERSION = YES; CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES; CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES; CLANG_WARN_OBJC_LITERAL_CONVERSION = YES; CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; CLANG_WARN_RANGE_LOOP_ANALYSIS = YES; CLANG_WARN_STRICT_PROTOTYPES = YES; CLANG_WARN_SUSPICIOUS_MOVE = YES; CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE; CLANG_WARN_UNREACHABLE_CODE = YES; CLANG_WARN__DUPLICATE_METHOD_MATCH = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; ENABLE_NS_ASSERTIONS = NO; ENABLE_STRICT_OBJC_MSGSEND = YES; ENABLE_USER_SCRIPT_SANDBOXING = YES; "EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_NO_COMMON_BLOCKS = YES; GCC_WARN_64_TO_32_BIT_CONVERSION = YES; GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR; GCC_WARN_UNDECLARED_SELECTOR = YES; GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE; GCC_WARN_UNUSED_FUNCTION = YES; GCC_WARN_UNUSED_VARIABLE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; LOCALIZATION_PREFERS_STRING_CATALOGS = YES; MTL_ENABLE_DEBUG_INFO = NO; MTL_FAST_MATH = YES; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; VALIDATE_PRODUCT = YES; }; name = Release; };
+		0B000000000000000000000010 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_ASSET_PATHS = "\"GoNow/Preview Content\""; DEVELOPMENT_TEAM = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Go Now"; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.nitbuk.gonow; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = NO; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = 1; }; name = Debug; };
+		0B000000000000000000000011 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_ASSET_PATHS = "\"GoNow/Preview Content\""; DEVELOPMENT_TEAM = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Go Now"; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.nitbuk.gonow; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = NO; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = 1; }; name = Release; };
+		0B000000000000000000000020 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.nitbuk.gonowTests; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = 1; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoNow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoNow"; }; name = Debug; };
+		0B000000000000000000000021 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.nitbuk.gonowTests; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = 1; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoNow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoNow"; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		080000000000000000000001 /* Build configuration list for PBXProject "GoNow" */ = {isa = XCConfigurationList; buildConfigurations = (0B000000000000000000000001 /* Debug */, 0B000000000000000000000002 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		080000000000000000000010 /* Build configuration list for PBXNativeTarget "GoNow" */ = {isa = XCConfigurationList; buildConfigurations = (0B000000000000000000000010 /* Debug */, 0B000000000000000000000011 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		080000000000000000000020 /* Build configuration list for PBXNativeTarget "GoNowTests" */ = {isa = XCConfigurationList; buildConfigurations = (0B000000000000000000000020 /* Debug */, 0B000000000000000000000021 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = 040000000000000000000001 /* Project object */;
+}
