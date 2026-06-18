@@ -5,7 +5,6 @@ import { motion, useInView, type Variants } from "framer-motion";
 import {
   Layers,
   Zap,
-  Github,
   ChevronRight,
   PawPrint,
   Waves,
@@ -17,6 +16,7 @@ import {
   Thermometer,
 } from "lucide-react";
 import Link from "next/link";
+import GithubIcon from "./GithubIcon";
 
 /* ── Counter hook ────────────────────────────────────────────────── */
 
@@ -544,7 +544,7 @@ export default function AboutView() {
         custom={4}
       >
         <div className="flex items-center gap-1.5 mb-3">
-          <Github size={14} className="text-slate-400" />
+          <GithubIcon size={14} className="text-slate-400" />
           <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
             Open Source
           </span>
@@ -570,7 +570,7 @@ export default function AboutView() {
           whileTap={{ scale: 0.96 }}
           transition={{ duration: 0.15 }}
         >
-          <Github size={13} />
+          <GithubIcon size={13} />
           View on GitHub
         </motion.a>
       </ScrollReveal>
