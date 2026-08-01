@@ -32,6 +32,7 @@ This folder contains the complete planning and specification documents for **Go 
 13. `12_ci_cd_pipeline.md` - GitHub Actions workflows per component, build gates, environment promotion, rollback
 14. `13_observability_data_quality.md` - Metrics catalog, structured logging, SLOs, alert routing, failure runbooks
 15. `14_api_reference.md` - OpenAPI-style endpoint docs with curl examples, error codes, auth details
+16. `15_scored_forecast_contract.md` - Canonical scored forecast contract shared by web and native iOS clients
 
 ## Execution Order (Implementation)
 
