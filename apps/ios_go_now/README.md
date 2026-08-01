@@ -13,6 +13,8 @@ Native SwiftUI client for Go Now. The first release is scoped to native parity w
 
 Open `GoNow.xcodeproj` in Xcode and run the `GoNow` scheme on an iPhone simulator.
 
+For TestFlight and App Store distribution, follow [TESTFLIGHT.md](TESTFLIGHT.md).
+
 The app defaults to:
 
 ```text
