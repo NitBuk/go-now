@@ -87,14 +87,18 @@ struct PlannerView: View {
                 Divider().overlay(Color.goNowDivider)
 
                 ForEach(days) { day in
+                    let isExpanded = shouldExpand(day)
                     VStack(spacing: 0) {
                         HStack(spacing: 10) {
                             Button {
                                 toggle(day)
                             } label: {
-                                DayPlannerHeader(day: day, mode: selectedMode, isExpanded: shouldExpand(day: day, allDays: days))
+                                DayPlannerHeader(day: day, mode: selectedMode, isExpanded: isExpanded)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("\(day.title) forecast hours")
+                            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+                            .accessibilityHint(isExpanded ? "Closes hourly forecast" : "Opens hourly forecast")
 
                             Button {
                                 selectedDay = day
@@ -111,7 +115,7 @@ struct PlannerView: View {
                         .padding(.horizontal, 18)
                         .padding(.vertical, 16)
 
-                        if shouldExpand(day: day, allDays: days) {
+                        if isExpanded {
                             VStack(spacing: 0) {
                                 ForEach(day.hours) { hour in
                                     HourSummaryRow(hour: hour, mode: selectedMode)
@@ -126,6 +130,7 @@ struct PlannerView: View {
                                 }
                             }
                             .padding(.bottom, 8)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                         }
 
                         if day.id != days.last?.id {
@@ -137,15 +142,17 @@ struct PlannerView: View {
         }
     }
 
-    private func shouldExpand(day: DayForecast, allDays: [DayForecast]) -> Bool {
-        expandedDays.contains(day.startOfDay) || allDays.prefix(2).contains(day)
+    private func shouldExpand(_ day: DayForecast) -> Bool {
+        expandedDays.contains(day.startOfDay)
     }
 
     private func toggle(_ day: DayForecast) {
-        if expandedDays.contains(day.startOfDay) {
-            expandedDays.remove(day.startOfDay)
-        } else {
-            expandedDays.insert(day.startOfDay)
+        withAnimation(.snappy(duration: 0.25)) {
+            if expandedDays.contains(day.startOfDay) {
+                expandedDays.remove(day.startOfDay)
+            } else {
+                expandedDays.insert(day.startOfDay)
+            }
         }
     }
 
