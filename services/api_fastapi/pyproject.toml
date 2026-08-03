@@ -15,7 +15,7 @@ dependencies = [
     "google-cloud-firestore>=2.14,<3.0",
     "firebase-admin>=7.4.0,<8.0",
     "python-dotenv>=1.2.2,<2.0",
-    "structlog>=24.1,<26.0",
+    "structlog>=26.1.0,<27.0",
     "scoring-engine",
 ]
 
